@@ -23,7 +23,7 @@ declare const penpot: Penpot;
 
 const UI_DIMENSIONS = { width: 960, height: 740 };
 
-penpot.ui.open("Design Discovery Assistant", "index.html", UI_DIMENSIONS);
+penpot.ui.open("Design Discovery Assistant", "https://kickdapie.github.io/designAI/index.html", UI_DIMENSIONS);
 
 penpot.ui.onMessage((message: PluginMessage | { type: string; payload?: any }) => {
   switch (message.type) {
