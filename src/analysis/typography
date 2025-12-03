@@ -1,0 +1,26 @@
+// src/analysis/typography.ts
+import { Shape } from "../types/shape";
+import { DesignIssue } from "../types/issue";
+
+const HEADING_MIN = 18; // px
+
+export function detectTypographyIssues(shapes: Shape[]): DesignIssue[] {
+  const issues: DesignIssue[] = [];
+
+  for (const shape of shapes) {
+    if (shape.type === "text" && shape.fontSize) {
+      if (shape.fontSize < 12) {
+        issues.push({
+          id: `type-small-${shape.id}`,
+          type: "typography",
+          severity: "info",
+          shapes: [shape.id],
+          message: `Text is small (${shape.fontSize}px).`,
+          suggestion: "Increase to at least 14–16px for body text."
+        });
+      }
+    }
+  }
+
+  return issues;
+}

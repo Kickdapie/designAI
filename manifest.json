@@ -1,0 +1,11 @@
+{
+  "name": "Design Discovery Assistant",
+  "description": "A conversational AI assistant that helps non-designers find and reuse good design examples. Describe what you want, explore real-world references, and collect palettes, typography, or layout blueprints directly onto your canvas.",
+  "version": "0.1.0",
+  "code": "dist/plugin.js",
+  "icon": "assets/icon.svg",
+  "permissions": [
+    "content:read",
+    "content:write"
+  ]
+}
