@@ -16,16 +16,19 @@ import type {
   Example,
   PaletteTrait,
   PluginMessage,
+  ResizeWindowMessage,
   TypographyTrait,
 } from "./src/types/catalog";
 
 declare const penpot: Penpot;
 
 const UI_DIMENSIONS = { width: 960, height: 740 };
+const MINIMIZED_DIMENSIONS = { width: 400, height: 300 };
 
 penpot.ui.open("Design Discovery Assistant", "https://kickdapie.github.io/designAI/index.html", UI_DIMENSIONS);
 
 penpot.ui.onMessage((message: PluginMessage | { type: string; payload?: any }) => {
+  console.log("[Plugin] Received message:", message.type, message);
   switch (message.type) {
     case "ui-ready":
       sendInitialExamples();
@@ -36,7 +39,11 @@ penpot.ui.onMessage((message: PluginMessage | { type: string; payload?: any }) =
     case "apply-collected-traits":
       handleApply(message as ApplyTraitsMessage);
       break;
+    case "resize-window":
+      handleResize(message as ResizeWindowMessage);
+      break;
     default:
+      console.log("[Plugin] Unknown message type:", message.type);
       break;
   }
 });
@@ -68,9 +75,12 @@ function handleSearch(query: string) {
 }
 
 function handleApply(message: ApplyTraitsMessage) {
+  console.log("[Plugin] handleApply called with:", message);
   const traits = message.payload?.traits ?? [];
+  console.log("[Plugin] Traits count:", traits.length);
 
   if (!traits.length) {
+    console.log("[Plugin] No traits to apply");
     penpot.ui.sendMessage({
       type: "collection-applied",
       payload: {
@@ -82,7 +92,9 @@ function handleApply(message: ApplyTraitsMessage) {
   }
 
   const selection = penpot.selection ?? [];
+  console.log("[Plugin] Selection count:", selection.length, selection);
   if (!selection.length) {
+    console.log("[Plugin] No shapes selected");
     penpot.ui.sendMessage({
       type: "collection-applied",
       payload: {
@@ -100,10 +112,18 @@ function handleApply(message: ApplyTraitsMessage) {
     (trait): trait is TypographyTrait => trait.type === "typography",
   );
 
+  console.log("[Plugin] Applying traits:", {
+    paletteCount: paletteTraits.length,
+    typographyCount: typographyTraits.length,
+    selectionCount: selection.length,
+  });
+
   const applied = {
     palette: applyPaletteTraits(selection, paletteTraits),
     typography: applyTypographyTraits(selection, typographyTraits),
   };
+
+  console.log("[Plugin] Applied results:", applied);
 
   const success = applied.palette || applied.typography;
 
@@ -116,6 +136,8 @@ function handleApply(message: ApplyTraitsMessage) {
         : "I couldn't find a compatible layer—try selecting shapes or text before applying.",
     },
   });
+  
+  console.log("[Plugin] Sent response, success:", success);
 }
 
 function applyPaletteTraits(
@@ -170,6 +192,12 @@ function isFillShape(shape: Shape): shape is Rectangle | Ellipse | Path | Text {
     types.isPath(shape) ||
     types.isText(shape)
   );
+}
+
+function handleResize(message: ResizeWindowMessage) {
+  const { width, height } = message.payload;
+  console.log("[Plugin] Resizing window to:", width, height);
+  penpot.ui.resize(width, height);
 }
 
 function buildResultSummary(query: string, results: Example[]): string {

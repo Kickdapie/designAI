@@ -242,6 +242,7 @@
   var UI_DIMENSIONS = { width: 960, height: 740 };
   penpot.ui.open("Design Discovery Assistant", "https://kickdapie.github.io/designAI/index.html", UI_DIMENSIONS);
   penpot.ui.onMessage((message) => {
+    console.log("[Plugin] Received message:", message.type, message);
     switch (message.type) {
       case "ui-ready":
         sendInitialExamples();
@@ -252,7 +253,11 @@
       case "apply-collected-traits":
         handleApply(message);
         break;
+      case "resize-window":
+        handleResize(message);
+        break;
       default:
+        console.log("[Plugin] Unknown message type:", message.type);
         break;
     }
   });
@@ -279,8 +284,11 @@
     });
   }
   function handleApply(message) {
+    console.log("[Plugin] handleApply called with:", message);
     const traits = message.payload?.traits ?? [];
+    console.log("[Plugin] Traits count:", traits.length);
     if (!traits.length) {
+      console.log("[Plugin] No traits to apply");
       penpot.ui.sendMessage({
         type: "collection-applied",
         payload: {
@@ -291,7 +299,9 @@
       return;
     }
     const selection = penpot.selection ?? [];
+    console.log("[Plugin] Selection count:", selection.length, selection);
     if (!selection.length) {
+      console.log("[Plugin] No shapes selected");
       penpot.ui.sendMessage({
         type: "collection-applied",
         payload: {
@@ -307,10 +317,16 @@
     const typographyTraits = traits.filter(
       (trait) => trait.type === "typography"
     );
+    console.log("[Plugin] Applying traits:", {
+      paletteCount: paletteTraits.length,
+      typographyCount: typographyTraits.length,
+      selectionCount: selection.length
+    });
     const applied = {
       palette: applyPaletteTraits(selection, paletteTraits),
       typography: applyTypographyTraits(selection, typographyTraits)
     };
+    console.log("[Plugin] Applied results:", applied);
     const success = applied.palette || applied.typography;
     penpot.ui.sendMessage({
       type: "collection-applied",
@@ -319,6 +335,7 @@
         error: success ? void 0 : "I couldn't find a compatible layer\u2014try selecting shapes or text before applying."
       }
     });
+    console.log("[Plugin] Sent response, success:", success);
   }
   function applyPaletteTraits(shapes, traits) {
     if (!traits.length) return false;
@@ -351,6 +368,11 @@
   function isFillShape(shape) {
     const { types } = penpot.utils;
     return types.isRectangle(shape) || types.isEllipse(shape) || types.isPath(shape) || types.isText(shape);
+  }
+  function handleResize(message) {
+    const { width, height } = message.payload;
+    console.log("[Plugin] Resizing window to:", width, height);
+    penpot.ui.resize(width, height);
   }
   function buildResultSummary(query, results) {
     if (!results.length) {

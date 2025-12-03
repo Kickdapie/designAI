@@ -80,6 +80,11 @@ export type CollectionAppliedMessage = {
   payload?: { success?: boolean; error?: string };
 };
 
+export type ResizeWindowMessage = {
+  type: "resize-window";
+  payload: { width: number; height: number };
+};
+
 export type SearchExamplesMessage = {
   type: "search-examples";
   payload: { query: string };

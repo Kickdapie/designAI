@@ -41,6 +41,31 @@
         gap: 6px;
       }
 
+      .header-top {
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-start;
+        gap: 12px;
+      }
+
+      .resize-toggle {
+        border: 1px solid rgba(148, 163, 184, 0.3);
+        border-radius: 8px;
+        padding: 8px 12px;
+        background: rgba(15, 23, 42, 0.6);
+        color: #e2e8f0;
+        cursor: pointer;
+        font-size: 1.2rem;
+        line-height: 1;
+        transition: background 0.2s ease, border-color 0.2s ease;
+        flex-shrink: 0;
+      }
+
+      .resize-toggle:hover {
+        background: rgba(15, 23, 42, 0.8);
+        border-color: rgba(56, 189, 248, 0.5);
+      }
+
       .app-header h1 {
         margin: 0;
         font-size: clamp(1.25rem, 2.4vw, 1.6rem);
@@ -54,6 +79,14 @@
         font-size: 0.95rem;
         line-height: 1.5;
         color: rgba(203, 213, 225, 0.9);
+      }
+
+      .app-shell.minimized .app-main {
+        display: none;
+      }
+
+      .app-shell.minimized .app-header p {
+        display: none;
       }
 
       .badge-lab {

@@ -14,6 +14,7 @@ import {
   ExampleSearchResponse,
   LayoutTrait,
   PaletteTrait,
+  ResizeWindowMessage,
   Trait,
   TypographyTrait,
 } from "../types/catalog";
@@ -37,6 +38,7 @@ export const App: React.FC = () => {
     DEFAULT_RESULTS[0] ?? null,
   );
   const [isLoading, setIsLoading] = useState(false);
+  const [isMinimized, setIsMinimized] = useState(false);
   const chatEndRef = useRef<HTMLDivElement | null>(null);
   const fallbackTimerRef = useRef<number | null>(null);
   const handshakeRef = useRef(false);
@@ -242,18 +244,47 @@ export const App: React.FC = () => {
     }
   }, [collection, pushAssistantMessage, sendToPlugin]);
 
+  const handleToggleSize = useCallback(() => {
+    const newMinimized = !isMinimized;
+    setIsMinimized(newMinimized);
+    
+    const message: ResizeWindowMessage = {
+      type: "resize-window",
+      payload: newMinimized
+        ? { width: 400, height: 300 }
+        : { width: 960, height: 740 },
+    };
+    
+    sendToPlugin(message);
+  }, [isMinimized, sendToPlugin]);
+
   const collectionSummary = useMemo(() => collection.length, [collection.length]);
 
   return (
-    <div className="app-shell">
+    <div className={`app-shell ${isMinimized ? "minimized" : ""}`}>
       <header className="app-header">
-        <div className="badge-lab">Penpot Plug-in Prototype</div>
-        <h1>Design Discovery Assistant</h1>
-        <p>
-          Describe what you want to build, explore real-world references, and
-          collect palettes, typography, or layout blueprints directly onto your
-          canvas.
-        </p>
+        <div className="header-top">
+          <div>
+            <div className="badge-lab">Penpot Plug-in Prototype</div>
+            <h1>Design Discovery Assistant</h1>
+          </div>
+          <button
+            className="resize-toggle"
+            type="button"
+            onClick={handleToggleSize}
+            aria-label={isMinimized ? "Expand window" : "Minimize window"}
+            title={isMinimized ? "Expand window" : "Minimize window"}
+          >
+            {isMinimized ? "⛶" : "⊟"}
+          </button>
+        </div>
+        {!isMinimized && (
+          <p>
+            Describe what you want to build, explore real-world references, and
+            collect palettes, typography, or layout blueprints directly onto your
+            canvas.
+          </p>
+        )}
       </header>
 
       <main className="app-main">
