@@ -239,7 +239,7 @@
   }
 
   // plugin.ts
-  var UI_DIMENSIONS = { width: 960, height: 740 };
+  var UI_DIMENSIONS = { width: 1200, height: 900 };
   penpot.ui.open("Design Discovery Assistant", "https://kickdapie.github.io/designAI/index.html", UI_DIMENSIONS);
   penpot.ui.onMessage((message) => {
     console.log("[Plugin] Received message:", message.type, message);

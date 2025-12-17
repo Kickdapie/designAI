@@ -22,7 +22,7 @@ import type {
 
 declare const penpot: Penpot;
 
-const UI_DIMENSIONS = { width: 960, height: 740 };
+const UI_DIMENSIONS = { width: 1200, height: 900 };
 const MINIMIZED_DIMENSIONS = { width: 400, height: 300 };
 
 penpot.ui.open("Design Discovery Assistant", "https://kickdapie.github.io/designAI/index.html", UI_DIMENSIONS);

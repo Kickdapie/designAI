@@ -375,36 +375,61 @@
         flex-wrap: wrap;
       }
 
+      .palette-section {
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+      }
+
+      .palette-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+      }
+
+      .palette-label {
+        font-size: 0.85rem;
+        font-weight: 500;
+        color: rgba(203, 213, 225, 0.9);
+      }
+
       .palette-row {
         display: flex;
         gap: 10px;
         flex-wrap: wrap;
       }
 
-      .palette-swatch {
+      .palette-swatch-clickable {
         width: 68px;
         height: 48px;
         border-radius: 12px;
-        border: 1px solid rgba(148, 163, 184, 0.3);
+        border: 2px solid transparent;
         display: flex;
         align-items: flex-end;
         justify-content: center;
         padding: 6px;
-        color: rgba(15, 23, 42, 0.8);
-        font-size: 0.7rem;
-        font-weight: 600;
-        text-transform: uppercase;
-        letter-spacing: 0.04em;
+        cursor: pointer;
+        transition: transform 0.15s ease, border-color 0.15s ease, box-shadow 0.15s ease;
         background-clip: padding-box;
       }
 
-      .palette-swatch span {
-        background: rgba(15, 23, 42, 0.55);
+      .palette-swatch-clickable:hover {
+        transform: translateY(-2px);
+        border-color: rgba(56, 189, 248, 0.6);
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+      }
+
+      .palette-swatch-clickable span {
+        background: rgba(15, 23, 42, 0.7);
         width: 100%;
         text-align: center;
         border-radius: 8px;
         padding: 2px 0;
         color: #f8fafc;
+        font-size: 0.7rem;
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: 0.04em;
       }
 
       .example-elements h5 {

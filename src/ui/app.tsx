@@ -189,6 +189,20 @@ export const App: React.FC = () => {
     [addTrait],
   );
 
+  const handleCollectSingleColor = useCallback(
+    (example: Example, color: string) => {
+      const trait: PaletteTrait = {
+        id: `${example.id}-color-${color}`,
+        type: "palette",
+        label: `${color} from ${example.name}`,
+        sourceExampleId: example.id,
+        colors: [color],
+      };
+      addTrait(trait);
+    },
+    [addTrait],
+  );
+
   const handleCollectTypography = useCallback(
     (example: Example) => {
       const trait: TypographyTrait = {
@@ -252,7 +266,7 @@ export const App: React.FC = () => {
       type: "resize-window",
       payload: newMinimized
         ? { width: 400, height: 300 }
-        : { width: 960, height: 740 },
+        : { width: 1200, height: 900 },
     };
     
     sendToPlugin(message);
@@ -346,6 +360,7 @@ export const App: React.FC = () => {
             <ExampleDetail
               example={selectedExample}
               onCollectPalette={handleCollectPalette}
+              onCollectSingleColor={handleCollectSingleColor}
               onCollectTypography={handleCollectTypography}
               onCollectLayout={handleCollectLayout}
               onCollectElement={handleCollectElement}
@@ -420,12 +435,14 @@ const ExampleCard: React.FC<{
 const ExampleDetail: React.FC<{
   example: Example;
   onCollectPalette: (example: Example) => void;
+  onCollectSingleColor: (example: Example, color: string) => void;
   onCollectTypography: (example: Example) => void;
   onCollectLayout: (example: Example) => void;
   onCollectElement: (element: ExampleElement) => void;
 }> = ({
   example,
   onCollectPalette,
+  onCollectSingleColor,
   onCollectTypography,
   onCollectLayout,
   onCollectElement,
@@ -469,12 +486,32 @@ const ExampleDetail: React.FC<{
         </button>
       </div>
 
-      <div className="palette-row">
-        {example.palette.map((hex) => (
-          <div key={hex} className="palette-swatch" style={{ background: hex }}>
-            <span>{hex}</span>
-          </div>
-        ))}
+      <div className="palette-section">
+        <div className="palette-header">
+          <span className="palette-label">Color palette</span>
+          <button
+            className="tertiary-button"
+            type="button"
+            onClick={() => onCollectPalette(example)}
+            style={{ fontSize: "0.8rem", padding: "6px 10px" }}
+          >
+            Collect all
+          </button>
+        </div>
+        <div className="palette-row">
+          {example.palette.map((hex) => (
+            <button
+              key={hex}
+              type="button"
+              className="palette-swatch-clickable"
+              style={{ background: hex }}
+              onClick={() => onCollectSingleColor(example, hex)}
+              title={`Collect ${hex}`}
+            >
+              <span>{hex}</span>
+            </button>
+          ))}
+        </div>
       </div>
 
       <div className="example-elements">
