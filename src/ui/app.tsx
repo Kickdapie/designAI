@@ -266,7 +266,7 @@ export const App: React.FC = () => {
       type: "resize-window",
       payload: newMinimized
         ? { width: 400, height: 300 }
-        : { width: 1500, height: 900 },
+        : { width: 1300, height: 900 },
     };
     
     sendToPlugin(message);
