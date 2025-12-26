@@ -535,6 +535,9 @@ const ExampleDetail: React.FC<{
 
       <div className="example-elements">
         <h5>Reusable elements</h5>
+        <p style={{ fontSize: "0.8rem", color: "rgba(203, 213, 225, 0.7)", margin: "0 0 12px 0", lineHeight: "1.4" }}>
+          These apply colors and fonts to your selected layers. Layout patterns are shown for reference—arrange elements manually to match the pattern.
+        </p>
         <div className="element-list">
           {example.elements.map((element) => (
             <div key={element.id} className="element-card">
@@ -543,6 +546,11 @@ const ExampleDetail: React.FC<{
                 <span>{element.highlight}</span>
               </div>
               <p>{element.description}</p>
+              {element.trait.layoutHints && element.trait.layoutHints.length > 0 && (
+                <p style={{ fontSize: "0.75rem", color: "rgba(148, 163, 184, 0.8)", margin: "8px 0 0 0", fontStyle: "italic" }}>
+                  Layout: {element.trait.layoutHints.slice(0, 2).join(" • ")}
+                </p>
+              )}
               <button
                 className="tertiary-button"
                 type="button"

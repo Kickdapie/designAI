@@ -159,6 +159,9 @@
     const elementTraits = traits.filter(
       (trait) => trait.type === "element"
     );
+    const layoutTraits = traits.filter(
+      (trait) => trait.type === "layout"
+    );
     const hasColors = paletteTraits.length > 0 || elementTraits.some((e) => e.colors && e.colors.length > 0);
     const hasFonts = typographyTraits.length > 0 || elementTraits.some((e) => e.fonts && e.fonts.length > 0);
     if (!selection.length) {
@@ -241,11 +244,24 @@
       const appliedParts = [];
       if (appliedColors) appliedParts.push("colors");
       if (appliedFonts) appliedParts.push("fonts");
+      const allLayoutHints = [
+        ...layoutTraits.flatMap((t) => t.layoutTags),
+        ...elementTraits.flatMap((t) => t.layoutHints ?? [])
+      ];
+      let message2 = `Applied ${appliedParts.join(" and ")} to ${selection.length} layer${selection.length > 1 ? "s" : ""}!`;
+      if (allLayoutHints.length > 0) {
+        message2 += `
+
+\u{1F4D0} Layout reference: ${allLayoutHints.slice(0, 3).join(" \u2022 ")}`;
+        message2 += `
+
+Note: Layout patterns are for reference. Use the colors and fonts as a starting point, then manually arrange your elements to match the layout pattern.`;
+      }
       penpot.ui.sendMessage({
         type: "collection-applied",
         payload: {
           success: true,
-          message: `Applied ${appliedParts.join(" and ")} to ${selection.length} layer${selection.length > 1 ? "s" : ""}!`
+          message: message2
         }
       });
     }

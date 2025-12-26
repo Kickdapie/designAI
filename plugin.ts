@@ -15,6 +15,7 @@ import type {
   ApplyTraitsMessage,
   ElementTrait,
   Example,
+  LayoutTrait,
   PaletteTrait,
   PluginMessage,
   ResizeWindowMessage,
@@ -104,6 +105,9 @@ function handleApply(message: ApplyTraitsMessage) {
   );
   const elementTraits = traits.filter(
     (trait): trait is ElementTrait => trait.type === "element",
+  );
+  const layoutTraits = traits.filter(
+    (trait): trait is LayoutTrait => trait.type === "layout",
   );
 
   // Check what we need to apply
@@ -212,11 +216,24 @@ function handleApply(message: ApplyTraitsMessage) {
     if (appliedColors) appliedParts.push("colors");
     if (appliedFonts) appliedParts.push("fonts");
     
+    // Collect layout hints for reference
+    const allLayoutHints = [
+      ...layoutTraits.flatMap(t => t.layoutTags),
+      ...elementTraits.flatMap(t => t.layoutHints ?? []),
+    ];
+    
+    let message = `Applied ${appliedParts.join(" and ")} to ${selection.length} layer${selection.length > 1 ? 's' : ''}!`;
+    
+    if (allLayoutHints.length > 0) {
+      message += `\n\n📐 Layout reference: ${allLayoutHints.slice(0, 3).join(" • ")}`;
+      message += `\n\nNote: Layout patterns are for reference. Use the colors and fonts as a starting point, then manually arrange your elements to match the layout pattern.`;
+    }
+    
     penpot.ui.sendMessage({
       type: "collection-applied",
       payload: {
         success: true,
-        message: `Applied ${appliedParts.join(" and ")} to ${selection.length} layer${selection.length > 1 ? 's' : ''}!`,
+        message,
       },
     });
   }
