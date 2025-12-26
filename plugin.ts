@@ -13,6 +13,7 @@ import {
 import { scoreExamples } from "./src/catalog/search";
 import type {
   ApplyTraitsMessage,
+  ElementTrait,
   Example,
   PaletteTrait,
   PluginMessage,
@@ -93,64 +94,144 @@ function handleApply(message: ApplyTraitsMessage) {
 
   const selection = penpot.selection ?? [];
   console.log("[Plugin] Selection count:", selection.length, selection);
-  if (!selection.length) {
-    console.log("[Plugin] No shapes selected");
-    penpot.ui.sendMessage({
-      type: "collection-applied",
-      payload: {
-        success: false,
-        error: "Select one or more layers on the canvas so I know where to apply the traits.",
-      },
-    });
-    return;
-  }
-
+  
+  // Analyze what types of traits we have
   const paletteTraits = traits.filter(
     (trait): trait is PaletteTrait => trait.type === "palette",
   );
   const typographyTraits = traits.filter(
     (trait): trait is TypographyTrait => trait.type === "typography",
   );
+  const elementTraits = traits.filter(
+    (trait): trait is ElementTrait => trait.type === "element",
+  );
+
+  // Check what we need to apply
+  const hasColors = paletteTraits.length > 0 || elementTraits.some(e => e.colors && e.colors.length > 0);
+  const hasFonts = typographyTraits.length > 0 || elementTraits.some(e => e.fonts && e.fonts.length > 0);
+
+  if (!selection.length) {
+    console.log("[Plugin] No shapes selected");
+    let errorMessage = "Please select layers on your canvas first.\n\n";
+    if (hasColors && hasFonts) {
+      errorMessage += "For this collection, select:\n• Shapes (rectangles, circles, etc.) to apply colors\n• Text layers to apply fonts";
+    } else if (hasColors) {
+      errorMessage += "Select shapes (rectangles, circles, paths, or text) to apply colors.";
+    } else if (hasFonts) {
+      errorMessage += "Select text layers to apply fonts.";
+    } else {
+      errorMessage += "Select any layers on your canvas.";
+    }
+    
+    penpot.ui.sendMessage({
+      type: "collection-applied",
+      payload: {
+        success: false,
+        error: errorMessage,
+      },
+    });
+    return;
+  }
+
+  // Extract all colors from palette traits and element traits
+  const allColors = [
+    ...paletteTraits.flatMap(t => t.colors),
+    ...elementTraits.flatMap(t => t.colors ?? []),
+  ];
+
+  // Extract all fonts from typography traits and element traits
+  const allFonts = [
+    ...typographyTraits.flatMap(t => t.fonts),
+    ...elementTraits.flatMap(t => t.fonts ?? []),
+  ];
 
   console.log("[Plugin] Applying traits:", {
     paletteCount: paletteTraits.length,
     typographyCount: typographyTraits.length,
+    elementCount: elementTraits.length,
+    totalColors: allColors.length,
+    totalFonts: allFonts.length,
     selectionCount: selection.length,
   });
 
+  // Apply colors and fonts
+  const appliedColors = allColors.length > 0 
+    ? applyColorsToShapes(selection, allColors)
+    : false;
+    
+  const appliedFonts = allFonts.length > 0
+    ? applyFontsToShapes(selection, allFonts)
+    : false;
+
   const applied = {
-    palette: applyPaletteTraits(selection, paletteTraits),
-    typography: applyTypographyTraits(selection, typographyTraits),
+    palette: appliedColors,
+    typography: appliedFonts,
   };
 
   console.log("[Plugin] Applied results:", applied);
 
   const success = applied.palette || applied.typography;
 
-  penpot.ui.sendMessage({
-    type: "collection-applied",
-    payload: {
-      success,
-      error: success
-        ? undefined
-        : "I couldn't find a compatible layer—try selecting shapes or text before applying.",
-    },
-  });
+  if (!success) {
+    // Provide specific guidance based on what we tried to apply
+    let errorMessage = "Couldn't apply to the selected layers.\n\n";
+    const fillable = selection.filter(isFillShape);
+    const textLayers = selection.filter(s => penpot.utils.types.isText(s));
+    
+    if (hasColors && hasFonts) {
+      if (!fillable.length && !textLayers.length) {
+        errorMessage += "Selected layers can't receive colors or fonts.\n\n";
+        errorMessage += "Try selecting:\n• Rectangles, circles, or paths for colors\n• Text layers for fonts";
+      } else if (!fillable.length) {
+        errorMessage += "No shapes found for colors. Select rectangles, circles, or paths.";
+      } else if (!textLayers.length) {
+        errorMessage += "No text layers found for fonts. Select text layers.";
+      }
+    } else if (hasColors) {
+      if (!fillable.length) {
+        errorMessage += "Selected layers can't receive colors.\n\n";
+        errorMessage += "Select shapes like rectangles, circles, paths, or text layers.";
+      }
+    } else if (hasFonts) {
+      if (!textLayers.length) {
+        errorMessage += "Selected layers aren't text.\n\n";
+        errorMessage += "Select text layers to apply fonts.";
+      }
+    }
+    
+    penpot.ui.sendMessage({
+      type: "collection-applied",
+      payload: {
+        success: false,
+        error: errorMessage,
+      },
+    });
+  } else {
+    // Success message
+    const appliedParts: string[] = [];
+    if (appliedColors) appliedParts.push("colors");
+    if (appliedFonts) appliedParts.push("fonts");
+    
+    penpot.ui.sendMessage({
+      type: "collection-applied",
+      payload: {
+        success: true,
+        message: `Applied ${appliedParts.join(" and ")} to ${selection.length} layer${selection.length > 1 ? 's' : ''}!`,
+      },
+    });
+  }
   
   console.log("[Plugin] Sent response, success:", success);
 }
 
-function applyPaletteTraits(
+function applyColorsToShapes(
   shapes: Shape[],
-  traits: PaletteTrait[],
+  colors: string[],
 ): boolean {
-  if (!traits.length) return false;
+  if (!colors.length) return false;
 
   const fillable = shapes.filter(isFillShape);
   if (!fillable.length) return false;
-
-  const colors = traits.flatMap((trait) => trait.colors);
-  if (!colors.length) return false;
 
   fillable.forEach((shape, index) => {
     const color = colors[index % colors.length];
@@ -162,20 +243,17 @@ function applyPaletteTraits(
   return true;
 }
 
-function applyTypographyTraits(
+function applyFontsToShapes(
   shapes: Shape[],
-  traits: TypographyTrait[],
+  fonts: string[],
 ): boolean {
-  if (!traits.length) return false;
-
-  const fontNames = traits.flatMap((trait) => trait.fonts);
-  if (!fontNames.length) return false;
+  if (!fonts.length) return false;
 
   let applied = false;
+  const fontFamily = fonts[0].split(' ')[0]; // Extract just the font name (remove weight)
 
   shapes.forEach((shape) => {
     if (penpot.utils.types.isText(shape)) {
-      const fontFamily = fontNames[0];
       shape.fontFamily = fontFamily;
       applied = true;
     }

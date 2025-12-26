@@ -150,49 +150,111 @@
     }
     const selection = penpot.selection ?? [];
     console.log("[Plugin] Selection count:", selection.length, selection);
-    if (!selection.length) {
-      console.log("[Plugin] No shapes selected");
-      penpot.ui.sendMessage({
-        type: "collection-applied",
-        payload: {
-          success: false,
-          error: "Select one or more layers on the canvas so I know where to apply the traits."
-        }
-      });
-      return;
-    }
     const paletteTraits = traits.filter(
       (trait) => trait.type === "palette"
     );
     const typographyTraits = traits.filter(
       (trait) => trait.type === "typography"
     );
+    const elementTraits = traits.filter(
+      (trait) => trait.type === "element"
+    );
+    const hasColors = paletteTraits.length > 0 || elementTraits.some((e) => e.colors && e.colors.length > 0);
+    const hasFonts = typographyTraits.length > 0 || elementTraits.some((e) => e.fonts && e.fonts.length > 0);
+    if (!selection.length) {
+      console.log("[Plugin] No shapes selected");
+      let errorMessage = "Please select layers on your canvas first.\n\n";
+      if (hasColors && hasFonts) {
+        errorMessage += "For this collection, select:\n\u2022 Shapes (rectangles, circles, etc.) to apply colors\n\u2022 Text layers to apply fonts";
+      } else if (hasColors) {
+        errorMessage += "Select shapes (rectangles, circles, paths, or text) to apply colors.";
+      } else if (hasFonts) {
+        errorMessage += "Select text layers to apply fonts.";
+      } else {
+        errorMessage += "Select any layers on your canvas.";
+      }
+      penpot.ui.sendMessage({
+        type: "collection-applied",
+        payload: {
+          success: false,
+          error: errorMessage
+        }
+      });
+      return;
+    }
+    const allColors = [
+      ...paletteTraits.flatMap((t) => t.colors),
+      ...elementTraits.flatMap((t) => t.colors ?? [])
+    ];
+    const allFonts = [
+      ...typographyTraits.flatMap((t) => t.fonts),
+      ...elementTraits.flatMap((t) => t.fonts ?? [])
+    ];
     console.log("[Plugin] Applying traits:", {
       paletteCount: paletteTraits.length,
       typographyCount: typographyTraits.length,
+      elementCount: elementTraits.length,
+      totalColors: allColors.length,
+      totalFonts: allFonts.length,
       selectionCount: selection.length
     });
+    const appliedColors = allColors.length > 0 ? applyColorsToShapes(selection, allColors) : false;
+    const appliedFonts = allFonts.length > 0 ? applyFontsToShapes(selection, allFonts) : false;
     const applied = {
-      palette: applyPaletteTraits(selection, paletteTraits),
-      typography: applyTypographyTraits(selection, typographyTraits)
+      palette: appliedColors,
+      typography: appliedFonts
     };
     console.log("[Plugin] Applied results:", applied);
     const success = applied.palette || applied.typography;
-    penpot.ui.sendMessage({
-      type: "collection-applied",
-      payload: {
-        success,
-        error: success ? void 0 : "I couldn't find a compatible layer\u2014try selecting shapes or text before applying."
+    if (!success) {
+      let errorMessage = "Couldn't apply to the selected layers.\n\n";
+      const fillable = selection.filter(isFillShape);
+      const textLayers = selection.filter((s) => penpot.utils.types.isText(s));
+      if (hasColors && hasFonts) {
+        if (!fillable.length && !textLayers.length) {
+          errorMessage += "Selected layers can't receive colors or fonts.\n\n";
+          errorMessage += "Try selecting:\n\u2022 Rectangles, circles, or paths for colors\n\u2022 Text layers for fonts";
+        } else if (!fillable.length) {
+          errorMessage += "No shapes found for colors. Select rectangles, circles, or paths.";
+        } else if (!textLayers.length) {
+          errorMessage += "No text layers found for fonts. Select text layers.";
+        }
+      } else if (hasColors) {
+        if (!fillable.length) {
+          errorMessage += "Selected layers can't receive colors.\n\n";
+          errorMessage += "Select shapes like rectangles, circles, paths, or text layers.";
+        }
+      } else if (hasFonts) {
+        if (!textLayers.length) {
+          errorMessage += "Selected layers aren't text.\n\n";
+          errorMessage += "Select text layers to apply fonts.";
+        }
       }
-    });
+      penpot.ui.sendMessage({
+        type: "collection-applied",
+        payload: {
+          success: false,
+          error: errorMessage
+        }
+      });
+    } else {
+      const appliedParts = [];
+      if (appliedColors) appliedParts.push("colors");
+      if (appliedFonts) appliedParts.push("fonts");
+      penpot.ui.sendMessage({
+        type: "collection-applied",
+        payload: {
+          success: true,
+          message: `Applied ${appliedParts.join(" and ")} to ${selection.length} layer${selection.length > 1 ? "s" : ""}!`
+        }
+      });
+    }
     console.log("[Plugin] Sent response, success:", success);
   }
-  function applyPaletteTraits(shapes, traits) {
-    if (!traits.length) return false;
+  function applyColorsToShapes(shapes, colors) {
+    if (!colors.length) return false;
     const fillable = shapes.filter(isFillShape);
     if (!fillable.length) return false;
-    const colors = traits.flatMap((trait) => trait.colors);
-    if (!colors.length) return false;
     fillable.forEach((shape, index) => {
       const color = colors[index % colors.length];
       shape.fills = [
@@ -201,14 +263,12 @@
     });
     return true;
   }
-  function applyTypographyTraits(shapes, traits) {
-    if (!traits.length) return false;
-    const fontNames = traits.flatMap((trait) => trait.fonts);
-    if (!fontNames.length) return false;
+  function applyFontsToShapes(shapes, fonts) {
+    if (!fonts.length) return false;
     let applied = false;
+    const fontFamily = fonts[0].split(" ")[0];
     shapes.forEach((shape) => {
       if (penpot.utils.types.isText(shape)) {
-        const fontFamily = fontNames[0];
         shape.fontFamily = fontFamily;
         applied = true;
       }

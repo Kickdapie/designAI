@@ -77,7 +77,7 @@ export type ApplyTraitsMessage = {
 
 export type CollectionAppliedMessage = {
   type: "collection-applied";
-  payload?: { success?: boolean; error?: string };
+  payload?: { success?: boolean; error?: string; message?: string };
 };
 
 export type ResizeWindowMessage = {

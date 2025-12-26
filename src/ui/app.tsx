@@ -100,11 +100,11 @@ export const App: React.FC = () => {
         }
         case "collection-applied": {
           const payload = message.payload as
-            | { success?: boolean; error?: string }
+            | { success?: boolean; error?: string; message?: string }
             | undefined;
           if (payload?.success) {
             pushAssistantMessage(
-              "Those elements are on your canvas! Keep browsing if you’d like more inspiration.",
+              payload.message || "Those elements are on your canvas! Keep browsing if you'd like more inspiration.",
             );
           } else if (payload?.error) {
             pushAssistantMessage(`I couldn't apply that yet: ${payload.error}`);
@@ -392,14 +392,33 @@ export const App: React.FC = () => {
             )}
           </div>
 
-          <button
-            className="primary-button apply-button"
-            type="button"
-            disabled={!collection.length}
-            onClick={handleApplyToCanvas}
-          >
-            Apply to canvas
-          </button>
+          <div className="apply-section">
+            <button
+              className="primary-button apply-button"
+              type="button"
+              disabled={!collection.length}
+              onClick={handleApplyToCanvas}
+            >
+              Apply to canvas
+            </button>
+            {collection.length > 0 && (
+              <div className="apply-hint">
+                {(() => {
+                  const hasColors = collection.some(t => t.type === "palette" || (t.type === "element" && (t as ElementTrait).colors?.length));
+                  const hasFonts = collection.some(t => t.type === "typography" || (t.type === "element" && (t as ElementTrait).fonts?.length));
+                  
+                  if (hasColors && hasFonts) {
+                    return "💡 Select shapes (rectangles, circles) for colors and text layers for fonts";
+                  } else if (hasColors) {
+                    return "💡 Select shapes (rectangles, circles, paths, or text) to apply colors";
+                  } else if (hasFonts) {
+                    return "💡 Select text layers to apply fonts";
+                  }
+                  return "💡 Select layers on your canvas to apply traits";
+                })()}
+              </div>
+            )}
+          </div>
         </section>
       </main>
     </div>
