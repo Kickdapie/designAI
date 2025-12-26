@@ -1,0 +1,35 @@
+  {
+    id: "soft-gradient-hero-landing",
+    name: "Soft gradient hero landing",
+    tagline: "Modern gradient mesh background with strong visual focus on primary CTA",
+    scenario: "Soft Gradient Hero",
+    description:
+      "A minimalist landing page with a smooth, abstract gradient background and centered welcome message.",
+    palette: ["#FFFFFF","#F7E96D","#F48FB1","#B388FF","#81D4FA","#1C1C1C"],
+    fonts: ["Modern sans-serif","Light sans-serif"],
+    layoutTags: ["Rounded hero container on dark background","Centered headline and description","Abstract gradient mesh backdrop","Minimal top navigation with wide spacing","Single primary CTA button","High contrast between container and page background"],
+    thumbnail:
+      "https://images.unsplash.com/photo-1460925895917-afdab827c52f?auto=format&fit=crop&w=400&q=60",
+    preview:
+      "https://images.unsplash.com/photo-1460925895917-afdab827c52f?auto=format&fit=crop&w=900&q=60",
+    elements: [
+      {
+        id: "soft-gradient-hero-landing-element",
+        label: "Soft gradient hero landing",
+        description:
+          "A minimalist landing page with a smooth, abstract gradient background and centered welcome message.",
+        highlight: "Modern gradient mesh background with strong visual focus on primary CTA",
+        trait: {
+          id: "soft-gradient-hero-landing",
+          type: "element",
+          label: "Soft gradient hero landing",
+          sourceExampleId: "soft-gradient-hero-landing",
+          description:
+            "A minimalist landing page with a smooth, abstract gradient background and centered welcome message.",
+          colors: ["#FFFFFF","#F7E96D","#F48FB1","#B388FF","#81D4FA","#1C1C1C"],
+          fonts: ["Modern sans-serif","Light sans-serif"],
+          layoutHints: ["Rounded hero container on dark background","Centered headline and description","Abstract gradient mesh backdrop","Minimal top navigation with wide spacing","Single primary CTA button","High contrast between container and page background","Soft shadows for floating effect","Generous white space","Focus on first-impression messaging"],
+        },
+      },
+    ],
+  }
