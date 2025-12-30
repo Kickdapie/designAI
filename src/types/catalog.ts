@@ -99,4 +99,29 @@ export type PluginMessage =
   | SearchExamplesMessage
   | UiReadyMessage;
 
+// Layout automation types
+export type ViewportInfo = {
+  width: number;
+  height: number;
+  centerX: number;
+  centerY: number;
+};
+
+export type LayoutPattern =
+  | { type: "twoColumn"; columns: number; gap: number }
+  | { type: "verticalSplit"; gap: number }
+  | { type: "heroStack"; gap: number }
+  | { type: "leftRight"; gap: number }
+  | { type: "unknown" };
+
+export type LayoutSpec = {
+  type: "rectangle" | "text";
+  x: number;
+  y: number;
+  width: number;
+  height: number;
+  color?: string;
+  font?: string;
+  text?: string;
+};
 

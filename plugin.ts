@@ -20,7 +20,11 @@ import type {
   PluginMessage,
   ResizeWindowMessage,
   TypographyTrait,
+  ViewportInfo,
+  LayoutSpec,
 } from "./src/types/catalog";
+import { parseLayoutHints } from "./src/utils/layoutParser";
+import { generateLayoutSpecs } from "./src/utils/layoutGenerator";
 
 declare const penpot: Penpot;
 
@@ -113,9 +117,17 @@ function handleApply(message: ApplyTraitsMessage) {
   // Check what we need to apply
   const hasColors = paletteTraits.length > 0 || elementTraits.some(e => e.colors && e.colors.length > 0);
   const hasFonts = typographyTraits.length > 0 || elementTraits.some(e => e.fonts && e.fonts.length > 0);
+  
+  // Collect layout hints to check if we can create layout
+  const allLayoutHints = [
+    ...layoutTraits.flatMap(t => t.layoutTags),
+    ...elementTraits.flatMap(t => t.layoutHints ?? []),
+  ];
+  const hasLayoutHints = allLayoutHints.length > 0;
 
-  if (!selection.length) {
-    console.log("[Plugin] No shapes selected");
+  // If no selection and no layout hints, require selection
+  if (!selection.length && !hasLayoutHints) {
+    console.log("[Plugin] No shapes selected and no layout hints");
     let errorMessage = "Please select layers on your canvas first.\n\n";
     if (hasColors && hasFonts) {
       errorMessage += "For this collection, select:\n• Shapes (rectangles, circles, etc.) to apply colors\n• Text layers to apply fonts";
@@ -153,28 +165,73 @@ function handleApply(message: ApplyTraitsMessage) {
     paletteCount: paletteTraits.length,
     typographyCount: typographyTraits.length,
     elementCount: elementTraits.length,
+    layoutCount: layoutTraits.length,
     totalColors: allColors.length,
     totalFonts: allFonts.length,
+    layoutHintsCount: allLayoutHints.length,
     selectionCount: selection.length,
   });
 
-  // Apply colors and fonts
-  const appliedColors = allColors.length > 0 
-    ? applyColorsToShapes(selection, allColors)
-    : false;
+  let layoutCreated = false;
+  let createdShapes: Shape[] = [];
+
+  // Try to create/arrange layout if layout hints are present
+  if (allLayoutHints.length > 0) {
+    const pattern = parseLayoutHints(allLayoutHints);
     
-  const appliedFonts = allFonts.length > 0
-    ? applyFontsToShapes(selection, allFonts)
-    : false;
+    if (pattern.type !== "unknown") {
+      const viewport = getViewportDimensions();
+      const layoutSpecs = generateLayoutSpecs(pattern, viewport, allColors, allFonts);
+
+      if (layoutSpecs.length > 0) {
+        // If no selection or incompatible selection, create new shapes
+        if (selection.length === 0 || !arrangeExistingShapes(selection, layoutSpecs)) {
+          createdShapes = createLayoutShapes(layoutSpecs, allColors, allFonts);
+          layoutCreated = createdShapes.length > 0;
+          
+          if (layoutCreated) {
+            // Apply colors and fonts to newly created shapes
+            applyColorsToShapes(createdShapes, allColors);
+            applyFontsToShapes(createdShapes, allFonts);
+          }
+        } else {
+          // Successfully arranged existing shapes
+          layoutCreated = true;
+          // Apply colors and fonts to arranged shapes
+          applyColorsToShapes(selection, allColors);
+          applyFontsToShapes(selection, allFonts);
+        }
+      }
+    }
+  }
+
+  // Apply colors and fonts to existing selection (if layout wasn't created or arranged)
+  let appliedColors = false;
+  let appliedFonts = false;
+  
+  if (!layoutCreated && selection.length > 0) {
+    appliedColors = allColors.length > 0 
+      ? applyColorsToShapes(selection, allColors)
+      : false;
+      
+    appliedFonts = allFonts.length > 0
+      ? applyFontsToShapes(selection, allFonts)
+      : false;
+  } else if (layoutCreated) {
+    // Colors and fonts were already applied during layout creation
+    appliedColors = allColors.length > 0;
+    appliedFonts = allFonts.length > 0;
+  }
 
   const applied = {
     palette: appliedColors,
     typography: appliedFonts,
+    layout: layoutCreated,
   };
 
   console.log("[Plugin] Applied results:", applied);
 
-  const success = applied.palette || applied.typography;
+  const success = applied.palette || applied.typography || applied.layout;
 
   if (!success) {
     // Provide specific guidance based on what we tried to apply
@@ -215,18 +272,13 @@ function handleApply(message: ApplyTraitsMessage) {
     const appliedParts: string[] = [];
     if (appliedColors) appliedParts.push("colors");
     if (appliedFonts) appliedParts.push("fonts");
+    if (layoutCreated) appliedParts.push("layout");
     
-    // Collect layout hints for reference
-    const allLayoutHints = [
-      ...layoutTraits.flatMap(t => t.layoutTags),
-      ...elementTraits.flatMap(t => t.layoutHints ?? []),
-    ];
+    const shapeCount = layoutCreated ? createdShapes.length : selection.length;
+    let message = `Applied ${appliedParts.join(", ")} to ${shapeCount} layer${shapeCount > 1 ? 's' : ''}!`;
     
-    let message = `Applied ${appliedParts.join(" and ")} to ${selection.length} layer${selection.length > 1 ? 's' : ''}!`;
-    
-    if (allLayoutHints.length > 0) {
-      message += `\n\n📐 Layout reference: ${allLayoutHints.slice(0, 3).join(" • ")}`;
-      message += `\n\nNote: Layout patterns are for reference. Use the colors and fonts as a starting point, then manually arrange your elements to match the layout pattern.`;
+    if (layoutCreated) {
+      message += `\n\n✨ Layout created on your canvas with ${shapeCount} element${shapeCount > 1 ? 's' : ''}.`;
     }
     
     penpot.ui.sendMessage({
@@ -310,6 +362,150 @@ function buildResultSummary(query: string, results: Example[]): string {
   }
 
   return `Here are ${results.length} directions inspired by "${query}". Spotlight: ${highlight}. Pick one to collect traits or refine your prompt.`;
+}
+
+/**
+ * Gets viewport dimensions and center point
+ */
+function getViewportDimensions(): ViewportInfo {
+  try {
+    const viewport = penpot.viewport;
+    const center = viewport.center;
+    const centerX = (center as any)?.x ?? 600;
+    const centerY = (center as any)?.y ?? 400;
+
+    // Try to get viewport dimensions from zoom or use defaults
+    const zoom = viewport.zoom ?? 1;
+    // Default viewport size, will be adjusted based on actual viewport if available
+    const defaultWidth = 1200;
+    const defaultHeight = 800;
+
+    return {
+      width: defaultWidth,
+      height: defaultHeight,
+      centerX,
+      centerY,
+    };
+  } catch (error) {
+    console.error("[Plugin] Error getting viewport:", error);
+    // Fallback to default dimensions
+    return {
+      width: 1200,
+      height: 800,
+      centerX: 600,
+      centerY: 400,
+    };
+  }
+}
+
+/**
+ * Creates shapes based on layout specifications
+ */
+function createLayoutShapes(
+  layoutSpecs: LayoutSpec[],
+  colors: string[],
+  fonts: string[],
+): Shape[] {
+  const createdShapes: Shape[] = [];
+
+  try {
+    for (const spec of layoutSpecs) {
+      if (spec.type === "rectangle") {
+        const rect = penpot.createRectangle();
+        // Set position - shapes are created at 0,0 with 100x100 default size
+        rect.x = spec.x;
+        rect.y = spec.y;
+        // Try to set width/height - if read-only, shapes will use default size
+        try {
+          (rect as any).width = spec.width;
+          (rect as any).height = spec.height;
+        } catch (e) {
+          // Width/height may be read-only, use defaults
+          console.warn("[Plugin] Could not set rectangle dimensions, using defaults");
+        }
+
+        if (spec.color) {
+          rect.fills = [{ fillColor: spec.color, fillOpacity: 1 }];
+        }
+
+        createdShapes.push(rect);
+      } else if (spec.type === "text") {
+        const text = penpot.createText(spec.text || "Text");
+        if (!text) {
+          console.warn("[Plugin] Failed to create text shape");
+          continue;
+        }
+
+        // Set position
+        text.x = spec.x;
+        text.y = spec.y;
+        // Try to set width/height - text shapes may auto-size
+        try {
+          (text as any).width = spec.width;
+          (text as any).height = spec.height;
+        } catch (e) {
+          // Width/height may be read-only or auto-sized
+          console.warn("[Plugin] Could not set text dimensions, using auto-size");
+        }
+
+        if (spec.font) {
+          // Extract font family name (remove weight/style)
+          const fontFamily = spec.font.split(" ")[0];
+          text.fontFamily = fontFamily;
+        }
+
+        if (spec.color) {
+          text.fills = [{ fillColor: spec.color, fillOpacity: 1 }];
+        }
+
+        createdShapes.push(text);
+      }
+    }
+  } catch (error) {
+    console.error("[Plugin] Error creating layout shapes:", error);
+  }
+
+  return createdShapes;
+}
+
+/**
+ * Attempts to arrange existing selected shapes into a layout pattern
+ */
+function arrangeExistingShapes(
+  selection: Shape[],
+  layoutSpecs: LayoutSpec[],
+): boolean {
+  if (selection.length === 0 || layoutSpecs.length === 0) {
+    return false;
+  }
+
+  // Only arrange if we have compatible number of shapes
+  if (selection.length !== layoutSpecs.length) {
+    return false;
+  }
+
+  try {
+    for (let i = 0; i < selection.length && i < layoutSpecs.length; i++) {
+      const shape = selection[i];
+      const spec = layoutSpecs[i];
+
+      // Update position
+      shape.x = spec.x;
+      shape.y = spec.y;
+      // Try to set width/height - may be read-only
+      try {
+        (shape as any).width = spec.width;
+        (shape as any).height = spec.height;
+      } catch (e) {
+        // Dimensions may be read-only, only position was updated
+      }
+    }
+
+    return true;
+  } catch (error) {
+    console.error("[Plugin] Error arranging shapes:", error);
+    return false;
+  }
 }
 
 

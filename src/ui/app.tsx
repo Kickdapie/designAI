@@ -406,8 +406,15 @@ export const App: React.FC = () => {
                 {(() => {
                   const hasColors = collection.some(t => t.type === "palette" || (t.type === "element" && (t as ElementTrait).colors?.length));
                   const hasFonts = collection.some(t => t.type === "typography" || (t.type === "element" && (t as ElementTrait).fonts?.length));
+                  const hasLayoutHints = collection.some(
+                    t => 
+                      (t.type === "layout") || 
+                      (t.type === "element" && (t as ElementTrait).layoutHints && (t as ElementTrait).layoutHints!.length > 0)
+                  );
                   
-                  if (hasColors && hasFonts) {
+                  if (hasLayoutHints) {
+                    return "✨ Layout will be created automatically! You can also select existing shapes to arrange them.";
+                  } else if (hasColors && hasFonts) {
                     return "💡 Select shapes (rectangles, circles) for colors and text layers for fonts";
                   } else if (hasColors) {
                     return "💡 Select shapes (rectangles, circles, paths, or text) to apply colors";
@@ -536,7 +543,7 @@ const ExampleDetail: React.FC<{
       <div className="example-elements">
         <h5>Reusable elements</h5>
         <p style={{ fontSize: "0.8rem", color: "rgba(203, 213, 225, 0.7)", margin: "0 0 12px 0", lineHeight: "1.4" }}>
-          These apply colors and fonts to your selected layers. Layout patterns are shown for reference—arrange elements manually to match the pattern.
+          These will automatically create a layout on your canvas with colors and fonts applied. You can also select existing shapes to arrange them into the layout pattern.
         </p>
         <div className="element-list">
           {example.elements.map((element) => (

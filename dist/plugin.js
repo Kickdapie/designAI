@@ -88,6 +88,219 @@
     return score;
   }
 
+  // src/utils/layoutParser.ts
+  function parseLayoutHints(hints) {
+    if (!hints || hints.length === 0) {
+      return { type: "unknown" };
+    }
+    const normalizedHints = hints.map((h) => h.toLowerCase());
+    if (normalizedHints.some(
+      (h) => h.includes("two-column") || h.includes("two column") || h.includes("2-column") || h.includes("2 column")
+    )) {
+      const columnMatch = normalizedHints.find(
+        (h) => /(\d+)[\s-]?column/.test(h)
+      );
+      const columns = columnMatch ? parseInt(columnMatch.match(/(\d+)/)?.[1] || "2") : 2;
+      return { type: "twoColumn", columns, gap: 40 };
+    }
+    if (normalizedHints.some(
+      (h) => h.includes("vertical split") || h.includes("vertical-split") || h.includes("split layout")
+    )) {
+      return { type: "verticalSplit", gap: 0 };
+    }
+    if (normalizedHints.some(
+      (h) => h.includes("hero") && (h.includes("stack") || h.includes("headline"))
+    )) {
+      return { type: "heroStack", gap: 20 };
+    }
+    if (normalizedHints.some(
+      (h) => h.includes("left") || h.includes("right") || h.includes("left-aligned") || h.includes("right-aligned")
+    )) {
+      return { type: "leftRight", gap: 40 };
+    }
+    return { type: "unknown" };
+  }
+
+  // src/utils/layoutGenerator.ts
+  function generateLayoutSpecs(pattern, viewport, colors, fonts) {
+    if (pattern.type === "unknown") {
+      return [];
+    }
+    const specs = [];
+    const padding = 40;
+    const usableWidth = viewport.width * 0.8;
+    const usableHeight = viewport.height * 0.6;
+    const startX = viewport.centerX - usableWidth / 2;
+    const startY = viewport.centerY - usableHeight / 2;
+    switch (pattern.type) {
+      case "twoColumn": {
+        const { columns, gap } = pattern;
+        const columnWidth = (usableWidth - gap * (columns - 1)) / columns;
+        const columnHeight = 400;
+        for (let i = 0; i < columns; i++) {
+          const x = startX + i * (columnWidth + gap);
+          const color = colors[i % colors.length] || colors[0] || "#E2E8F0";
+          specs.push({
+            type: "rectangle",
+            x,
+            y: startY,
+            width: columnWidth,
+            height: columnHeight,
+            color
+          });
+          if (fonts.length > 0) {
+            specs.push({
+              type: "text",
+              x: x + 20,
+              y: startY + 20,
+              width: columnWidth - 40,
+              height: 60,
+              font: fonts[i % fonts.length] || fonts[0],
+              text: i === 0 ? "Headline" : "Content",
+              color: colors[colors.length - 1] || "#1A1A1A"
+            });
+          }
+        }
+        break;
+      }
+      case "verticalSplit": {
+        const splitX = viewport.centerX;
+        const leftWidth = usableWidth / 2;
+        const rightWidth = usableWidth / 2;
+        const sectionHeight = 400;
+        specs.push({
+          type: "rectangle",
+          x: startX,
+          y: startY,
+          width: leftWidth,
+          height: sectionHeight,
+          color: colors[0] || "#E2E8F0"
+        });
+        if (fonts.length > 0) {
+          specs.push({
+            type: "text",
+            x: startX + 20,
+            y: startY + 20,
+            width: leftWidth - 40,
+            height: 60,
+            font: fonts[0],
+            text: "Left Section",
+            color: colors[colors.length - 1] || "#1A1A1A"
+          });
+        }
+        specs.push({
+          type: "rectangle",
+          x: splitX,
+          y: startY,
+          width: rightWidth,
+          height: sectionHeight,
+          color: colors[1] || colors[0] || "#F1F5F9"
+        });
+        if (fonts.length > 1) {
+          specs.push({
+            type: "text",
+            x: splitX + 20,
+            y: startY + 20,
+            width: rightWidth - 40,
+            height: 60,
+            font: fonts[1] || fonts[0],
+            text: "Right Section",
+            color: colors[colors.length - 1] || "#1A1A1A"
+          });
+        }
+        break;
+      }
+      case "heroStack": {
+        const { gap } = pattern;
+        const stackWidth = usableWidth;
+        const textHeight = 80;
+        let currentY = startY;
+        if (fonts.length > 0) {
+          specs.push({
+            type: "text",
+            x: startX,
+            y: currentY,
+            width: stackWidth,
+            height: textHeight * 1.5,
+            font: fonts[0],
+            text: "Hero Headline",
+            color: colors[0] || "#1A1A1A"
+          });
+          currentY += textHeight * 1.5 + gap;
+          if (fonts.length > 1) {
+            specs.push({
+              type: "text",
+              x: startX,
+              y: currentY,
+              width: stackWidth,
+              height: textHeight,
+              font: fonts[1],
+              text: "Supporting copy text",
+              color: colors[1] || colors[0] || "#4A5568"
+            });
+          }
+        } else {
+          specs.push({
+            type: "rectangle",
+            x: startX,
+            y: startY,
+            width: stackWidth,
+            height: 300,
+            color: colors[0] || "#E2E8F0"
+          });
+        }
+        break;
+      }
+      case "leftRight": {
+        const leftWidth = usableWidth * 0.5 - pattern.gap / 2;
+        const rightWidth = usableWidth * 0.5 - pattern.gap / 2;
+        const sectionHeight = 400;
+        specs.push({
+          type: "rectangle",
+          x: startX,
+          y: startY,
+          width: leftWidth,
+          height: sectionHeight,
+          color: colors[0] || "#E2E8F0"
+        });
+        if (fonts.length > 0) {
+          specs.push({
+            type: "text",
+            x: startX + 20,
+            y: startY + 20,
+            width: leftWidth - 40,
+            height: 60,
+            font: fonts[0],
+            text: "Left Content",
+            color: colors[colors.length - 1] || "#1A1A1A"
+          });
+        }
+        specs.push({
+          type: "rectangle",
+          x: startX + leftWidth + pattern.gap,
+          y: startY,
+          width: rightWidth,
+          height: sectionHeight,
+          color: colors[1] || colors[0] || "#F1F5F9"
+        });
+        if (fonts.length > 1) {
+          specs.push({
+            type: "text",
+            x: startX + leftWidth + pattern.gap + 20,
+            y: startY + 20,
+            width: rightWidth - 40,
+            height: 60,
+            font: fonts[1] || fonts[0],
+            text: "Right Content",
+            color: colors[colors.length - 1] || "#1A1A1A"
+          });
+        }
+        break;
+      }
+    }
+    return specs;
+  }
+
   // plugin.ts
   var UI_DIMENSIONS = { width: 1300, height: 900 };
   penpot.ui.open("Design Discovery Assistant", "https://kickdapie.github.io/designAI/index.html", UI_DIMENSIONS);
@@ -164,8 +377,13 @@
     );
     const hasColors = paletteTraits.length > 0 || elementTraits.some((e) => e.colors && e.colors.length > 0);
     const hasFonts = typographyTraits.length > 0 || elementTraits.some((e) => e.fonts && e.fonts.length > 0);
-    if (!selection.length) {
-      console.log("[Plugin] No shapes selected");
+    const allLayoutHints = [
+      ...layoutTraits.flatMap((t) => t.layoutTags),
+      ...elementTraits.flatMap((t) => t.layoutHints ?? [])
+    ];
+    const hasLayoutHints = allLayoutHints.length > 0;
+    if (!selection.length && !hasLayoutHints) {
+      console.log("[Plugin] No shapes selected and no layout hints");
       let errorMessage = "Please select layers on your canvas first.\n\n";
       if (hasColors && hasFonts) {
         errorMessage += "For this collection, select:\n\u2022 Shapes (rectangles, circles, etc.) to apply colors\n\u2022 Text layers to apply fonts";
@@ -197,18 +415,51 @@
       paletteCount: paletteTraits.length,
       typographyCount: typographyTraits.length,
       elementCount: elementTraits.length,
+      layoutCount: layoutTraits.length,
       totalColors: allColors.length,
       totalFonts: allFonts.length,
+      layoutHintsCount: allLayoutHints.length,
       selectionCount: selection.length
     });
-    const appliedColors = allColors.length > 0 ? applyColorsToShapes(selection, allColors) : false;
-    const appliedFonts = allFonts.length > 0 ? applyFontsToShapes(selection, allFonts) : false;
+    let layoutCreated = false;
+    let createdShapes = [];
+    if (allLayoutHints.length > 0) {
+      const pattern = parseLayoutHints(allLayoutHints);
+      if (pattern.type !== "unknown") {
+        const viewport = getViewportDimensions();
+        const layoutSpecs = generateLayoutSpecs(pattern, viewport, allColors, allFonts);
+        if (layoutSpecs.length > 0) {
+          if (selection.length === 0 || !arrangeExistingShapes(selection, layoutSpecs)) {
+            createdShapes = createLayoutShapes(layoutSpecs, allColors, allFonts);
+            layoutCreated = createdShapes.length > 0;
+            if (layoutCreated) {
+              applyColorsToShapes(createdShapes, allColors);
+              applyFontsToShapes(createdShapes, allFonts);
+            }
+          } else {
+            layoutCreated = true;
+            applyColorsToShapes(selection, allColors);
+            applyFontsToShapes(selection, allFonts);
+          }
+        }
+      }
+    }
+    let appliedColors = false;
+    let appliedFonts = false;
+    if (!layoutCreated && selection.length > 0) {
+      appliedColors = allColors.length > 0 ? applyColorsToShapes(selection, allColors) : false;
+      appliedFonts = allFonts.length > 0 ? applyFontsToShapes(selection, allFonts) : false;
+    } else if (layoutCreated) {
+      appliedColors = allColors.length > 0;
+      appliedFonts = allFonts.length > 0;
+    }
     const applied = {
       palette: appliedColors,
-      typography: appliedFonts
+      typography: appliedFonts,
+      layout: layoutCreated
     };
     console.log("[Plugin] Applied results:", applied);
-    const success = applied.palette || applied.typography;
+    const success = applied.palette || applied.typography || applied.layout;
     if (!success) {
       let errorMessage = "Couldn't apply to the selected layers.\n\n";
       const fillable = selection.filter(isFillShape);
@@ -244,18 +495,13 @@
       const appliedParts = [];
       if (appliedColors) appliedParts.push("colors");
       if (appliedFonts) appliedParts.push("fonts");
-      const allLayoutHints = [
-        ...layoutTraits.flatMap((t) => t.layoutTags),
-        ...elementTraits.flatMap((t) => t.layoutHints ?? [])
-      ];
-      let message2 = `Applied ${appliedParts.join(" and ")} to ${selection.length} layer${selection.length > 1 ? "s" : ""}!`;
-      if (allLayoutHints.length > 0) {
+      if (layoutCreated) appliedParts.push("layout");
+      const shapeCount = layoutCreated ? createdShapes.length : selection.length;
+      let message2 = `Applied ${appliedParts.join(", ")} to ${shapeCount} layer${shapeCount > 1 ? "s" : ""}!`;
+      if (layoutCreated) {
         message2 += `
 
-\u{1F4D0} Layout reference: ${allLayoutHints.slice(0, 3).join(" \u2022 ")}`;
-        message2 += `
-
-Note: Layout patterns are for reference. Use the colors and fonts as a starting point, then manually arrange your elements to match the layout pattern.`;
+\u2728 Layout created on your canvas with ${shapeCount} element${shapeCount > 1 ? "s" : ""}.`;
       }
       penpot.ui.sendMessage({
         type: "collection-applied",
@@ -309,5 +555,102 @@ Note: Layout patterns are for reference. Use the colors and fonts as a starting 
       return `Here are ${results.length} inspiration examples to get you started. Spotlight: ${highlight}.`;
     }
     return `Here are ${results.length} directions inspired by "${query}". Spotlight: ${highlight}. Pick one to collect traits or refine your prompt.`;
+  }
+  function getViewportDimensions() {
+    try {
+      const viewport = penpot.viewport;
+      const center = viewport.center;
+      const centerX = center?.x ?? 600;
+      const centerY = center?.y ?? 400;
+      const zoom = viewport.zoom ?? 1;
+      const defaultWidth = 1200;
+      const defaultHeight = 800;
+      return {
+        width: defaultWidth,
+        height: defaultHeight,
+        centerX,
+        centerY
+      };
+    } catch (error) {
+      console.error("[Plugin] Error getting viewport:", error);
+      return {
+        width: 1200,
+        height: 800,
+        centerX: 600,
+        centerY: 400
+      };
+    }
+  }
+  function createLayoutShapes(layoutSpecs, colors, fonts) {
+    const createdShapes = [];
+    try {
+      for (const spec of layoutSpecs) {
+        if (spec.type === "rectangle") {
+          const rect = penpot.createRectangle();
+          rect.x = spec.x;
+          rect.y = spec.y;
+          try {
+            rect.width = spec.width;
+            rect.height = spec.height;
+          } catch (e) {
+            console.warn("[Plugin] Could not set rectangle dimensions, using defaults");
+          }
+          if (spec.color) {
+            rect.fills = [{ fillColor: spec.color, fillOpacity: 1 }];
+          }
+          createdShapes.push(rect);
+        } else if (spec.type === "text") {
+          const text = penpot.createText(spec.text || "Text");
+          if (!text) {
+            console.warn("[Plugin] Failed to create text shape");
+            continue;
+          }
+          text.x = spec.x;
+          text.y = spec.y;
+          try {
+            text.width = spec.width;
+            text.height = spec.height;
+          } catch (e) {
+            console.warn("[Plugin] Could not set text dimensions, using auto-size");
+          }
+          if (spec.font) {
+            const fontFamily = spec.font.split(" ")[0];
+            text.fontFamily = fontFamily;
+          }
+          if (spec.color) {
+            text.fills = [{ fillColor: spec.color, fillOpacity: 1 }];
+          }
+          createdShapes.push(text);
+        }
+      }
+    } catch (error) {
+      console.error("[Plugin] Error creating layout shapes:", error);
+    }
+    return createdShapes;
+  }
+  function arrangeExistingShapes(selection, layoutSpecs) {
+    if (selection.length === 0 || layoutSpecs.length === 0) {
+      return false;
+    }
+    if (selection.length !== layoutSpecs.length) {
+      return false;
+    }
+    try {
+      for (let i = 0; i < selection.length && i < layoutSpecs.length; i++) {
+        const shape = selection[i];
+        const spec = layoutSpecs[i];
+        shape.x = spec.x;
+        shape.y = spec.y;
+        try {
+          shape.width = spec.width;
+          shape.height = spec.height;
+        } catch (e) {
+        }
+      }
+      return true;
+    } catch (error) {
+      console.error("[Plugin] Error arranging shapes:", error);
+      return false;
+    }
   }
 })();
