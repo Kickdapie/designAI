@@ -36,6 +36,148 @@
           }
         }
       ]
+    },
+    // Additional examples converted from commented format
+    {
+      id: "designer-coder-hero",
+      name: "Split identity hero",
+      tagline: "Clearly communicates hybrid skillset",
+      scenario: "Personal portfolio website",
+      description: "Full-width hero split vertically to showcase designer and developer identities through typography and imagery.",
+      palette: ["#FFFFFF", "#000000", "#F2C94C", "#EB5757"],
+      fonts: ["Sans-serif", "Monospace"],
+      layoutTags: ["Vertical split layout", "Centered portrait", "Asymmetric typography"],
+      thumbnail: "https://images.unsplash.com/photo-1517694712202-14dd9538aa97?auto=format&fit=crop&w=400&q=60",
+      preview: "https://images.unsplash.com/photo-1517694712202-14dd9538aa97?auto=format&fit=crop&w=800&q=60",
+      elements: [
+        {
+          id: "designer-coder-hero",
+          label: "Designer\u2013coder split hero",
+          description: "Centered split hero with large typographic labels, half illustrated portrait on left and photographic portrait on right, strong contrast and whitespace.",
+          highlight: "Clearly communicates hybrid skillset",
+          trait: {
+            id: "designer-coder-hero",
+            type: "element",
+            label: "Designer\u2013coder split hero",
+            sourceExampleId: "designer-coder-portfolio",
+            description: "Centered split hero with large typographic labels, half illustrated portrait on left and photographic portrait on right, strong contrast and whitespace.",
+            colors: ["#FFFFFF", "#000000", "#F2C94C", "#EB5757"],
+            fonts: ["Sans-serif", "Monospace"],
+            layoutHints: [
+              "Vertical split layout",
+              "Centered portrait",
+              "Asymmetric typography"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      id: "writer-portfolio-about-hero",
+      name: "Personal about hero",
+      tagline: "Builds credibility and personal connection",
+      scenario: "Writer's portfolio about page",
+      description: "Two-column about section with portrait image on the left and large editorial headline on the right.",
+      palette: ["#FFFFFF", "#F6F1EE", "#1A1A1A"],
+      fonts: ["Serif", "Sans-serif"],
+      layoutTags: ["Two-column layout", "Portrait image left", "Large headline right", "Centered vertical rhythm"],
+      thumbnail: "https://images.unsplash.com/photo-1507207611509-ec012433a691?auto=format&fit=crop&w=400&q=60",
+      preview: "https://images.unsplash.com/photo-1507207611509-ec012433a691?auto=format&fit=crop&w=800&q=60",
+      elements: [
+        {
+          id: "writer-portfolio-about-hero",
+          label: "Writer about hero",
+          description: "Wide content area with left-aligned photo and right-aligned serif headline, generous vertical spacing and soft neutral background.",
+          highlight: "Builds credibility and personal connection",
+          trait: {
+            id: "writer-portfolio-about-hero",
+            type: "element",
+            label: "Writer about hero",
+            sourceExampleId: "ashley-cortez-portfolio",
+            description: "Wide content area with left-aligned photo and right-aligned serif headline, generous vertical spacing and soft neutral background.",
+            colors: ["#FFFFFF", "#F6F1EE", "#1A1A1A"],
+            fonts: ["Serif", "Sans-serif"],
+            layoutHints: [
+              "Two-column layout",
+              "Portrait image left",
+              "Large headline right",
+              "Centered vertical rhythm"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      id: "academic-profile-hero",
+      name: "Academic profile hero",
+      tagline: "Balances professionalism with approachability",
+      scenario: "Academic profile page",
+      description: "Clean academic landing section with circular portrait, name headline, short bio, and prominent category navigation buttons.",
+      palette: ["#FFFFFF", "#B6D76A", "#F2B24C", "#9EDADF", "#D0D0D0", "#1A1A1A"],
+      fonts: ["Sans-serif"],
+      layoutTags: ["Two-column layout", "Circular portrait image", "Large name headline", "Short bio paragraph", "Circular navigation buttons"],
+      thumbnail: "https://images.unsplash.com/photo-1523875194686-e310a928370f?auto=format&fit=crop&w=400&q=60",
+      preview: "https://images.unsplash.com/photo-1523875194686-e310a928370f?auto=format&fit=crop&w=800&q=60",
+      elements: [
+        {
+          id: "academic-profile-hero",
+          label: "Researcher profile hero",
+          description: "Centered layout with large circular portrait on the left, bold name headline and short bio on the right, followed by color-coded circular navigation buttons.",
+          highlight: "Balances professionalism with approachability",
+          trait: {
+            id: "academic-profile-hero",
+            type: "element",
+            label: "Researcher profile hero",
+            sourceExampleId: "dalya-baron-portfolio",
+            description: "Centered layout with large circular portrait on the left, bold name headline and short bio on the right, followed by color-coded circular navigation buttons.",
+            colors: ["#FFFFFF", "#B6D76A", "#F2B24C", "#9EDADF", "#D0D0D0", "#1A1A1A"],
+            fonts: ["Sans-serif"],
+            layoutHints: [
+              "Two-column layout",
+              "Circular portrait image",
+              "Large name headline",
+              "Short bio paragraph",
+              "Circular navigation buttons"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      id: "default-blog-about-layout",
+      name: "Classic blog about page",
+      tagline: "Simple and familiar content structure",
+      scenario: "Blog website about page",
+      description: "Traditional blog-style layout with main content column, inline profile image, and right sidebar widgets.",
+      palette: ["#FFFFFF", "#000000", "#F5F5F5", "#CCCCCC"],
+      fonts: ["Serif", "Sans-serif"],
+      layoutTags: ["Single main content column", "Right sidebar", "Inline profile image", "Long-form text", "Widget-based layout"],
+      thumbnail: "https://images.unsplash.com/photo-1499750310107-5fcd61f872a6?auto=format&fit=crop&w=400&q=60",
+      preview: "https://images.unsplash.com/photo-1499750310107-5fcd61f872a6?auto=format&fit=crop&w=800&q=60",
+      elements: [
+        {
+          id: "default-blog-about-layout",
+          label: "Blog about layout",
+          description: "Left-aligned article content with heading and long-form text, embedded profile image floated within content, and a persistent right sidebar containing search and metadata widgets.",
+          highlight: "Simple and familiar content structure",
+          trait: {
+            id: "default-blog-about-layout",
+            type: "element",
+            label: "Blog about layout",
+            sourceExampleId: "thomas-frank-wordpress",
+            description: "Left-aligned article content with heading and long-form text, embedded profile image floated within content, and a persistent right sidebar containing search and metadata widgets.",
+            colors: ["#FFFFFF", "#000000", "#F5F5F5", "#CCCCCC"],
+            fonts: ["Serif", "Sans-serif"],
+            layoutHints: [
+              "Single main content column",
+              "Right sidebar",
+              "Inline profile image",
+              "Long-form text",
+              "Widget-based layout"
+            ]
+          }
+        }
+      ]
     }
   ];
   var DEFAULT_RESULTS = EXAMPLE_DATASET.slice(0, 3);

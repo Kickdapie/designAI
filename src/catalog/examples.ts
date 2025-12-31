@@ -41,12 +41,7 @@ export const EXAMPLE_DATASET: Example[] = [
       },
     ],
   },
-];
-
-export const DEFAULT_RESULTS = EXAMPLE_DATASET.slice(0, 3);
-
-// Additional examples converted from commented format
-export const ADDITIONAL_EXAMPLES: Example[] = [
+  // Additional examples converted from commented format
   {
     id: "designer-coder-hero",
     name: "Split identity hero",
@@ -202,12 +197,7 @@ export const ADDITIONAL_EXAMPLES: Example[] = [
   },
 ];
 
-
-
-
-
-
-
+export const DEFAULT_RESULTS = EXAMPLE_DATASET.slice(0, 3);
 
 /*
 import { Example } from "../types/catalog";
