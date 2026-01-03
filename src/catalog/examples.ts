@@ -195,14 +195,6 @@ export const EXAMPLE_DATASET: Example[] = [
       },
     ],
   },
-];
-
-export const DEFAULT_RESULTS = EXAMPLE_DATASET.slice(0, 3);
-
-/*
-import { Example } from "../types/catalog";
-
-export const EXAMPLE_DATASET: Example[] = [
   {
     id: "green-harvest",
     name: "Green Harvest Landing",
@@ -415,10 +407,1081 @@ export const EXAMPLE_DATASET: Example[] = [
       },
     ],
   },
+  {
+    id: "gradient-cloud-landing-hero",
+    name: "Gradient cloud landing page",
+    tagline: "Bold hero typography floating above layered, colorful cloud shapes",
+    scenario: "SaaS product landing page",
+    description:
+      "A modern landing page design with a smooth purple-to-blue gradient background, layered cloud shapes at the bottom, and a strong typographic hero section optimized for conversions.",
+    palette: ["#2E2B6F", "#3B3A8F", "#6A3F7A", "#C63A3A", "#E96B2C", "#F5B23C", "#FFFFFF"],
+    fonts: ["Sans-serif bold", "Sans-serif regular"],
+    layoutTags: ["Full-width gradient hero", "Layered cloud shapes", "Minimal navigation", "Primary and secondary CTAs"],
+    thumbnail: "https://images.unsplash.com/photo-1460925895917-afdab827c52f?auto=format&fit=crop&w=400&q=60",
+    preview: "https://images.unsplash.com/photo-1460925895917-afdab827c52f?auto=format&fit=crop&w=900&q=60",
+    elements: [
+      {
+        id: "gradient-cloud-landing-hero",
+        label: "Gradient cloud landing hero",
+        description:
+          "Clean SaaS-style landing page with large left-aligned headline and subtitle on a deep gradient background with overlapping cloud-like shapes in warm colors.",
+        highlight: "Bold hero typography floating above layered, colorful cloud shapes",
+        trait: {
+          id: "gradient-cloud-landing-hero",
+          type: "element",
+          label: "Minimal SaaS-style hero with layered clouds",
+          sourceExampleId: "gradient-cloud-landing-hero",
+          description:
+            "This layout features a clean SaaS-style landing page with a large left-aligned headline and subtitle on a deep gradient background. The lower portion is decorated with overlapping cloud-like shapes in warm reds, oranges, and yellows, creating visual depth while keeping the content area uncluttered.",
+          colors: ["#2E2B6F", "#3B3A8F", "#6A3F7A", "#C63A3A", "#E96B2C", "#F5B23C", "#FFFFFF"],
+          fonts: ["Sans-serif bold", "Sans-serif regular"],
+          layoutHints: [
+            "Full-width gradient hero background",
+            "Top-left logo with icon + company name",
+            "Minimal top navigation with spaced links",
+            "Outlined sign-in button on top-right",
+            "Large left-aligned headline and subtitle",
+            "Primary and secondary CTA buttons with rounded corners",
+            "Layered cloud-style shapes at bottom of hero",
+          ],
+        },
+      },
+    ],
+  },
+  {
+    id: "minimal-blog-magazine-layout",
+    name: "Minimal blog / magazine layout",
+    tagline: "Large featured post with image-led headline and sidebar author profile",
+    scenario: "Personal blog or magazine website",
+    description:
+      "A clean, content-focused blog layout with a large hero post, simple top navigation, and a right-hand sidebar for author info and discovery.",
+    palette: ["#FFFFFF", "#111111", "#777777", "#E85C4A", "#F2F2F2"],
+    fonts: ["Sans-serif bold", "Sans-serif regular"],
+    layoutTags: ["Centered site title", "Thin horizontal navigation", "Left-aligned main content", "Large featured image", "Right-hand sidebar", "Author bio card"],
+    thumbnail: "https://images.unsplash.com/photo-1499750310107-5fcd61f872a6?auto=format&fit=crop&w=400&q=60",
+    preview: "https://images.unsplash.com/photo-1499750310107-5fcd61f872a6?auto=format&fit=crop&w=900&q=60",
+    elements: [
+      {
+        id: "minimal-blog-magazine-layout",
+        label: "Content-first personal blog with sidebar",
+        description:
+          "This design follows a modern personal blog or magazine-style layout. The top area features a centered site title and tagline, followed by a slim horizontal navigation bar with category links.",
+        highlight: "Large featured post with image-led headline and sidebar author profile",
+        trait: {
+          id: "minimal-blog-magazine-layout",
+          type: "element",
+          label: "Content-first personal blog with sidebar",
+          sourceExampleId: "minimal-blog-magazine-layout",
+          description:
+            "The main content column highlights a featured blog post using a large image, category tag, bold headline, and metadata such as date, author, read time, and comments. A right-hand sidebar provides author information with avatar, short bio, social links, and secondary content.",
+          colors: ["#FFFFFF", "#111111", "#777777", "#E85C4A", "#F2F2F2"],
+          fonts: ["Sans-serif bold", "Sans-serif regular"],
+          layoutHints: [
+            "Centered site title with short tagline",
+            "Thin horizontal navigation bar below header",
+            "Left-aligned main content column",
+            "Large featured image per post",
+            "Overlay category tag on featured image",
+            "Prominent post headline with metadata row",
+            "Right-hand sidebar for author bio and widgets",
+            "Author card with avatar, name, and description",
+          ],
+        },
+      },
+    ],
+  },
+  {
+    id: "personal-brand-ecommerce-lifestyle",
+    name: "Personal brand e-commerce / lifestyle storefront",
+    tagline: "Founder-led hero section with soft imagery, script logo, and seamless shop entry points",
+    scenario: "Personal brand e-commerce homepage",
+    description:
+      "A clean, personality-driven e-commerce homepage that blends personal branding, content, and shopping into a cohesive lifestyle experience.",
+    palette: ["#FAF7F4", "#EADFD6", "#C9A98B", "#000000", "#FFFFFF"],
+    fonts: ["Handwritten script", "Clean sans-serif"],
+    layoutTags: ["Top announcement bar", "Centered handwritten-style logo", "Minimal navigation with icons", "Hero section featuring brand owner", "Grid-based product previews"],
+    thumbnail: "https://images.unsplash.com/photo-1441986300917-64674bd600d8?auto=format&fit=crop&w=400&q=60",
+    preview: "https://images.unsplash.com/photo-1441986300917-64674bd600d8?auto=format&fit=crop&w=900&q=60",
+    elements: [
+      {
+        id: "personal-brand-ecommerce-lifestyle",
+        label: "Creator-led lifestyle commerce site",
+        description:
+          "This layout is centered around a strong personal brand identity. The header uses a handwritten-style logo and soft neutral palette to establish warmth and trust.",
+        highlight: "Founder-led hero section with soft imagery, script logo, and seamless shop entry points",
+        trait: {
+          id: "personal-brand-ecommerce-lifestyle",
+          type: "element",
+          label: "Creator-led lifestyle commerce site",
+          sourceExampleId: "personal-brand-ecommerce-lifestyle",
+          description:
+            "A promotional announcement bar highlights shipping or awards. The hero section prominently features the founder with clear CTAs to shop products, reinforcing authenticity and credibility. Below the fold, modular content blocks showcase featured collections, product categories, and lifestyle imagery.",
+          colors: ["#FAF7F4", "#EADFD6", "#C9A98B", "#000000", "#FFFFFF"],
+          fonts: ["Handwritten script", "Clean sans-serif"],
+          layoutHints: [
+            "Top announcement bar for promotions or shipping info",
+            "Centered handwritten-style logo for personal branding",
+            "Minimal navigation with icons (menu, search, account, cart)",
+            "Hero section featuring the brand owner",
+            "Clear CTA buttons like 'Shop now' or 'Shop my range'",
+            "Grid-based product and collection previews",
+            "Editorial-style sections that mix content and commerce",
+          ],
+        },
+      },
+    ],
+  },
+  {
+    id: "colorful-cloud-hero-business-layout",
+    name: "Colorful cloud hero business site",
+    tagline: "Strong visual contrast between playful hero and structured content sections",
+    scenario: "Business Layout",
+    description:
+      "Bright, playful landing page featuring a gradient sky hero with layered cloud illustrations, followed by a structured business layout.",
+    palette: ["#4DB3E6", "#F4C430", "#E74C3C", "#8B1A1A", "#FFFFFF", "#1E1E1E"],
+    fonts: ["Sans-serif"],
+    layoutTags: ["Illustrated gradient hero", "Layered cloud graphics", "Top navigation with search bar", "Left-side login panel", "Two-column About Us section", "Icon-based feature strip"],
+    thumbnail:
+      "https://images.unsplash.com/photo-1487058792275-0ad4aaf24ca7?auto=format&fit=crop&w=400&q=60",
+    preview:
+      "https://images.unsplash.com/photo-1487058792275-0ad4aaf24ca7?auto=format&fit=crop&w=900&q=60",
+    elements: [
+      {
+        id: "colorful-cloud-hero-business-layout-element",
+        label: "Illustrated gradient hero with classic business sections",
+        description:
+          "Large illustrated hero with gradient background and layered cloud shapes, top navigation with search, a split login/about section, icon-based feature strip, and a utility-heavy footer.",
+        highlight: "Strong visual contrast between playful hero and structured content sections",
+        trait: {
+          id: "colorful-cloud-hero-business-layout",
+          type: "element",
+          label: "Illustrated gradient hero with classic business sections",
+          sourceExampleId: "colorful-cloud-hero-business-layout",
+          description:
+            "Large illustrated hero with gradient background and layered cloud shapes, top navigation with search, a split login/about section, icon-based feature strip, and a utility-heavy footer.",
+          colors: ["#4DB3E6", "#F4C430", "#E74C3C", "#8B1A1A", "#FFFFFF", "#1E1E1E"],
+          fonts: ["Sans-serif"],
+          layoutHints: [
+            "Illustrated gradient hero",
+            "Layered cloud graphics",
+            "Top navigation with search bar",
+            "Left-side login panel",
+            "Two-column About Us section",
+            "Icon-based feature strip",
+            "Dark utility footer",
+          ],
+        },
+      },
+    ],
+  },
+  {
+    id: "bold-multicolor-pricing-grid",
+    name: "Bold multicolor pricing plans layout",
+    tagline: "Strong color segmentation clearly differentiates pricing tiers at a glance",
+    scenario: "Pricing Layout",
+    description:
+      "High-contrast pricing section organized as a grid of large color blocks, each representing a subscription tier with feature checklists and call-to-action buttons.",
+    palette: ["#8FAF1F", "#0FA3B1", "#F2C300", "#E53935", "#4A4A4A", "#FFFFFF"],
+    fonts: ["Sans-serif"],
+    layoutTags: ["Full-width pricing grid", "Color-coded plan cards", "Checklist icons for feature comparison", "Centered plan titles", "Strong call-to-action buttons", "Conversion-oriented design"],
+    thumbnail:
+      "https://images.unsplash.com/photo-1522071820081-009f3129cbfb?auto=format&fit=crop&w=400&q=60",
+    preview:
+      "https://images.unsplash.com/photo-1522071820081-009f3129cbfb?auto=format&fit=crop&w=900&q=60",
+    elements: [
+      {
+        id: "bold-multicolor-pricing-grid-element",
+        label: "Grid-based pricing comparison with color-coded tiers",
+        description:
+          "Pricing layout divided into equally weighted rectangular panels for Free, Standard, Premium, and Multi-Seat plans, using bold background colors, checklist icons, concise descriptions, and prominent 'Order Now' buttons to emphasize comparison and conversion.",
+        highlight: "Strong color segmentation clearly differentiates pricing tiers at a glance",
+        trait: {
+          id: "bold-multicolor-pricing-grid",
+          type: "element",
+          label: "Grid-based pricing comparison with color-coded tiers",
+          sourceExampleId: "bold-multicolor-pricing-grid",
+          description:
+            "Pricing layout divided into equally weighted rectangular panels for Free, Standard, Premium, and Multi-Seat plans, using bold background colors, checklist icons, concise descriptions, and prominent 'Order Now' buttons to emphasize comparison and conversion.",
+          colors: ["#8FAF1F", "#0FA3B1", "#F2C300", "#E53935", "#4A4A4A", "#FFFFFF"],
+          fonts: ["Sans-serif"],
+          layoutHints: [
+            "Full-width pricing grid",
+            "Color-coded plan cards",
+            "Checklist icons for feature comparison",
+            "Centered plan titles",
+            "Strong call-to-action buttons",
+            "Minimal navigation focus, conversion-oriented design",
+          ],
+        },
+      },
+    ],
+  },
+  {
+    id: "rounded-glass-about-layout",
+    name: "Rounded glass content layout",
+    tagline: "Creates a calm, modern, glass-like feel",
+    scenario: "About Layout",
+    description:
+      "Centered card-style website layout with rounded corners, soft gradients, and a blurred cityscape hero image.",
+    palette: ["#2E3A3A", "#8FBAD3", "#EAF3F8", "#FFFFFF", "#6C8FA5"],
+    fonts: ["Sans-serif"],
+    layoutTags: ["Centered card layout", "Rounded corners", "Blurred hero background", "Horizontal navigation bar", "Sidebar navigation list", "Icon-based feature row"],
+    thumbnail:
+      "https://images.unsplash.com/photo-1517486808906-6ca8b3f04846?auto=format&fit=crop&w=400&q=60",
+    preview:
+      "https://images.unsplash.com/photo-1517486808906-6ca8b3f04846?auto=format&fit=crop&w=900&q=60",
+    elements: [
+      {
+        id: "rounded-glass-about-layout-element",
+        label: "Rounded glass content card",
+        description:
+          "Main content contained in a centered rounded rectangle with drop shadow, blurred photographic hero banner, soft blue gradient navigation bar, and icon-based footer section.",
+        highlight: "Creates a calm, modern, glass-like feel",
+        trait: {
+          id: "rounded-glass-about-layout",
+          type: "element",
+          label: "Rounded glass content card",
+          sourceExampleId: "rounded-glass-about-layout",
+          description:
+            "Main content contained in a centered rounded rectangle with drop shadow, blurred photographic hero banner, soft blue gradient navigation bar, and icon-based footer section.",
+          colors: ["#2E3A3A", "#8FBAD3", "#EAF3F8", "#FFFFFF", "#6C8FA5"],
+          fonts: ["Sans-serif"],
+          layoutHints: [
+            "Centered card layout",
+            "Rounded corners",
+            "Blurred hero background",
+            "Horizontal navigation bar",
+            "Sidebar navigation list",
+            "Icon-based feature row",
+            "Soft gradients and subtle shadows",
+          ],
+        },
+      },
+    ],
+  },
+  {
+    id: "layered-tabbed-about-card",
+    name: "Layered tabbed about section",
+    tagline: "Strong visual hierarchy with clear section focus",
+    scenario: "About Layout",
+    description:
+      "Tabbed interface layout with layered card design, featuring distinct sections for About, Services, and Contact, each with its own color-coded header and content area.",
+    palette: ["#F5F5F5", "#E8E8E8", "#4A90E2", "#2C3E50", "#FFFFFF", "#1A1A1A"],
+    fonts: ["Sans-serif"],
+    layoutTags: ["Tabbed interface", "Layered card design", "Color-coded sections", "Centered content", "Icon-based navigation", "Clear visual hierarchy"],
+    thumbnail:
+      "https://images.unsplash.com/photo-1460925895917-afdab827c52f?auto=format&fit=crop&w=400&q=60",
+    preview:
+      "https://images.unsplash.com/photo-1460925895917-afdab827c52f?auto=format&fit=crop&w=900&q=60",
+    elements: [
+      {
+        id: "layered-tabbed-about-card-element",
+        label: "Layered tabbed content card",
+        description:
+          "Main content area organized into tabs (About, Services, Contact) with distinct color-coded headers, layered card design with shadows, and clear visual separation between sections.",
+        highlight: "Strong visual hierarchy with clear section focus",
+        trait: {
+          id: "layered-tabbed-about-card",
+          type: "element",
+          label: "Layered tabbed content card",
+          sourceExampleId: "layered-tabbed-about-card",
+          description:
+            "Main content area organized into tabs (About, Services, Contact) with distinct color-coded headers, layered card design with shadows, and clear visual separation between sections.",
+          colors: ["#F5F5F5", "#E8E8E8", "#4A90E2", "#2C3E50", "#FFFFFF", "#1A1A1A"],
+          fonts: ["Sans-serif"],
+          layoutHints: [
+            "Tabbed interface",
+            "Layered card design",
+            "Color-coded section headers",
+            "Centered content layout",
+            "Icon-based tab navigation",
+            "Clear visual hierarchy",
+            "Drop shadows for depth",
+          ],
+        },
+      },
+    ],
+  },
+  {
+    id: "rounded-portfolio-slider-layout",
+    name: "Rounded portfolio hero with slider",
+    tagline: "Soft rounded UI with layered depth and motion emphasis",
+    scenario: "Portfolio Slider",
+    description:
+      "Modern web layout featuring rounded rectangular panels, a prominent hero slider with globe imagery, and modular content cards below.",
+    palette: [
+      "#0E2A47",
+      "#1E5FA3",
+      "#6FAED9",
+      "#E6EEF5",
+      "#FFFFFF",
+      "#3A3A3A",
+    ],
+    fonts: ["Sans-serif"],
+    layoutTags: ["Rounded container-based layout", "Hero carousel with arrow navigation", "High-contrast callout text in hero", "Three-column card section", "Consistent border radius", "Soft gradients"],
+    thumbnail:
+      "https://images.unsplash.com/photo-1498050108023-c5249f4df085?auto=format&fit=crop&w=400&q=60",
+    preview:
+      "https://images.unsplash.com/photo-1498050108023-c5249f4df085?auto=format&fit=crop&w=900&q=60",
+    elements: [
+      {
+        id: "rounded-portfolio-slider-layout-element",
+        label: "Rounded hero slider with modular cards",
+        description:
+          "Centered page layout using large rounded containers. Includes a top navigation bar, a wide hero slider with globe illustration and carousel controls, followed by three evenly spaced rounded content cards for About, visual feature, and text.",
+        highlight: "Soft rounded UI with layered depth and motion emphasis",
+        trait: {
+          id: "rounded-portfolio-slider-layout",
+          type: "element",
+          label: "Rounded hero slider with modular cards",
+          sourceExampleId: "rounded-portfolio-slider-layout",
+          description:
+            "Centered page layout using large rounded containers. Includes a top navigation bar, a wide hero slider with globe illustration and carousel controls, followed by three evenly spaced rounded content cards for About, visual feature, and text.",
+          colors: [
+            "#0E2A47",
+            "#1E5FA3",
+            "#6FAED9",
+            "#E6EEF5",
+            "#FFFFFF",
+            "#3A3A3A",
+          ],
+          fonts: ["Sans-serif"],
+          layoutHints: [
+            "Rounded container-based layout",
+            "Hero carousel with arrow navigation",
+            "High-contrast callout text in hero",
+            "Three-column card section",
+            "Consistent border radius across components",
+            "Soft gradients and subtle shadows",
+            "Centered, symmetrical composition",
+          ],
+        },
+      },
+    ],
+  },
+  {
+    id: "green-idea-slider-layout",
+    name: "Green idea hero with services grid",
+    tagline: "Fresh green palette with lightbulb innovation theme",
+    scenario: "Eco-inspired website layout",
+    description:
+      "Clean, eco-inspired website layout with a green gradient hero slider, icon-driven sections, and clear service/contact segmentation.",
+    palette: [
+      "#6FA43A",
+      "#8DBE5A",
+      "#4F7F2A",
+      "#FFFFFF",
+      "#2E2E2E",
+      "#DCEAC8",
+    ],
+    fonts: ["Sans-serif bold", "Sans-serif regular"],
+    layoutTags: ["Full-width hero slider", "Green gradient background", "Numbered content sections", "Three-column feature strip", "Icon-based contact bar"],
+    thumbnail:
+      "https://images.unsplash.com/photo-1551288049-bebda4e38f71?auto=format&fit=crop&w=400&q=60",
+    preview:
+      "https://images.unsplash.com/photo-1551288049-bebda4e38f71?auto=format&fit=crop&w=900&q=60",
+    elements: [
+      {
+        id: "green-idea-slider-layout-element",
+        label: "Green hero slider with services and contacts",
+        description:
+          "Full-width green gradient hero with carousel arrows and pagination dots, featuring a laptop + lightbulb illustration. Includes a horizontal top navigation, numbered About/Services/Contacts sections, a three-column feature strip, and a bold contact callout band with icon set.",
+        highlight: "Fresh green palette with lightbulb innovation theme",
+        trait: {
+          id: "green-idea-slider-layout",
+          type: "element",
+          label: "Green hero slider with services and contacts",
+          sourceExampleId: "green-idea-slider-layout",
+          description:
+            "Full-width green gradient hero with carousel arrows and pagination dots, featuring a laptop + lightbulb illustration. Includes a horizontal top navigation, numbered About/Services/Contacts sections, a three-column feature strip, and a bold contact callout band with icon set.",
+          colors: [
+            "#6FA43A",
+            "#8DBE5A",
+            "#4F7F2A",
+            "#FFFFFF",
+            "#2E2E2E",
+            "#DCEAC8",
+          ],
+          fonts: ["Sans-serif bold", "Sans-serif regular"],
+          layoutHints: [
+            "Full-width hero slider with arrows",
+            "Green gradient background",
+            "Centered slogan with pagination dots",
+            "Laptop + idea/lightbulb illustration",
+            "Numbered content sections",
+            "Three-column feature strip",
+            "Icon-based contact bar",
+            "Clear horizontal section separation",
+          ],
+        },
+      },
+    ],
+  },
+  {
+    id: "arrow-flow-glass-header-layout",
+    name: "Arrow-driven glass header with about section",
+    tagline: "Layered arrow motion over a global gradient background",
+    scenario: "Modern glassmorphism website",
+    description:
+      "Modern glassmorphism-style header with directional arrow graphics, followed by a clean two-column About Us content area and icon-based footer navigation.",
+    palette: [
+      "#F2A23A",
+      "#D47A2C",
+      "#2F3A4A",
+      "#FFFFFF",
+      "#EDEDED",
+      "#1E1E1E",
+    ],
+    fonts: ["Sans-serif bold", "Sans-serif regular"],
+    layoutTags: ["Rounded glassmorphism hero", "Gradient background with world map", "Repeating arrow graphics", "Two-column About Us", "Left sidebar navigation", "Minimal icon row"],
+    thumbnail:
+      "https://images.unsplash.com/photo-1551288049-bebda4e38f71?auto=format&fit=crop&w=400&q=60",
+    preview:
+      "https://images.unsplash.com/photo-1551288049-bebda4e38f71?auto=format&fit=crop&w=900&q=60",
+    elements: [
+      {
+        id: "arrow-flow-glass-header-layout-element",
+        label: "Glass header with arrow flow motif",
+        description:
+          "Rounded glass-like hero header featuring layered arrow icons suggesting motion and direction over a warm gradient world-map backdrop. Includes compact top navigation, followed by a white About Us section with sidebar links, dual text columns, and a minimal icon strip above a slim footer.",
+        highlight: "Layered arrow motion over a global gradient background",
+        trait: {
+          id: "arrow-flow-glass-header-layout",
+          type: "element",
+          label: "Glass header with arrow flow motif",
+          sourceExampleId: "arrow-flow-glass-header-layout",
+          description:
+            "Rounded glass-like hero header featuring layered arrow icons suggesting motion and direction over a warm gradient world-map backdrop. Includes compact top navigation, followed by a white About Us section with sidebar links, dual text columns, and a minimal icon strip above a slim footer.",
+          colors: [
+            "#F2A23A",
+            "#D47A2C",
+            "#2F3A4A",
+            "#FFFFFF",
+            "#EDEDED",
+            "#1E1E1E",
+          ],
+          fonts: ["Sans-serif bold", "Sans-serif regular"],
+          layoutHints: [
+            "Rounded glassmorphism hero container",
+            "Gradient background with world map overlay",
+            "Repeating arrow graphics indicating motion",
+            "Centered logo with compact navigation",
+            "Two-column About Us text layout",
+            "Left sidebar list navigation",
+            "Minimal icon row for highlights",
+            "Slim footer with inline links",
+          ],
+        },
+      },
+    ],
+  },
+  {
+    id: "blue-globe-search-header-layout",
+    name: "Blue globe hero with search-focused header",
+    tagline: "Right-aligned globe graphic paired with prominent search input",
+    scenario: "Corporate-style website layout",
+    description:
+      "Corporate-style layout featuring a wide blue hero header with vertical texture lines, globe illustration, and integrated search bar, followed by a structured About Us section with feature tiles and circular highlights.",
+    palette: [
+      "#1E3A5F",
+      "#2F5FA7",
+      "#4A90E2",
+      "#CDE6B8",
+      "#EAF4D3",
+      "#1B2B3A",
+      "#FFFFFF",
+    ],
+    fonts: ["Sans-serif bold", "Sans-serif regular"],
+    layoutTags: ["Wide rounded hero container", "Vertical line texture background", "Prominent search bar", "Right-aligned globe illustration", "Icon-based feature cards", "Two-column About Us"],
+    thumbnail:
+      "https://images.unsplash.com/photo-1551288049-bebda4e38f71?auto=format&fit=crop&w=400&q=60",
+    preview:
+      "https://images.unsplash.com/photo-1551288049-bebda4e38f71?auto=format&fit=crop&w=900&q=60",
+    elements: [
+      {
+        id: "blue-globe-search-header-layout-element",
+        label: "Globe hero with search-centric navigation",
+        description:
+          "Large rounded hero container with a blue gradient and vertical line texture, showcasing a company name, slogan, horizontal navigation, and a pill-shaped search bar with confirmation button. A floating globe graphic anchors the right side.",
+        highlight: "Right-aligned globe graphic paired with prominent search input",
+        trait: {
+          id: "blue-globe-search-header-layout",
+          type: "element",
+          label: "Globe hero with search-centric navigation",
+          sourceExampleId: "blue-globe-search-header-layout",
+          description:
+            "Below the hero, a light-toned About Us section combines icon-based feature cards, text blocks, and circular callouts, ending with a compact footer navigation.",
+          colors: [
+            "#1E3A5F",
+            "#2F5FA7",
+            "#4A90E2",
+            "#CDE6B8",
+            "#EAF4D3",
+            "#1B2B3A",
+            "#FFFFFF",
+          ],
+          fonts: ["Sans-serif bold", "Sans-serif regular"],
+          layoutHints: [
+            "Wide rounded hero container",
+            "Vertical line texture background",
+            "Left-aligned logo and slogan",
+            "Top navigation with separators",
+            "Prominent pill-shaped search bar with OK button",
+            "Right-aligned globe illustration",
+            "Icon-based feature cards in grid",
+            "Two-column About Us content",
+          ],
+        },
+      },
+    ],
+  },
+  {
+    id: "circular-icon-globe-layout",
+    name: "Circular icon header with dotted globe backdrop",
+    tagline: "Oversized circular feature icons paired with a digital globe motif",
+    scenario: "Tech-forward corporate website",
+    description:
+      "A tech-forward corporate website layout featuring a row of large circular icon modules at the top, a dotted globe visualization, and a structured About Us content area.",
+    palette: [
+      "#0F1E2E",
+      "#1F3B63",
+      "#2F5FA7",
+      "#3FA9DD",
+      "#0B0B0B",
+      "#FFFFFF",
+      "#D9E6F2",
+    ],
+    fonts: ["Sans-serif bold", "Sans-serif regular"],
+    layoutTags: ["Diagonal striped background", "Row of large circular icon cards", "Gradient blue content panel", "Dotted globe graphic", "Two-column About Us", "Dark feature strip"],
+    thumbnail:
+      "https://images.unsplash.com/photo-1551288049-bebda4e38f71?auto=format&fit=crop&w=400&q=60",
+    preview:
+      "https://images.unsplash.com/photo-1551288049-bebda4e38f71?auto=format&fit=crop&w=900&q=60",
+    elements: [
+      {
+        id: "circular-icon-globe-layout-element",
+        label: "Circular feature navigation with globe accent",
+        description:
+          "This layout emphasizes a horizontal row of prominent circular icon cards at the top, each representing a core feature or section. A blue gradient panel with a dotted world globe graphic anchors the left side, reinforcing a global or tech-oriented brand.",
+        highlight: "Oversized circular feature icons paired with a digital globe motif",
+        trait: {
+          id: "circular-icon-globe-layout",
+          type: "element",
+          label: "Circular feature navigation with globe accent",
+          sourceExampleId: "circular-icon-globe-layout",
+          description:
+            "Below, a clean white About Us section is split into two text columns, followed by a dark feature strip and a minimal footer.",
+          colors: [
+            "#0F1E2E",
+            "#1F3B63",
+            "#2F5FA7",
+            "#3FA9DD",
+            "#0B0B0B",
+            "#FFFFFF",
+            "#D9E6F2",
+          ],
+          fonts: ["Sans-serif bold", "Sans-serif regular"],
+          layoutHints: [
+            "Diagonal striped background texture",
+            "Top-left logo with minimalist branding",
+            "Row of large circular icon cards with thick borders",
+            "Gradient blue content panel",
+            "Dotted globe graphic on left side",
+            "Vertical navigation list with play-style bullets",
+            "Two-column About Us text section",
+            "Dark feature strip with icons and short descriptions",
+          ],
+        },
+      },
+    ],
+  },
+  {
+    id: "hexagon-slider-olive-layout",
+    name: "Hexagon hero slider with olive UI theme",
+    tagline: "Rounded hexagon-pattern hero slider paired with glossy circular icon buttons",
+    scenario: "Olive-toned corporate website",
+    description:
+      "A soft, olive-toned corporate website layout featuring a rounded hero slider with abstract hexagon graphics, spherical icon navigation, and a balanced three-column content structure.",
+    palette: [
+      "#4F5F2A",
+      "#9FB36A",
+      "#F6F3C6",
+      "#E6E2B8",
+      "#D87C2A",
+      "#6B7F3A",
+      "#FFFFFF",
+    ],
+    fonts: ["Sans-serif bold", "Sans-serif regular"],
+    layoutTags: ["Olive-green navigation", "Rounded hero slider", "Abstract hexagon mosaic", "Glossy circular icon buttons", "Three-column feature section", "Soft cream background"],
+    thumbnail:
+      "https://images.unsplash.com/photo-1551288049-bebda4e38f71?auto=format&fit=crop&w=400&q=60",
+    preview:
+      "https://images.unsplash.com/photo-1551288049-bebda4e38f71?auto=format&fit=crop&w=900&q=60",
+    elements: [
+      {
+        id: "hexagon-slider-olive-layout-element",
+        label: "Hexagon-based hero with circular feature icons",
+        description:
+          "This layout centers around a rounded rectangular hero slider displaying layered hexagonal shapes in warm green and orange tones. Below the slider, a row of glossy circular icon buttons introduces key sections.",
+        highlight: "Rounded hexagon-pattern hero slider paired with glossy circular icon buttons",
+        trait: {
+          id: "hexagon-slider-olive-layout",
+          type: "element",
+          label: "Hexagon-based hero with circular feature icons",
+          sourceExampleId: "hexagon-slider-olive-layout",
+          description:
+            "The main content area is divided into a left vertical navigation list, a central About Us text block, and a right-side account/product panel, followed by a three-column feature section and a minimal footer.",
+          colors: [
+            "#4F5F2A",
+            "#9FB36A",
+            "#F6F3C6",
+            "#E6E2B8",
+            "#D87C2A",
+            "#6B7F3A",
+            "#FFFFFF",
+          ],
+          fonts: ["Sans-serif bold", "Sans-serif regular"],
+          layoutHints: [
+            "Olive-green top navigation bar with lowercase links",
+            "Top-left italic logo typography",
+            "Rounded hero slider with thick green border",
+            "Abstract hexagon mosaic graphic in hero",
+            "Carousel navigation arrows and pagination dots",
+            "Row of glossy circular icon buttons with shadows",
+            "Left-side vertical text navigation with play icons",
+            "Centered About Us section with lowercase heading",
+            "Three-column feature section with icons and CTAs",
+          ],
+        },
+      },
+    ],
+  },
+  {
+    id: "soft-gradient-hero-landing",
+    name: "Soft gradient hero landing",
+    tagline: "Modern gradient mesh background with strong visual focus on primary CTA",
+    scenario: "Minimalist landing page",
+    description:
+      "A minimalist landing page with a smooth, abstract gradient background and centered welcome message.",
+    palette: ["#E8F4F8", "#B8D4E3", "#6B9BD1", "#4A7BA7", "#2E5C8A", "#FFFFFF"],
+    fonts: ["Sans-serif"],
+    layoutTags: ["Centered content", "Gradient mesh background", "Minimal navigation", "Primary CTA button", "Clean typography"],
+    thumbnail:
+      "https://images.unsplash.com/photo-1551288049-bebda4e38f71?auto=format&fit=crop&w=400&q=60",
+    preview:
+      "https://images.unsplash.com/photo-1551288049-bebda4e38f71?auto=format&fit=crop&w=900&q=60",
+    elements: [
+      {
+        id: "soft-gradient-hero-landing-element",
+        label: "Gradient hero with centered CTA",
+        description:
+          "Clean landing page with a soft gradient mesh background, minimal top navigation, centered headline and subtitle, and a prominent primary CTA button.",
+        highlight: "Modern gradient mesh background with strong visual focus on primary CTA",
+        trait: {
+          id: "soft-gradient-hero-landing",
+          type: "element",
+          label: "Gradient hero with centered CTA",
+          sourceExampleId: "soft-gradient-hero-landing",
+          description:
+            "Clean landing page with a soft gradient mesh background, minimal top navigation, centered headline and subtitle, and a prominent primary CTA button.",
+          colors: ["#E8F4F8", "#B8D4E3", "#6B9BD1", "#4A7BA7", "#2E5C8A", "#FFFFFF"],
+          fonts: ["Sans-serif"],
+          layoutHints: [
+            "Centered content layout",
+            "Gradient mesh background",
+            "Minimal top navigation",
+            "Large centered headline",
+            "Supporting subtitle text",
+            "Prominent primary CTA button",
+            "Clean, spacious design",
+          ],
+        },
+      },
+    ],
+  },
+  {
+    id: "minimal-blog-login-landing",
+    name: "Minimal blog and login landing",
+    tagline: "Simple structure combining content, forms, and feature steps",
+    scenario: "Minimal Blog",
+    description:
+      "Clean monochrome landing page with top navigation, oversized hero icon and text, login and contact forms, and numbered feature highlights.",
+    palette: ["#F2F2F2", "#1F1F1F", "#000000", "#BDBDBD", "#FFFFFF"],
+    fonts: ["Sans-serif"],
+    layoutTags: ["Top navigation bar", "Oversized hero icon", "Split login and contact forms", "Three-column feature section", "Circular step indicators", "Minimal grayscale palette"],
+    thumbnail:
+      "https://images.unsplash.com/photo-1499750310107-5fef28a66643?auto=format&fit=crop&w=400&q=60",
+    preview:
+      "https://images.unsplash.com/photo-1499750310107-5fef28a66643?auto=format&fit=crop&w=900&q=60",
+    elements: [
+      {
+        id: "minimal-blog-login-landing-element",
+        label: "Minimal content + form layout",
+        description:
+          "Wide layout with dark navigation bar, large hero illustration and headline, split section for login and contact forms, followed by three-step feature blocks with circular number markers.",
+        highlight: "Simple structure combining content, forms, and feature steps",
+        trait: {
+          id: "minimal-blog-login-landing",
+          type: "element",
+          label: "Minimal content + form layout",
+          sourceExampleId: "minimal-blog-login-landing",
+          description:
+            "Wide layout with dark navigation bar, large hero illustration and headline, split section for login and contact forms, followed by three-step feature blocks with circular number markers.",
+          colors: ["#F2F2F2", "#1F1F1F", "#000000", "#BDBDBD", "#FFFFFF"],
+          fonts: ["Sans-serif"],
+          layoutHints: [
+            "Top navigation bar",
+            "Oversized hero icon",
+            "Split login and contact forms",
+            "Three-column feature section",
+            "Circular step indicators",
+            "Minimal grayscale palette",
+          ],
+        },
+      },
+    ],
+  },
+  {
+    id: "lime-accent-web-landing",
+    name: "Lime-accent web landing",
+    tagline: "High-contrast accents guide attention through sections",
+    scenario: "Web Landing",
+    description:
+      "Bright modern landing page with lime navigation bar, hero text slider, feature card grid, and embedded login and contact forms.",
+    palette: ["#D6D92B", "#F2F2F2", "#9E9E9E", "#1F1F1F", "#FFFFFF"],
+    fonts: ["Sans-serif"],
+    layoutTags: ["High-contrast navigation bar", "Centered hero text", "Hero slider indicators", "Rounded feature card grid", "Split login and contact forms", "Accent color highlights"],
+    thumbnail:
+      "https://images.unsplash.com/photo-1504868584819-f8e8b4b6d7e3?auto=format&fit=crop&w=400&q=60",
+    preview:
+      "https://images.unsplash.com/photo-1504868584819-f8e8b4b6d7e3?auto=format&fit=crop&w=900&q=60",
+    elements: [
+      {
+        id: "lime-accent-web-landing-element",
+        label: "Accent-driven marketing layout",
+        description:
+          "Wide layout with bold lime navigation bar, centered hero headline and supporting text, icon-based feature cards in a rounded grid, followed by split login and contact forms.",
+        highlight: "High-contrast accents guide attention through sections",
+        trait: {
+          id: "lime-accent-web-landing",
+          type: "element",
+          label: "Accent-driven marketing layout",
+          sourceExampleId: "lime-accent-web-landing",
+          description:
+            "Wide layout with bold lime navigation bar, centered hero headline and supporting text, icon-based feature cards in a rounded grid, followed by split login and contact forms.",
+          colors: ["#D6D92B", "#F2F2F2", "#9E9E9E", "#1F1F1F", "#FFFFFF"],
+          fonts: ["Sans-serif"],
+          layoutHints: [
+            "High-contrast navigation bar",
+            "Centered hero text",
+            "Hero slider indicators",
+            "Rounded feature card grid",
+            "Split login and contact forms",
+            "Accent color highlights",
+          ],
+        },
+      },
+    ],
+  },
+  {
+    id: "red-ribbon-cta-corporate",
+    name: "Red ribbon CTA landing",
+    tagline: "High-contrast CTAs with strong visual emphasis",
+    scenario: "Corporate Landing",
+    description:
+      "Bold corporate landing page with red hero banner, diagonal ribbon accents, inline login form, and stacked blog highlights.",
+    palette: ["#C81E1E", "#F2F2F2", "#FFFFFF", "#1F1F1F", "#9E9E9E"],
+    fonts: ["Sans-serif"],
+    layoutTags: ["Bold red hero banner", "Diagonal ribbon overlays", "Inline login form", "Sectioned business overview", "Stacked blog highlight cards", "Strong contrast CTAs"],
+    thumbnail:
+      "https://images.unsplash.com/photo-1515895307828-95d45c2cbf0a?auto=format&fit=crop&w=400&q=60",
+    preview:
+      "https://images.unsplash.com/photo-1515895307828-95d45c2cbf0a?auto=format&fit=crop&w=900&q=60",
+    elements: [
+      {
+        id: "red-ribbon-cta-corporate-element",
+        label: "Ribbon-accent marketing layout",
+        description:
+          "Prominent red hero section with diagonal ribbon label overlay, centered descriptive text, inline login inputs, followed by business overview and blog card sections using repeated ribbon motifs.",
+        highlight: "High-contrast CTAs with strong visual emphasis",
+        trait: {
+          id: "red-ribbon-cta-corporate",
+          type: "element",
+          label: "Ribbon-accent marketing layout",
+          sourceExampleId: "red-ribbon-cta-corporate",
+          description:
+            "Prominent red hero section with diagonal ribbon label overlay, centered descriptive text, inline login inputs, followed by business overview and blog card sections using repeated ribbon motifs.",
+          colors: ["#C81E1E", "#F2F2F2", "#FFFFFF", "#1F1F1F", "#9E9E9E"],
+          fonts: ["Sans-serif"],
+          layoutHints: [
+            "Bold red hero banner",
+            "Diagonal ribbon overlays",
+            "Inline login form",
+            "Sectioned business overview",
+            "Stacked blog highlight cards",
+            "Strong contrast CTAs",
+          ],
+        },
+      },
+    ],
+  },
+  {
+    id: "glass-ui-service-landing",
+    name: "Glass UI service landing",
+    tagline: "Sleek glass effect creates a premium, modern feel",
+    scenario: "Service Landing",
+    description:
+      "Dark modern landing page using glassmorphism hero banner, icon-based service cards, and gallery preview section.",
+    palette: ["#5A5A5A", "#2B2B2B", "#FFFFFF", "#9E9E9E", "#000000"],
+    fonts: ["Sans-serif"],
+    layoutTags: ["Glassmorphism hero banner", "Centered floating callout", "Pill-style navigation tabs", "Three-column service cards", "Circular gallery placeholders", "Dark minimal footer"],
+    thumbnail:
+      "https://images.unsplash.com/photo-1521737604893-d14cc237f11d?auto=format&fit=crop&w=400&q=60",
+    preview:
+      "https://images.unsplash.com/photo-1521737604893-d14cc237f11d?auto=format&fit=crop&w=900&q=60",
+    elements: [
+      {
+        id: "glass-ui-service-landing-element",
+        label: "Glassmorphism marketing layout",
+        description:
+          "Centered glass-style hero banner with frosted transparency and drop shadow, top navigation with pill tabs, followed by three bordered service cards and a gallery section with circular image placeholders.",
+        highlight: "Sleek glass effect creates a premium, modern feel",
+        trait: {
+          id: "glass-ui-service-landing",
+          type: "element",
+          label: "Glassmorphism marketing layout",
+          sourceExampleId: "glass-ui-service-landing",
+          description:
+            "Centered glass-style hero banner with frosted transparency and drop shadow, top navigation with pill tabs, followed by three bordered service cards and a gallery section with circular image placeholders.",
+          colors: ["#5A5A5A", "#2B2B2B", "#FFFFFF", "#9E9E9E", "#000000"],
+          fonts: ["Sans-serif"],
+          layoutHints: [
+            "Glassmorphism hero banner",
+            "Centered floating callout",
+            "Pill-style navigation tabs",
+            "Three-column service cards",
+            "Circular gallery placeholders",
+            "Dark minimal footer",
+          ],
+        },
+      },
+    ],
+  },
+  {
+    id: "network-hero-dashboard-landing",
+    name: "Networked dashboard landing",
+    tagline: "Combines marketing, authentication, and product discovery in one layout",
+    scenario: "Dashboard Landing",
+    description:
+      "Feature-rich corporate landing page with network-style hero graphic, login panel, content highlights, and utility navigation.",
+    palette: ["#F04B23", "#8BC34A", "#4BB6E8", "#E6E6E6", "#2E2E2E", "#FFFFFF"],
+    fonts: ["Sans-serif"],
+    layoutTags: ["Abstract network hero graphic", "Circular focal element", "Top tab navigation", "Left-aligned login panel", "Highlighted content band", "Multi-column feature tiles"],
+    thumbnail:
+      "https://images.unsplash.com/photo-1498050108023-c5249f4df085?auto=format&fit=crop&w=400&q=60",
+    preview:
+      "https://images.unsplash.com/photo-1498050108023-c5249f4df085?auto=format&fit=crop&w=900&q=60",
+    elements: [
+      {
+        id: "network-hero-dashboard-landing-element",
+        label: "Dashboard-style marketing layout",
+        description:
+          "Wide layout featuring a large hero with abstract network visualization and circular focal element, top tab navigation, left-aligned login panel, central content highlight band, and multi-column feature tiles.",
+        highlight: "Combines marketing, authentication, and product discovery in one layout",
+        trait: {
+          id: "network-hero-dashboard-landing",
+          type: "element",
+          label: "Dashboard-style marketing layout",
+          sourceExampleId: "network-hero-dashboard-landing",
+          description:
+            "Wide layout featuring a large hero with abstract network visualization and circular focal element, top tab navigation, left-aligned login panel, central content highlight band, and multi-column feature tiles.",
+          colors: ["#F04B23", "#8BC34A", "#4BB6E8", "#E6E6E6", "#2E2E2E", "#FFFFFF"],
+          fonts: ["Sans-serif"],
+          layoutHints: [
+            "Abstract network hero graphic",
+            "Circular focal element",
+            "Top tab navigation",
+            "Left-aligned login panel",
+            "Highlighted content band",
+            "Multi-column feature tiles",
+          ],
+        },
+      },
+    ],
+  },
+  {
+    id: "dark-skyline-about-landing",
+    name: "Dark skyline about landing",
+    tagline: "Strong visual contrast draws focus to core content",
+    scenario: "About Landing",
+    description:
+      "Elegant corporate website with dark framing, panoramic hero image, informational about section, and integrated login panel.",
+    palette: ["#1A1A1A", "#4A97B5", "#FFFFFF", "#F2C94C", "#2E2E2E"],
+    fonts: ["Sans-serif"],
+    layoutTags: ["Dark framed layout", "Panoramic hero image", "Left-aligned login panel", "Multi-column about section", "Icon-based contact links", "Minimal footer navigation"],
+    thumbnail:
+      "https://images.unsplash.com/photo-1492691527719-9d1e07e534b4?auto=format&fit=crop&w=400&q=60",
+    preview:
+      "https://images.unsplash.com/photo-1492691527719-9d1e07e534b4?auto=format&fit=crop&w=900&q=60",
+    elements: [
+      {
+        id: "dark-skyline-about-landing-element",
+        label: "Panoramic about layout",
+        description:
+          "Centered layout with dark header and footer, wide panoramic hero image, left-aligned account/login panel, and multi-column about content with contact details and icon links.",
+        highlight: "Strong visual contrast draws focus to core content",
+        trait: {
+          id: "dark-skyline-about-landing",
+          type: "element",
+          label: "Panoramic about layout",
+          sourceExampleId: "dark-skyline-about-landing",
+          description:
+            "Centered layout with dark header and footer, wide panoramic hero image, left-aligned account/login panel, and multi-column about content with contact details and icon links.",
+          colors: ["#1A1A1A", "#4A97B5", "#FFFFFF", "#F2C94C", "#2E2E2E"],
+          fonts: ["Sans-serif"],
+          layoutHints: [
+            "Dark framed layout",
+            "Panoramic hero image",
+            "Left-aligned login panel",
+            "Multi-column about section",
+            "Icon-based contact links",
+            "Minimal footer navigation",
+          ],
+        },
+      },
+    ],
+  },
+  {
+    id: "illustrated-hero-circle-features",
+    name: "Illustrated hero with circular features",
+    tagline: "Playful visuals combined with clear marketing structure",
+    scenario: "Illustrated Landing",
+    description:
+      "Colorful illustrated landing page with hand-drawn hero graphic, circular feature cards, and structured content sections.",
+    palette: ["#FF6B6B", "#4ECDC4", "#FFE66D", "#95E1D3", "#FFFFFF", "#2C3E50"],
+    fonts: ["Sans-serif"],
+    layoutTags: ["Illustrated hero graphic", "Circular feature cards", "Hand-drawn style", "Colorful palette", "Structured content sections", "Playful aesthetic"],
+    thumbnail:
+      "https://images.unsplash.com/photo-1551288049-bebda4e38f71?auto=format&fit=crop&w=400&q=60",
+    preview:
+      "https://images.unsplash.com/photo-1551288049-bebda4e38f71?auto=format&fit=crop&w=900&q=60",
+    elements: [
+      {
+        id: "illustrated-hero-circle-features-element",
+        label: "Illustrated marketing layout",
+        description:
+          "Hero section with hand-drawn illustration style, followed by circular feature cards with icons and text, structured content sections, and playful color palette.",
+        highlight: "Playful visuals combined with clear marketing structure",
+        trait: {
+          id: "illustrated-hero-circle-features",
+          type: "element",
+          label: "Illustrated marketing layout",
+          sourceExampleId: "illustrated-hero-circle-features",
+          description:
+            "Hero section with hand-drawn illustration style, followed by circular feature cards with icons and text, structured content sections, and playful color palette.",
+          colors: ["#FF6B6B", "#4ECDC4", "#FFE66D", "#95E1D3", "#FFFFFF", "#2C3E50"],
+          fonts: ["Sans-serif"],
+          layoutHints: [
+            "Illustrated hero graphic",
+            "Circular feature cards",
+            "Hand-drawn style",
+            "Colorful palette",
+            "Structured content sections",
+            "Playful aesthetic",
+          ],
+        },
+      },
+    ],
+  },
+  {
+    id: "gradient-triangle-portfolio-landing",
+    name: "Gradient triangle portfolio landing",
+    tagline: "Clean layout with vibrant gradients that frame content",
+    scenario: "Portfolio Landing",
+    description:
+      "Modern portfolio landing page with warm gradient navigation, centered hero slider, and three-column informational sections.",
+    palette: ["#E91E63", "#F39C12", "#FFFFFF", "#F2F2F2", "#9E9E9E"],
+    fonts: ["Sans-serif"],
+    layoutTags: ["Gradient navigation bar", "Centered hero slider", "Minimal headline typography", "Three-column content layout", "Soft card-like section dividers", "Gradient footer accent"],
+    thumbnail:
+      "https://images.unsplash.com/photo-1506905925346-21bda4d32df4?auto=format&fit=crop&w=400&q=60",
+    preview:
+      "https://images.unsplash.com/photo-1506905925346-21bda4d32df4?auto=format&fit=crop&w=900&q=60",
+    elements: [
+      {
+        id: "gradient-triangle-portfolio-landing-element",
+        label: "Gradient-driven portfolio layout",
+        description:
+          "Top navigation bar with pink-to-orange gradient and tabbed menu, centered hero slider with headline and dot indicators, followed by three evenly spaced columns for about, portfolio, and news content, and a matching gradient footer.",
+        highlight: "Clean layout with vibrant gradients that frame content",
+        trait: {
+          id: "gradient-triangle-portfolio-landing",
+          type: "element",
+          label: "Gradient-driven portfolio layout",
+          sourceExampleId: "gradient-triangle-portfolio-landing",
+          description:
+            "Top navigation bar with pink-to-orange gradient and tabbed menu, centered hero slider with headline and dot indicators, followed by three evenly spaced columns for about, portfolio, and news content, and a matching gradient footer.",
+          colors: ["#E91E63", "#F39C12", "#FFFFFF", "#F2F2F2", "#9E9E9E"],
+          fonts: ["Sans-serif"],
+          layoutHints: [
+            "Gradient navigation bar",
+            "Centered hero slider",
+            "Minimal headline typography",
+            "Three-column content layout",
+            "Soft card-like section dividers",
+            "Gradient footer accent",
+          ],
+        },
+      },
+    ],
+  },
+  {
+    id: "mosaic-portfolio-icon-landing",
+    name: "Mosaic portfolio landing",
+    tagline: "Distinct visual rhythm using modular blocks and icons",
+    scenario: "Portfolio Landing",
+    description:
+      "Editorial-style landing page with mosaic hero grid, icon-driven feature row, and three-column informational sections.",
+    palette: ["#2C3E50", "#3498DB", "#E74C3C", "#FFFFFF", "#ECF0F1"],
+    fonts: ["Sans-serif"],
+    layoutTags: ["Mosaic hero grid", "Icon-driven feature row", "Three-column informational sections", "Modular block layout", "Editorial style", "Clear visual hierarchy"],
+    thumbnail:
+      "https://images.unsplash.com/photo-1506905925346-21bda4d32df4?auto=format&fit=crop&w=400&q=60",
+    preview:
+      "https://images.unsplash.com/photo-1506905925346-21bda4d32df4?auto=format&fit=crop&w=900&q=60",
+    elements: [
+      {
+        id: "mosaic-portfolio-icon-landing-element",
+        label: "Mosaic portfolio layout",
+        description:
+          "Hero section with mosaic grid of image blocks, followed by a row of icon-driven feature cards, and three-column informational sections with clear visual hierarchy.",
+        highlight: "Distinct visual rhythm using modular blocks and icons",
+        trait: {
+          id: "mosaic-portfolio-icon-landing",
+          type: "element",
+          label: "Mosaic portfolio layout",
+          sourceExampleId: "mosaic-portfolio-icon-landing",
+          description:
+            "Hero section with mosaic grid of image blocks, followed by a row of icon-driven feature cards, and three-column informational sections with clear visual hierarchy.",
+          colors: ["#2C3E50", "#3498DB", "#E74C3C", "#FFFFFF", "#ECF0F1"],
+          fonts: ["Sans-serif"],
+          layoutHints: [
+            "Mosaic hero grid",
+            "Icon-driven feature row",
+            "Three-column informational sections",
+            "Modular block layout",
+            "Editorial style",
+            "Clear visual hierarchy",
+          ],
+        },
+      },
+    ],
+  },
 ];
 
 export const DEFAULT_RESULTS = EXAMPLE_DATASET.slice(0, 3);
 
+/*
 // Additional examples converted from commented format
 export const ADDITIONAL_EXAMPLES: Example[] = [
   {
@@ -1995,7 +3058,7 @@ export const ADDITIONAL_EXAMPLES: Example[] = [
       "Minimal footer with inline navigation links",
     ],
   },
-},
+],
 
 
 
@@ -2196,12 +3259,9 @@ export const ADDITIONAL_EXAMPLES: Example[] = [
       "SaaS welcome screens",
       "Marketing splash pages",
       "Portfolio or studio homepages"
-    ]
-  }
-}
-
-
-
+    ],
+  },
+];
 
 */
 
