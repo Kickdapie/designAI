@@ -1479,7 +1479,7 @@ export const EXAMPLE_DATASET: Example[] = [
   },
 ];
 
-export const DEFAULT_RESULTS = EXAMPLE_DATASET.slice(0, 3);
+export const DEFAULT_RESULTS = EXAMPLE_DATASET.slice(0, 12);
 
 /*
 // Additional examples converted from commented format

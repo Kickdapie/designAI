@@ -1326,23 +1326,23 @@
       ]
     }
   ];
-  var DEFAULT_RESULTS = EXAMPLE_DATASET.slice(0, 3);
+  var DEFAULT_RESULTS = EXAMPLE_DATASET.slice(0, 12);
 
   // src/catalog/search.ts
   function scoreExamples(query, dataset) {
     if (!query.trim()) {
-      return dataset.slice(0, 4);
+      return dataset.slice(0, 12);
     }
     const tokens = query.toLowerCase().split(/[^a-z0-9]+/).filter(Boolean);
     if (!tokens.length) {
-      return dataset.slice(0, 4);
+      return dataset.slice(0, 12);
     }
     const ranked = dataset.map((example) => ({
       example,
       score: scoreExample(example, tokens)
     })).sort((a, b) => b.score - a.score);
-    const results = ranked.filter((entry, index) => entry.score > 0 || index < 2).slice(0, 4).map((entry) => entry.example);
-    return results.length ? results : dataset.slice(0, Math.min(4, dataset.length));
+    const results = ranked.filter((entry, index) => entry.score > 0 || index < 2).slice(0, 12).map((entry) => entry.example);
+    return results.length ? results : dataset.slice(0, Math.min(12, dataset.length));
   }
   function scoreExample(example, tokens) {
     const base = [

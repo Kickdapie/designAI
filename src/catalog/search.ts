@@ -2,7 +2,7 @@ import { Example } from "../types/catalog";
 
 export function scoreExamples(query: string, dataset: Example[]): Example[] {
   if (!query.trim()) {
-    return dataset.slice(0, 4);
+    return dataset.slice(0, 12);
   }
 
   const tokens = query
@@ -11,7 +11,7 @@ export function scoreExamples(query: string, dataset: Example[]): Example[] {
     .filter(Boolean);
 
   if (!tokens.length) {
-    return dataset.slice(0, 4);
+    return dataset.slice(0, 12);
   }
 
   const ranked = dataset
@@ -23,10 +23,10 @@ export function scoreExamples(query: string, dataset: Example[]): Example[] {
 
   const results = ranked
     .filter((entry, index) => entry.score > 0 || index < 2)
-    .slice(0, 4)
+    .slice(0, 12)
     .map((entry) => entry.example);
 
-  return results.length ? results : dataset.slice(0, Math.min(4, dataset.length));
+  return results.length ? results : dataset.slice(0, Math.min(12, dataset.length));
 }
 
 function scoreExample(example: Example, tokens: string[]): number {
