@@ -11,6 +11,7 @@ import {
   EXAMPLE_DATASET,
 } from "./src/catalog/examples";
 import { scoreExamples } from "./src/catalog/search";
+import { aiService } from "./src/services/aiService";
 import type {
   ApplyTraitsMessage,
   ElementTrait,
@@ -33,11 +34,17 @@ const MINIMIZED_DIMENSIONS = { width: 400, height: 300 };
 
 penpot.ui.open("Design Discovery Assistant", "https://kickdapie.github.io/designAI/index.html", UI_DIMENSIONS);
 
+// Initialize AI service (will check for API key in localStorage)
+aiService.initialize();
+
 penpot.ui.onMessage((message: PluginMessage | { type: string; payload?: any }) => {
   console.log("[Plugin] Received message:", message.type, message);
   switch (message.type) {
     case "ui-ready":
       sendInitialExamples();
+      break;
+    case "configure-ai":
+      handleAIConfiguration(message.payload?.apiKey);
       break;
     case "search-examples":
       handleSearch(message.payload?.query ?? "");
@@ -66,9 +73,19 @@ function sendInitialExamples() {
   });
 }
 
-function handleSearch(query: string) {
-  const results = scoreExamples(query, EXAMPLE_DATASET);
-  const summary = buildResultSummary(query, results);
+async function handleSearch(query: string) {
+  // Get initial results using keyword matching
+  const initialResults = scoreExamples(query, EXAMPLE_DATASET);
+  
+  // Enhance with AI if available
+  const results = await aiService.enhanceSearchResults(
+    query,
+    initialResults,
+    EXAMPLE_DATASET
+  );
+  
+  // Generate AI-powered summary (falls back to template if AI unavailable)
+  const summary = await aiService.generateSummary(query, results);
 
   penpot.ui.sendMessage({
     type: "search-results",
@@ -76,8 +93,38 @@ function handleSearch(query: string) {
       query,
       results,
       summary,
+      aiEnabled: aiService.isAvailable(),
     },
   });
+}
+
+function handleAIConfiguration(apiKey?: string) {
+  if (apiKey) {
+    aiService.initialize(apiKey);
+    if (typeof window !== "undefined") {
+      localStorage.setItem("openai_api_key", apiKey);
+    }
+    penpot.ui.sendMessage({
+      type: "ai-configured",
+      payload: {
+        success: true,
+        enabled: aiService.isAvailable(),
+      },
+    });
+  } else {
+    // Clear API key
+    if (typeof window !== "undefined") {
+      localStorage.removeItem("openai_api_key");
+    }
+    aiService.initialize();
+    penpot.ui.sendMessage({
+      type: "ai-configured",
+      payload: {
+        success: true,
+        enabled: false,
+      },
+    });
+  }
 }
 
 function handleApply(message: ApplyTraitsMessage) {
@@ -347,7 +394,9 @@ function handleResize(message: ResizeWindowMessage) {
   penpot.ui.resize(width, height);
 }
 
+// Legacy function kept for backwards compatibility, but now handled by AI service
 function buildResultSummary(query: string, results: Example[]): string {
+  // This is now a fallback - AI service handles summaries
   if (!results.length) {
     return `I couldn't find a strong match for "${query}". Try adding the page type or mood you're going for.`;
   }

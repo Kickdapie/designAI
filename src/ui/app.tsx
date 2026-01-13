@@ -39,6 +39,9 @@ export const App: React.FC = () => {
   );
   const [isLoading, setIsLoading] = useState(false);
   const [isMinimized, setIsMinimized] = useState(false);
+  const [aiEnabled, setAiEnabled] = useState(false);
+  const [showAISettings, setShowAISettings] = useState(false);
+  const [apiKeyInput, setApiKeyInput] = useState("");
   const chatEndRef = useRef<HTMLDivElement | null>(null);
   const fallbackTimerRef = useRef<number | null>(null);
   const handshakeRef = useRef(false);
@@ -89,11 +92,29 @@ export const App: React.FC = () => {
 
           setExamples(resultList);
           setSelectedExample(resultList[0] ?? null);
+          
+          // Update AI status
+          if (payload?.aiEnabled !== undefined) {
+            setAiEnabled(payload.aiEnabled);
+          }
 
           if (message.type === "search-results") {
             setIsLoading(false);
             if (payload?.summary) {
               pushAssistantMessage(payload.summary);
+            }
+          }
+          break;
+        }
+        case "ai-configured": {
+          const payload = message.payload as { success: boolean; enabled: boolean } | undefined;
+          if (payload) {
+            setAiEnabled(payload.enabled);
+            setShowAISettings(false);
+            if (payload.enabled) {
+              pushAssistantMessage("✨ AI features enabled! I can now provide smarter search results and recommendations.");
+            } else {
+              pushAssistantMessage("AI features disabled. Using keyword-based search.");
             }
           }
           break;
@@ -272,6 +293,21 @@ export const App: React.FC = () => {
     sendToPlugin(message);
   }, [isMinimized, sendToPlugin]);
 
+  const handleSaveAPIKey = useCallback(() => {
+    sendToPlugin({
+      type: "configure-ai",
+      payload: { apiKey: apiKeyInput.trim() || undefined },
+    });
+  }, [apiKeyInput, sendToPlugin]);
+
+  const handleClearAPIKey = useCallback(() => {
+    setApiKeyInput("");
+    sendToPlugin({
+      type: "configure-ai",
+      payload: { apiKey: undefined },
+    });
+  }, [sendToPlugin]);
+
   const collectionSummary = useMemo(() => collection.length, [collection.length]);
 
   return (
@@ -281,23 +317,106 @@ export const App: React.FC = () => {
           <div>
             <div className="badge-lab">Penpot Plug-in Prototype</div>
             <h1>Design Discovery Assistant</h1>
+            {aiEnabled && (
+              <span className="ai-badge" title="AI-powered search enabled">
+                ✨ AI Enabled
+              </span>
+            )}
           </div>
-          <button
-            className="resize-toggle"
-            type="button"
-            onClick={handleToggleSize}
-            aria-label={isMinimized ? "Expand window" : "Minimize window"}
-            title={isMinimized ? "Expand window" : "Minimize window"}
-          >
-            {isMinimized ? "⛶" : "⊟"}
-          </button>
+          <div style={{ display: "flex", gap: "8px", alignItems: "center" }}>
+            {!isMinimized && (
+              <button
+                className="secondary-button"
+                type="button"
+                onClick={() => setShowAISettings(!showAISettings)}
+                title="Configure AI settings"
+                style={{ fontSize: "12px", padding: "4px 8px" }}
+              >
+                {aiEnabled ? "⚙️ AI Settings" : "🤖 Enable AI"}
+              </button>
+            )}
+            <button
+              className="resize-toggle"
+              type="button"
+              onClick={handleToggleSize}
+              aria-label={isMinimized ? "Expand window" : "Minimize window"}
+              title={isMinimized ? "Expand window" : "Minimize window"}
+            >
+              {isMinimized ? "⛶" : "⊟"}
+            </button>
+          </div>
         </div>
         {!isMinimized && (
-          <p>
-            Describe what you want to build, explore real-world references, and
-            collect palettes, typography, or layout blueprints directly onto your
-            canvas.
-          </p>
+          <>
+            <p>
+              Describe what you want to build, explore real-world references, and
+              collect palettes, typography, or layout blueprints directly onto your
+              canvas.
+            </p>
+            {showAISettings && (
+              <div className="ai-settings" style={{ 
+                marginTop: "16px", 
+                padding: "16px", 
+                background: "rgba(255, 255, 255, 0.05)", 
+                borderRadius: "8px",
+                border: "1px solid rgba(255, 255, 255, 0.1)"
+              }}>
+                <h4 style={{ margin: "0 0 12px 0", fontSize: "14px", fontWeight: "600" }}>
+                  AI Configuration
+                </h4>
+                <p style={{ margin: "0 0 12px 0", fontSize: "12px", opacity: 0.8 }}>
+                  Add your OpenAI API key to enable intelligent search, semantic understanding, and AI-generated summaries.
+                  Your key is stored locally and never sent to our servers.
+                </p>
+                <div style={{ display: "flex", gap: "8px", alignItems: "center" }}>
+                  <input
+                    type="password"
+                    placeholder="sk-..."
+                    value={apiKeyInput}
+                    onChange={(e) => setApiKeyInput(e.target.value)}
+                    style={{
+                      flex: 1,
+                      padding: "8px 12px",
+                      background: "rgba(0, 0, 0, 0.3)",
+                      border: "1px solid rgba(255, 255, 255, 0.2)",
+                      borderRadius: "4px",
+                      color: "white",
+                      fontSize: "12px",
+                    }}
+                  />
+                  <button
+                    className="primary-button"
+                    type="button"
+                    onClick={handleSaveAPIKey}
+                    style={{ fontSize: "12px", padding: "8px 16px" }}
+                  >
+                    Save
+                  </button>
+                  {aiEnabled && (
+                    <button
+                      className="secondary-button"
+                      type="button"
+                      onClick={handleClearAPIKey}
+                      style={{ fontSize: "12px", padding: "8px 16px" }}
+                    >
+                      Disable
+                    </button>
+                  )}
+                </div>
+                <p style={{ margin: "8px 0 0 0", fontSize: "11px", opacity: 0.6 }}>
+                  Get your API key from{" "}
+                  <a 
+                    href="https://platform.openai.com/api-keys" 
+                    target="_blank" 
+                    rel="noopener noreferrer"
+                    style={{ color: "#4A9EFF" }}
+                  >
+                    platform.openai.com/api-keys
+                  </a>
+                </p>
+              </div>
+            )}
+          </>
         )}
       </header>
 

@@ -68,6 +68,7 @@ export type ExampleSearchResponse = {
   query: string;
   results: Example[];
   summary?: string;
+  aiEnabled?: boolean;
 };
 
 export type ApplyTraitsMessage = {
@@ -94,10 +95,16 @@ export type UiReadyMessage = {
   type: "ui-ready";
 };
 
+export type ConfigureAIMessage = {
+  type: "configure-ai";
+  payload?: { apiKey?: string };
+};
+
 export type PluginMessage =
   | ApplyTraitsMessage
   | SearchExamplesMessage
-  | UiReadyMessage;
+  | UiReadyMessage
+  | ConfigureAIMessage;
 
 // Layout automation types
 export type ViewportInfo = {
