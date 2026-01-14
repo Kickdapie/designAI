@@ -1455,6 +1455,31 @@
       }
     }
     /**
+     * Generate intelligent layout specs based on element descriptions
+     * Uses AI to understand what the element represents and creates appropriate layouts
+     */
+    async generateIntelligentLayout(elementTraits, viewport, colors, fonts) {
+      if (!this.isAvailable() || elementTraits.length === 0) {
+        return null;
+      }
+      try {
+        const elementInfo = elementTraits.map((trait) => ({
+          label: trait.label,
+          description: trait.description,
+          layoutHints: trait.layoutHints || [],
+          colors: trait.colors || [],
+          fonts: trait.fonts || []
+        }));
+        const prompt = this.buildLayoutGenerationPrompt(elementInfo, viewport, colors, fonts);
+        const response = await this.callLLM(prompt);
+        const layoutSpecs = this.parseLayoutSpecsResponse(response, viewport);
+        return layoutSpecs.length > 0 ? layoutSpecs : null;
+      } catch (error) {
+        console.warn("[AI Service] Intelligent layout generation failed:", error);
+        return null;
+      }
+    }
+    /**
      * Use AI to semantically re-rank search results
      */
     async semanticRerank(query, initialResults, allExamples) {
@@ -1582,6 +1607,90 @@ Respond with just the numbers in order of relevance (e.g., "3, 1, 5, 2, 4").`;
         }
       });
       return reordered;
+    }
+    /**
+     * Build prompt for intelligent layout generation
+     */
+    buildLayoutGenerationPrompt(elementInfo, viewport, availableColors, availableFonts) {
+      const elementDescriptions = elementInfo.map(
+        (el, idx) => `Element ${idx + 1}: "${el.label}"
+Description: ${el.description}
+Layout hints: ${el.layoutHints.join(", ") || "none"}
+Colors: ${el.colors.join(", ") || "none"}
+Fonts: ${el.fonts.join(", ") || "none"}`
+      ).join("\n\n");
+      const centerX = Math.round(viewport.centerX);
+      const centerY = Math.round(viewport.centerY);
+      const width = Math.round(viewport.width * 0.8);
+      const height = Math.round(viewport.height * 0.6);
+      const startX = Math.round(centerX - width / 2);
+      const startY = Math.round(centerY - height / 2);
+      return `You are a design layout generator. Based on the element descriptions below, generate a JSON array of layout specifications.
+
+Viewport: ${viewport.width}x${viewport.height}, center at (${centerX}, ${centerY})
+Available area: ${width}x${height} starting at (${startX}, ${startY})
+Available colors: ${availableColors.join(", ")}
+Available fonts: ${availableFonts.join(", ")}
+
+Elements to create:
+${elementDescriptions}
+
+Generate a JSON array of layout specs. Each spec should be:
+{
+  "type": "rectangle" | "text",
+  "x": number (absolute position),
+  "y": number (absolute position),
+  "width": number,
+  "height": number,
+  "color": "#hex" (optional, for rectangles or text fill),
+  "font": "font name" (optional, for text),
+  "text": "content" (required for text)
+}
+
+Rules:
+- Create layouts that match the element descriptions semantically
+- Use meaningful text content (not generic "Headline" or "Content")
+- Position elements appropriately based on layout hints
+- Use available colors and fonts intelligently
+- Return ONLY valid JSON array, no other text
+- Keep shapes within the available area (${startX} to ${startX + width}, ${startY} to ${startY + height})
+
+Example format:
+[{"type":"text","x":100,"y":200,"width":400,"height":80,"text":"Welcome to Our Platform","color":"#1A1A1A","font":"Sans-serif"},{"type":"rectangle","x":100,"y":300,"width":400,"height":300,"color":"#E2E8F0"}]`;
+    }
+    /**
+     * Parse AI response into LayoutSpec array
+     */
+    parseLayoutSpecsResponse(response, viewport) {
+      try {
+        let jsonStr = response.trim();
+        jsonStr = jsonStr.replace(/^```json\n?/i, "").replace(/^```\n?/i, "").replace(/\n?```$/i, "");
+        const jsonMatch = jsonStr.match(/\[[\s\S]*\]/);
+        if (jsonMatch) {
+          jsonStr = jsonMatch[0];
+        }
+        const parsed = JSON.parse(jsonStr);
+        if (!Array.isArray(parsed)) {
+          return [];
+        }
+        return parsed.filter((spec) => {
+          return spec && typeof spec === "object" && (spec.type === "rectangle" || spec.type === "text") && typeof spec.x === "number" && typeof spec.y === "number" && typeof spec.width === "number" && typeof spec.height === "number";
+        }).map((spec) => ({
+          type: spec.type,
+          x: Math.round(spec.x),
+          y: Math.round(spec.y),
+          width: Math.round(spec.width),
+          height: Math.round(spec.height),
+          color: spec.color,
+          font: spec.font,
+          text: spec.text
+        })).filter((spec) => {
+          return spec.x >= 0 && spec.y >= 0 && spec.width > 0 && spec.height > 0;
+        });
+      } catch (error) {
+        console.warn("[AI Service] Failed to parse layout specs:", error, response);
+        return [];
+      }
     }
     /**
      * Fallback summary when AI is unavailable
@@ -1894,7 +2003,7 @@ Respond with just the numbers in order of relevance (e.g., "3, 1, 5, 2, 4").`;
       });
     }
   }
-  function handleApply(message) {
+  async function handleApply(message) {
     console.log("[Plugin] handleApply called with:", message);
     const traits = message.payload?.traits ?? [];
     console.log("[Plugin] Traits count:", traits.length);
@@ -1972,23 +2081,39 @@ Respond with just the numbers in order of relevance (e.g., "3, 1, 5, 2, 4").`;
     let layoutCreated = false;
     let createdShapes = [];
     if (allLayoutHints.length > 0) {
-      const pattern = parseLayoutHints(allLayoutHints);
-      if (pattern.type !== "unknown") {
-        const viewport = getViewportDimensions();
-        const layoutSpecs = generateLayoutSpecs(pattern, viewport, allColors, allFonts);
-        if (layoutSpecs.length > 0) {
-          if (selection.length === 0 || !arrangeExistingShapes(selection, layoutSpecs)) {
-            createdShapes = createLayoutShapes(layoutSpecs, allColors, allFonts);
-            layoutCreated = createdShapes.length > 0;
-            if (layoutCreated) {
-              applyColorsToShapes(createdShapes, allColors);
-              applyFontsToShapes(createdShapes, allFonts);
-            }
-          } else {
-            layoutCreated = true;
-            applyColorsToShapes(selection, allColors);
-            applyFontsToShapes(selection, allFonts);
+      const viewport = getViewportDimensions();
+      let layoutSpecs = [];
+      if (elementTraits.length > 0 && aiService.isAvailable()) {
+        const aiLayoutSpecs = await aiService.generateIntelligentLayout(
+          elementTraits,
+          viewport,
+          allColors,
+          allFonts
+        );
+        if (aiLayoutSpecs && aiLayoutSpecs.length > 0) {
+          layoutSpecs = aiLayoutSpecs;
+          console.log("[Plugin] Using AI-generated layout specs:", layoutSpecs.length);
+        }
+      }
+      if (layoutSpecs.length === 0) {
+        const pattern = parseLayoutHints(allLayoutHints);
+        if (pattern.type !== "unknown") {
+          layoutSpecs = generateLayoutSpecs(pattern, viewport, allColors, allFonts);
+          console.log("[Plugin] Using pattern-based layout specs:", layoutSpecs.length);
+        }
+      }
+      if (layoutSpecs.length > 0) {
+        if (selection.length === 0 || !arrangeExistingShapes(selection, layoutSpecs)) {
+          createdShapes = createLayoutShapes(layoutSpecs, allColors, allFonts);
+          layoutCreated = createdShapes.length > 0;
+          if (layoutCreated) {
+            applyColorsToShapes(createdShapes, allColors);
+            applyFontsToShapes(createdShapes, allFonts);
           }
+        } else {
+          layoutCreated = true;
+          applyColorsToShapes(selection, allColors);
+          applyFontsToShapes(selection, allFonts);
         }
       }
     }

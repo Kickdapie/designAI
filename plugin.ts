@@ -127,7 +127,7 @@ function handleAIConfiguration(apiKey?: string) {
   }
 }
 
-function handleApply(message: ApplyTraitsMessage) {
+async function handleApply(message: ApplyTraitsMessage) {
   console.log("[Plugin] handleApply called with:", message);
   const traits = message.payload?.traits ?? [];
   console.log("[Plugin] Traits count:", traits.length);
@@ -224,30 +224,51 @@ function handleApply(message: ApplyTraitsMessage) {
 
   // Try to create/arrange layout if layout hints are present
   if (allLayoutHints.length > 0) {
-    const pattern = parseLayoutHints(allLayoutHints);
+    const viewport = getViewportDimensions();
+    let layoutSpecs: LayoutSpec[] = [];
     
-    if (pattern.type !== "unknown") {
-      const viewport = getViewportDimensions();
-      const layoutSpecs = generateLayoutSpecs(pattern, viewport, allColors, allFonts);
+    // Try AI-powered layout generation first if element traits are present
+    if (elementTraits.length > 0 && aiService.isAvailable()) {
+      const aiLayoutSpecs = await aiService.generateIntelligentLayout(
+        elementTraits,
+        viewport,
+        allColors,
+        allFonts
+      );
+      
+      if (aiLayoutSpecs && aiLayoutSpecs.length > 0) {
+        layoutSpecs = aiLayoutSpecs;
+        console.log("[Plugin] Using AI-generated layout specs:", layoutSpecs.length);
+      }
+    }
+    
+    // Fallback to pattern-based generation if AI didn't produce results
+    if (layoutSpecs.length === 0) {
+      const pattern = parseLayoutHints(allLayoutHints);
+      
+      if (pattern.type !== "unknown") {
+        layoutSpecs = generateLayoutSpecs(pattern, viewport, allColors, allFonts);
+        console.log("[Plugin] Using pattern-based layout specs:", layoutSpecs.length);
+      }
+    }
 
-      if (layoutSpecs.length > 0) {
-        // If no selection or incompatible selection, create new shapes
-        if (selection.length === 0 || !arrangeExistingShapes(selection, layoutSpecs)) {
-          createdShapes = createLayoutShapes(layoutSpecs, allColors, allFonts);
-          layoutCreated = createdShapes.length > 0;
-          
-          if (layoutCreated) {
-            // Apply colors and fonts to newly created shapes
-            applyColorsToShapes(createdShapes, allColors);
-            applyFontsToShapes(createdShapes, allFonts);
-          }
-        } else {
-          // Successfully arranged existing shapes
-          layoutCreated = true;
-          // Apply colors and fonts to arranged shapes
-          applyColorsToShapes(selection, allColors);
-          applyFontsToShapes(selection, allFonts);
+    if (layoutSpecs.length > 0) {
+      // If no selection or incompatible selection, create new shapes
+      if (selection.length === 0 || !arrangeExistingShapes(selection, layoutSpecs)) {
+        createdShapes = createLayoutShapes(layoutSpecs, allColors, allFonts);
+        layoutCreated = createdShapes.length > 0;
+        
+        if (layoutCreated) {
+          // Apply colors and fonts to newly created shapes
+          applyColorsToShapes(createdShapes, allColors);
+          applyFontsToShapes(createdShapes, allFonts);
         }
+      } else {
+        // Successfully arranged existing shapes
+        layoutCreated = true;
+        // Apply colors and fonts to arranged shapes
+        applyColorsToShapes(selection, allColors);
+        applyFontsToShapes(selection, allFonts);
       }
     }
   }
