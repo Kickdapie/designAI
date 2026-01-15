@@ -45,7 +45,10 @@ jobs:
           cp -r dist ../deploy/
           cp index.html manifest.json ../deploy/
           if [ -d "assets" ]; then cp -r assets ../deploy/; fi
+          # Copy images from design-mentor-ai/images if it exists
           if [ -d "images" ]; then cp -r images ../deploy/; fi
+          # Also check for images at repository root (in case they're there)
+          if [ -d "../images" ] && [ ! -d "../deploy/images" ]; then cp -r ../images ../deploy/; fi
           if [ ! -f "../deploy/.nojekyll" ]; then touch ../deploy/.nojekyll; fi
 
       - name: Setup Pages
