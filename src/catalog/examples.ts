@@ -89,8 +89,8 @@ export const EXAMPLE_DATASET: Example[] = [
     palette: ["#FFFFFF", "#F6F1EE", "#1A1A1A"],
     fonts: ["Serif", "Sans-serif"],
     layoutTags: ["Two-column layout", "Portrait image left", "Large headline right", "Centered vertical rhythm"],
-    thumbnail: "https://images.unsplash.com/photo-1507207611509-ec012433a691?auto=format&fit=crop&w=400&q=60",
-    preview: "https://images.unsplash.com/photo-1507207611509-ec012433a691?auto=format&fit=crop&w=800&q=60",
+    thumbnail: "/images/ashley-cortez.jpg",
+    preview: "/images/ashley-cortez.jpg",
     elements: [
       {
         id: "writer-portfolio-about-hero",
@@ -127,8 +127,8 @@ export const EXAMPLE_DATASET: Example[] = [
     palette: ["#FFFFFF", "#B6D76A", "#F2B24C", "#9EDADF", "#D0D0D0", "#1A1A1A"],
     fonts: ["Sans-serif"],
     layoutTags: ["Two-column layout", "Circular portrait image", "Large name headline", "Short bio paragraph", "Circular navigation buttons"],
-    thumbnail: "https://images.unsplash.com/photo-1523875194686-e310a928370f?auto=format&fit=crop&w=400&q=60",
-    preview: "https://images.unsplash.com/photo-1523875194686-e310a928370f?auto=format&fit=crop&w=800&q=60",
+    thumbnail: "/images/dalya-baron.jpg",
+    preview: "/images/dalya-baron.jpg",
     elements: [
       {
         id: "academic-profile-hero",
@@ -166,8 +166,8 @@ export const EXAMPLE_DATASET: Example[] = [
     palette: ["#FFFFFF", "#000000", "#F5F5F5", "#CCCCCC"],
     fonts: ["Serif", "Sans-serif"],
     layoutTags: ["Single main content column", "Right sidebar", "Inline profile image", "Long-form text", "Widget-based layout"],
-    thumbnail: "https://images.unsplash.com/photo-1499750310107-5fcd61f872a6?auto=format&fit=crop&w=400&q=60",
-    preview: "https://images.unsplash.com/photo-1499750310107-5fcd61f872a6?auto=format&fit=crop&w=800&q=60",
+    thumbnail: "/images/Default-Theme.jpg",
+    preview: "/images/Default-Theme.jpg",
     elements: [
       {
         id: "default-blog-about-layout",
@@ -417,8 +417,8 @@ export const EXAMPLE_DATASET: Example[] = [
     palette: ["#2E2B6F", "#3B3A8F", "#6A3F7A", "#C63A3A", "#E96B2C", "#F5B23C", "#FFFFFF"],
     fonts: ["Sans-serif bold", "Sans-serif regular"],
     layoutTags: ["Full-width gradient hero", "Layered cloud shapes", "Minimal navigation", "Primary and secondary CTAs"],
-    thumbnail: "https://images.unsplash.com/photo-1460925895917-afdab827c52f?auto=format&fit=crop&w=400&q=60",
-    preview: "https://images.unsplash.com/photo-1460925895917-afdab827c52f?auto=format&fit=crop&w=900&q=60",
+    thumbnail: "/images/istockphoto-2251958429-2048x2048.jpg",
+    preview: "/images/istockphoto-2251958429-2048x2048.jpg",
     elements: [
       {
         id: "gradient-cloud-landing-hero",
@@ -458,8 +458,8 @@ export const EXAMPLE_DATASET: Example[] = [
     palette: ["#FFFFFF", "#111111", "#777777", "#E85C4A", "#F2F2F2"],
     fonts: ["Sans-serif bold", "Sans-serif regular"],
     layoutTags: ["Centered site title", "Thin horizontal navigation", "Left-aligned main content", "Large featured image", "Right-hand sidebar", "Author bio card"],
-    thumbnail: "https://images.unsplash.com/photo-1499750310107-5fcd61f872a6?auto=format&fit=crop&w=400&q=60",
-    preview: "https://images.unsplash.com/photo-1499750310107-5fcd61f872a6?auto=format&fit=crop&w=900&q=60",
+    thumbnail: "/images/make-a-blog.png",
+    preview: "/images/make-a-blog.png",
     elements: [
       {
         id: "minimal-blog-magazine-layout",
@@ -500,8 +500,8 @@ export const EXAMPLE_DATASET: Example[] = [
     palette: ["#FAF7F4", "#EADFD6", "#C9A98B", "#000000", "#FFFFFF"],
     fonts: ["Handwritten script", "Clean sans-serif"],
     layoutTags: ["Top announcement bar", "Centered handwritten-style logo", "Minimal navigation with icons", "Hero section featuring brand owner", "Grid-based product previews"],
-    thumbnail: "https://images.unsplash.com/photo-1441986300917-64674bd600d8?auto=format&fit=crop&w=400&q=60",
-    preview: "https://images.unsplash.com/photo-1441986300917-64674bd600d8?auto=format&fit=crop&w=900&q=60",
+    thumbnail: "/images/small-business-websites-alyce-alexandra-oca20.webp",
+    preview: "/images/small-business-websites-alyce-alexandra-oca20.webp",
     elements: [
       {
         id: "personal-brand-ecommerce-lifestyle",
@@ -541,10 +541,8 @@ export const EXAMPLE_DATASET: Example[] = [
     palette: ["#4DB3E6", "#F4C430", "#E74C3C", "#8B1A1A", "#FFFFFF", "#1E1E1E"],
     fonts: ["Sans-serif"],
     layoutTags: ["Illustrated gradient hero", "Layered cloud graphics", "Top navigation with search bar", "Left-side login panel", "Two-column About Us section", "Icon-based feature strip"],
-    thumbnail:
-      "https://images.unsplash.com/photo-1487058792275-0ad4aaf24ca7?auto=format&fit=crop&w=400&q=60",
-    preview:
-      "https://images.unsplash.com/photo-1487058792275-0ad4aaf24ca7?auto=format&fit=crop&w=900&q=60",
+    thumbnail: "/images/istockphoto-1145896481-2048x2048.jpg",
+    preview: "/images/istockphoto-1145896481-2048x2048.jpg",
     elements: [
       {
         id: "colorful-cloud-hero-business-layout-element",
@@ -584,10 +582,8 @@ export const EXAMPLE_DATASET: Example[] = [
     palette: ["#8FAF1F", "#0FA3B1", "#F2C300", "#E53935", "#4A4A4A", "#FFFFFF"],
     fonts: ["Sans-serif"],
     layoutTags: ["Full-width pricing grid", "Color-coded plan cards", "Checklist icons for feature comparison", "Centered plan titles", "Strong call-to-action buttons", "Conversion-oriented design"],
-    thumbnail:
-      "https://images.unsplash.com/photo-1522071820081-009f3129cbfb?auto=format&fit=crop&w=400&q=60",
-    preview:
-      "https://images.unsplash.com/photo-1522071820081-009f3129cbfb?auto=format&fit=crop&w=900&q=60",
+    thumbnail: "/images/istockphoto-1165117159-2048x2048.jpg",
+    preview: "/images/istockphoto-1165117159-2048x2048.jpg",
     elements: [
       {
         id: "bold-multicolor-pricing-grid-element",
@@ -626,10 +622,8 @@ export const EXAMPLE_DATASET: Example[] = [
     palette: ["#2E3A3A", "#8FBAD3", "#EAF3F8", "#FFFFFF", "#6C8FA5"],
     fonts: ["Sans-serif"],
     layoutTags: ["Centered card layout", "Rounded corners", "Blurred hero background", "Horizontal navigation bar", "Sidebar navigation list", "Icon-based feature row"],
-    thumbnail:
-      "https://images.unsplash.com/photo-1517486808906-6ca8b3f04846?auto=format&fit=crop&w=400&q=60",
-    preview:
-      "https://images.unsplash.com/photo-1517486808906-6ca8b3f04846?auto=format&fit=crop&w=900&q=60",
+    thumbnail: "/images/istockphoto-1165571247-1024x1024.jpg",
+    preview: "/images/istockphoto-1165571247-1024x1024.jpg",
     elements: [
       {
         id: "rounded-glass-about-layout-element",
@@ -669,10 +663,8 @@ export const EXAMPLE_DATASET: Example[] = [
     palette: ["#F5F5F5", "#E8E8E8", "#4A90E2", "#2C3E50", "#FFFFFF", "#1A1A1A"],
     fonts: ["Sans-serif"],
     layoutTags: ["Tabbed interface", "Layered card design", "Color-coded sections", "Centered content", "Icon-based navigation", "Clear visual hierarchy"],
-    thumbnail:
-      "https://images.unsplash.com/photo-1460925895917-afdab827c52f?auto=format&fit=crop&w=400&q=60",
-    preview:
-      "https://images.unsplash.com/photo-1460925895917-afdab827c52f?auto=format&fit=crop&w=900&q=60",
+    thumbnail: "/images/istockphoto-1165910056-2048x2048.jpg",
+    preview: "/images/istockphoto-1165910056-2048x2048.jpg",
     elements: [
       {
         id: "layered-tabbed-about-card-element",
@@ -719,10 +711,8 @@ export const EXAMPLE_DATASET: Example[] = [
     ],
     fonts: ["Sans-serif"],
     layoutTags: ["Rounded container-based layout", "Hero carousel with arrow navigation", "High-contrast callout text in hero", "Three-column card section", "Consistent border radius", "Soft gradients"],
-    thumbnail:
-      "https://images.unsplash.com/photo-1498050108023-c5249f4df085?auto=format&fit=crop&w=400&q=60",
-    preview:
-      "https://images.unsplash.com/photo-1498050108023-c5249f4df085?auto=format&fit=crop&w=900&q=60",
+    thumbnail: "/images/istockphoto-1168448389-2048x2048.jpg",
+    preview: "/images/istockphoto-1168448389-2048x2048.jpg",
     elements: [
       {
         id: "rounded-portfolio-slider-layout-element",
@@ -776,10 +766,8 @@ export const EXAMPLE_DATASET: Example[] = [
     ],
     fonts: ["Sans-serif bold", "Sans-serif regular"],
     layoutTags: ["Full-width hero slider", "Green gradient background", "Numbered content sections", "Three-column feature strip", "Icon-based contact bar"],
-    thumbnail:
-      "https://images.unsplash.com/photo-1551288049-bebda4e38f71?auto=format&fit=crop&w=400&q=60",
-    preview:
-      "https://images.unsplash.com/photo-1551288049-bebda4e38f71?auto=format&fit=crop&w=900&q=60",
+    thumbnail: "/images/istockphoto-1169767728-2048x2048.jpg",
+    preview: "/images/istockphoto-1169767728-2048x2048.jpg",
     elements: [
       {
         id: "green-idea-slider-layout-element",
@@ -834,10 +822,8 @@ export const EXAMPLE_DATASET: Example[] = [
     ],
     fonts: ["Sans-serif bold", "Sans-serif regular"],
     layoutTags: ["Rounded glassmorphism hero", "Gradient background with world map", "Repeating arrow graphics", "Two-column About Us", "Left sidebar navigation", "Minimal icon row"],
-    thumbnail:
-      "https://images.unsplash.com/photo-1551288049-bebda4e38f71?auto=format&fit=crop&w=400&q=60",
-    preview:
-      "https://images.unsplash.com/photo-1551288049-bebda4e38f71?auto=format&fit=crop&w=900&q=60",
+    thumbnail: "/images/istockphoto-1206907140-1024x1024.jpg",
+    preview: "/images/istockphoto-1206907140-1024x1024.jpg",
     elements: [
       {
         id: "arrow-flow-glass-header-layout-element",
@@ -893,10 +879,8 @@ export const EXAMPLE_DATASET: Example[] = [
     ],
     fonts: ["Sans-serif bold", "Sans-serif regular"],
     layoutTags: ["Wide rounded hero container", "Vertical line texture background", "Prominent search bar", "Right-aligned globe illustration", "Icon-based feature cards", "Two-column About Us"],
-    thumbnail:
-      "https://images.unsplash.com/photo-1551288049-bebda4e38f71?auto=format&fit=crop&w=400&q=60",
-    preview:
-      "https://images.unsplash.com/photo-1551288049-bebda4e38f71?auto=format&fit=crop&w=900&q=60",
+    thumbnail: "/images/istockphoto-1209896633-2048x2048.jpg",
+    preview: "/images/istockphoto-1209896633-2048x2048.jpg",
     elements: [
       {
         id: "blue-globe-search-header-layout-element",
@@ -953,10 +937,8 @@ export const EXAMPLE_DATASET: Example[] = [
     ],
     fonts: ["Sans-serif bold", "Sans-serif regular"],
     layoutTags: ["Diagonal striped background", "Row of large circular icon cards", "Gradient blue content panel", "Dotted globe graphic", "Two-column About Us", "Dark feature strip"],
-    thumbnail:
-      "https://images.unsplash.com/photo-1551288049-bebda4e38f71?auto=format&fit=crop&w=400&q=60",
-    preview:
-      "https://images.unsplash.com/photo-1551288049-bebda4e38f71?auto=format&fit=crop&w=900&q=60",
+    thumbnail: "/images/istockphoto-1210609143-2048x2048.jpg",
+    preview: "/images/istockphoto-1210609143-2048x2048.jpg",
     elements: [
       {
         id: "circular-icon-globe-layout-element",
@@ -1013,10 +995,8 @@ export const EXAMPLE_DATASET: Example[] = [
     ],
     fonts: ["Sans-serif bold", "Sans-serif regular"],
     layoutTags: ["Olive-green navigation", "Rounded hero slider", "Abstract hexagon mosaic", "Glossy circular icon buttons", "Three-column feature section", "Soft cream background"],
-    thumbnail:
-      "https://images.unsplash.com/photo-1551288049-bebda4e38f71?auto=format&fit=crop&w=400&q=60",
-    preview:
-      "https://images.unsplash.com/photo-1551288049-bebda4e38f71?auto=format&fit=crop&w=900&q=60",
+    thumbnail: "/images/istockphoto-1210796733-2048x2048.jpg",
+    preview: "/images/istockphoto-1210796733-2048x2048.jpg",
     elements: [
       {
         id: "hexagon-slider-olive-layout-element",
@@ -1066,10 +1046,8 @@ export const EXAMPLE_DATASET: Example[] = [
     palette: ["#E8F4F8", "#B8D4E3", "#6B9BD1", "#4A7BA7", "#2E5C8A", "#FFFFFF"],
     fonts: ["Sans-serif"],
     layoutTags: ["Centered content", "Gradient mesh background", "Minimal navigation", "Primary CTA button", "Clean typography"],
-    thumbnail:
-      "https://images.unsplash.com/photo-1551288049-bebda4e38f71?auto=format&fit=crop&w=400&q=60",
-    preview:
-      "https://images.unsplash.com/photo-1551288049-bebda4e38f71?auto=format&fit=crop&w=900&q=60",
+    thumbnail: "/images/stock-vector-abstract-wave-futuristic-design-of-landing-page-retro-gradient-mesh-website-design-2559939325.jpg",
+    preview: "/images/stock-vector-abstract-wave-futuristic-design-of-landing-page-retro-gradient-mesh-website-design-2559939325.jpg",
     elements: [
       {
         id: "soft-gradient-hero-landing-element",
@@ -1109,10 +1087,8 @@ export const EXAMPLE_DATASET: Example[] = [
     palette: ["#F2F2F2", "#1F1F1F", "#000000", "#BDBDBD", "#FFFFFF"],
     fonts: ["Sans-serif"],
     layoutTags: ["Top navigation bar", "Oversized hero icon", "Split login and contact forms", "Three-column feature section", "Circular step indicators", "Minimal grayscale palette"],
-    thumbnail:
-      "https://images.unsplash.com/photo-1499750310107-5fef28a66643?auto=format&fit=crop&w=400&q=60",
-    preview:
-      "https://images.unsplash.com/photo-1499750310107-5fef28a66643?auto=format&fit=crop&w=900&q=60",
+    thumbnail: "/images/istockphoto-520244093-2048x2048.jpg",
+    preview: "/images/istockphoto-520244093-2048x2048.jpg",
     elements: [
       {
         id: "minimal-blog-login-landing-element",
@@ -1151,10 +1127,8 @@ export const EXAMPLE_DATASET: Example[] = [
     palette: ["#D6D92B", "#F2F2F2", "#9E9E9E", "#1F1F1F", "#FFFFFF"],
     fonts: ["Sans-serif"],
     layoutTags: ["High-contrast navigation bar", "Centered hero text", "Hero slider indicators", "Rounded feature card grid", "Split login and contact forms", "Accent color highlights"],
-    thumbnail:
-      "https://images.unsplash.com/photo-1504868584819-f8e8b4b6d7e3?auto=format&fit=crop&w=400&q=60",
-    preview:
-      "https://images.unsplash.com/photo-1504868584819-f8e8b4b6d7e3?auto=format&fit=crop&w=900&q=60",
+    thumbnail: "/images/istockphoto-520259653-1024x1024.jpg",
+    preview: "/images/istockphoto-520259653-1024x1024.jpg",
     elements: [
       {
         id: "lime-accent-web-landing-element",
@@ -1193,10 +1167,8 @@ export const EXAMPLE_DATASET: Example[] = [
     palette: ["#C81E1E", "#F2F2F2", "#FFFFFF", "#1F1F1F", "#9E9E9E"],
     fonts: ["Sans-serif"],
     layoutTags: ["Bold red hero banner", "Diagonal ribbon overlays", "Inline login form", "Sectioned business overview", "Stacked blog highlight cards", "Strong contrast CTAs"],
-    thumbnail:
-      "https://images.unsplash.com/photo-1515895307828-95d45c2cbf0a?auto=format&fit=crop&w=400&q=60",
-    preview:
-      "https://images.unsplash.com/photo-1515895307828-95d45c2cbf0a?auto=format&fit=crop&w=900&q=60",
+    thumbnail: "/images/istockphoto-520261927-2048x2048.jpg",
+    preview: "/images/istockphoto-520261927-2048x2048.jpg",
     elements: [
       {
         id: "red-ribbon-cta-corporate-element",
@@ -1235,10 +1207,8 @@ export const EXAMPLE_DATASET: Example[] = [
     palette: ["#5A5A5A", "#2B2B2B", "#FFFFFF", "#9E9E9E", "#000000"],
     fonts: ["Sans-serif"],
     layoutTags: ["Glassmorphism hero banner", "Centered floating callout", "Pill-style navigation tabs", "Three-column service cards", "Circular gallery placeholders", "Dark minimal footer"],
-    thumbnail:
-      "https://images.unsplash.com/photo-1521737604893-d14cc237f11d?auto=format&fit=crop&w=400&q=60",
-    preview:
-      "https://images.unsplash.com/photo-1521737604893-d14cc237f11d?auto=format&fit=crop&w=900&q=60",
+    thumbnail: "/images/istockphoto-588243926-2048x2048.jpg",
+    preview: "/images/istockphoto-588243926-2048x2048.jpg",
     elements: [
       {
         id: "glass-ui-service-landing-element",
@@ -1277,10 +1247,8 @@ export const EXAMPLE_DATASET: Example[] = [
     palette: ["#F04B23", "#8BC34A", "#4BB6E8", "#E6E6E6", "#2E2E2E", "#FFFFFF"],
     fonts: ["Sans-serif"],
     layoutTags: ["Abstract network hero graphic", "Circular focal element", "Top tab navigation", "Left-aligned login panel", "Highlighted content band", "Multi-column feature tiles"],
-    thumbnail:
-      "https://images.unsplash.com/photo-1498050108023-c5249f4df085?auto=format&fit=crop&w=400&q=60",
-    preview:
-      "https://images.unsplash.com/photo-1498050108023-c5249f4df085?auto=format&fit=crop&w=900&q=60",
+    thumbnail: "/images/istockphoto-604360684-2048x2048.jpg",
+    preview: "/images/istockphoto-604360684-2048x2048.jpg",
     elements: [
       {
         id: "network-hero-dashboard-landing-element",
@@ -1319,10 +1287,8 @@ export const EXAMPLE_DATASET: Example[] = [
     palette: ["#1A1A1A", "#4A97B5", "#FFFFFF", "#F2C94C", "#2E2E2E"],
     fonts: ["Sans-serif"],
     layoutTags: ["Dark framed layout", "Panoramic hero image", "Left-aligned login panel", "Multi-column about section", "Icon-based contact links", "Minimal footer navigation"],
-    thumbnail:
-      "https://images.unsplash.com/photo-1492691527719-9d1e07e534b4?auto=format&fit=crop&w=400&q=60",
-    preview:
-      "https://images.unsplash.com/photo-1492691527719-9d1e07e534b4?auto=format&fit=crop&w=900&q=60",
+    thumbnail: "/images/istockphoto-928516162-2048x2048.jpg",
+    preview: "/images/istockphoto-928516162-2048x2048.jpg",
     elements: [
       {
         id: "dark-skyline-about-landing-element",
@@ -1361,10 +1327,8 @@ export const EXAMPLE_DATASET: Example[] = [
     palette: ["#FF6B6B", "#4ECDC4", "#FFE66D", "#95E1D3", "#FFFFFF", "#2C3E50"],
     fonts: ["Sans-serif"],
     layoutTags: ["Illustrated hero graphic", "Circular feature cards", "Hand-drawn style", "Colorful palette", "Structured content sections", "Playful aesthetic"],
-    thumbnail:
-      "https://images.unsplash.com/photo-1551288049-bebda4e38f71?auto=format&fit=crop&w=400&q=60",
-    preview:
-      "https://images.unsplash.com/photo-1551288049-bebda4e38f71?auto=format&fit=crop&w=900&q=60",
+    thumbnail: "/images/istockphoto-1030345124-2048x2048.jpg",
+    preview: "/images/istockphoto-1030345124-2048x2048.jpg",
     elements: [
       {
         id: "illustrated-hero-circle-features-element",
@@ -1403,10 +1367,8 @@ export const EXAMPLE_DATASET: Example[] = [
     palette: ["#E91E63", "#F39C12", "#FFFFFF", "#F2F2F2", "#9E9E9E"],
     fonts: ["Sans-serif"],
     layoutTags: ["Gradient navigation bar", "Centered hero slider", "Minimal headline typography", "Three-column content layout", "Soft card-like section dividers", "Gradient footer accent"],
-    thumbnail:
-      "https://images.unsplash.com/photo-1506905925346-21bda4d32df4?auto=format&fit=crop&w=400&q=60",
-    preview:
-      "https://images.unsplash.com/photo-1506905925346-21bda4d32df4?auto=format&fit=crop&w=900&q=60",
+    thumbnail: "/images/istockphoto-1097005808-2048x2048.jpg",
+    preview: "/images/istockphoto-1097005808-2048x2048.jpg",
     elements: [
       {
         id: "gradient-triangle-portfolio-landing-element",
@@ -1445,10 +1407,8 @@ export const EXAMPLE_DATASET: Example[] = [
     palette: ["#2C3E50", "#3498DB", "#E74C3C", "#FFFFFF", "#ECF0F1"],
     fonts: ["Sans-serif"],
     layoutTags: ["Mosaic hero grid", "Icon-driven feature row", "Three-column informational sections", "Modular block layout", "Editorial style", "Clear visual hierarchy"],
-    thumbnail:
-      "https://images.unsplash.com/photo-1506905925346-21bda4d32df4?auto=format&fit=crop&w=400&q=60",
-    preview:
-      "https://images.unsplash.com/photo-1506905925346-21bda4d32df4?auto=format&fit=crop&w=900&q=60",
+    thumbnail: "/images/istockphoto-1145896438-2048x2048.jpg",
+    preview: "/images/istockphoto-1145896438-2048x2048.jpg",
     elements: [
       {
         id: "mosaic-portfolio-icon-landing-element",
@@ -1660,10 +1620,8 @@ export const ADDITIONAL_EXAMPLES: Example[] = [
     palette: ["#A9714B", "#2F5D50", "#F3E8E3", "#FFFFFF", "#1F1F1F"],
     fonts: ["Serif", "Sans-serif"],
     layoutTags: ["Full-width hero", "Lifestyle photography", "Overlay headline and CTA", "Email signup section", "Stat highlight band", "Alternating image-text sections"],
-    thumbnail:
-      "https://images.unsplash.com/photo-1497613812973-731b5a8cc776?auto=format&fit=crop&w=400&q=60",
-    preview:
-      "https://images.unsplash.com/photo-1497613812973-731b5a8cc776?auto=format&fit=crop&w=900&q=60",
+    thumbnail: "/images/image16.png",
+    preview: "/images/image16.png",
     elements: [
       {
         id: "coaching-brand-hero-stack-element",
@@ -1703,10 +1661,8 @@ export const ADDITIONAL_EXAMPLES: Example[] = [
     palette: ["#1E1F26", "#2E3440", "#FFFFFF", "#C7D2E0", "#9FB3C8"],
     fonts: ["Sans-serif"],
     layoutTags: ["Full-width hero", "Dark gradient background", "Large headline typography", "Icon-based feature list", "Newsletter signup bar", "Testimonial blocks"],
-    thumbnail:
-      "https://images.unsplash.com/photo-1517077304055-6e89abbf09b0?auto=format&fit=crop&w=400&q=60",
-    preview:
-      "https://images.unsplash.com/photo-1517077304055-6e89abbf09b0?auto=format&fit=crop&w=900&q=60",
+    thumbnail: "/images/istockphoto-188055259-2048x2048.jpg",
+    preview: "/images/istockphoto-188055259-2048x2048.jpg",
     elements: [
       {
         id: "corporate-software-landing-element",
@@ -1746,10 +1702,8 @@ export const ADDITIONAL_EXAMPLES: Example[] = [
     palette: ["#2F3A4A", "#4F78A8", "#8DBF3F", "#E6E6E6", "#FFFFFF"],
     fonts: ["Sans-serif"],
     layoutTags: ["Segmented horizontal navigation", "Embedded login form", "Multi-column content grid", "Illustrated feature blocks", "Arrow-based progress indicators", "Dense information layout"],
-    thumbnail:
-      "https://images.unsplash.com/photo-1498050108023-c5249f4df085?auto=format&fit=crop&w=400&q=60",
-    preview:
-      "https://images.unsplash.com/photo-1498050108023-c5249f4df085?auto=format&fit=crop&w=900&q=60",
+    thumbnail: "/images/istockphoto-475461576-2048x2048.jpg",
+    preview: "/images/istockphoto-475461576-2048x2048.jpg",
     elements: [
       {
         id: "enterprise-dashboard-landing-element",
@@ -1788,10 +1742,8 @@ export const ADDITIONAL_EXAMPLES: Example[] = [
     palette: ["#4BB6E8", "#2B2B2B", "#FFFFFF", "#6F6F6F", "#1E88C9"],
     fonts: ["Sans-serif"],
     layoutTags: ["Gradient top navigation", "Wide informational hero", "Split text and illustration", "Icon feature grid", "Newsletter subscription section", "Multi-column utility footer"],
-    thumbnail:
-      "https://images.unsplash.com/photo-1460925895917-afdab827c52f?auto=format&fit=crop&w=400&q=60",
-    preview:
-      "https://images.unsplash.com/photo-1460925895917-afdab827c52f?auto=format&fit=crop&w=900&q=60",
+    thumbnail: "/images/istockphoto-495838160-2048x2048.jpg",
+    preview: "/images/istockphoto-495838160-2048x2048.jpg",
     elements: [
       {
         id: "tech-agency-blue-dark-landing-element",
@@ -1901,10 +1853,8 @@ export const ADDITIONAL_EXAMPLES: Example[] = [
     palette: ["#F2F2F2", "#1F1F1F", "#000000", "#BDBDBD", "#FFFFFF"],
     fonts: ["Sans-serif"],
     layoutTags: ["Top navigation bar", "Oversized hero icon", "Split login and contact forms", "Three-column feature section", "Circular step indicators", "Minimal grayscale palette"],
-    thumbnail:
-      "https://images.unsplash.com/photo-1499750310107-5fef28a66643?auto=format&fit=crop&w=400&q=60",
-    preview:
-      "https://images.unsplash.com/photo-1499750310107-5fef28a66643?auto=format&fit=crop&w=900&q=60",
+    thumbnail: "/images/istockphoto-520244093-2048x2048.jpg",
+    preview: "/images/istockphoto-520244093-2048x2048.jpg",
     elements: [
       {
         id: "minimal-blog-login-landing-element",
@@ -1972,10 +1922,8 @@ export const ADDITIONAL_EXAMPLES: Example[] = [
     palette: ["#D6D92B", "#F2F2F2", "#9E9E9E", "#1F1F1F", "#FFFFFF"],
     fonts: ["Sans-serif"],
     layoutTags: ["High-contrast navigation bar", "Centered hero text", "Hero slider indicators", "Rounded feature card grid", "Split login and contact forms", "Accent color highlights"],
-    thumbnail:
-      "https://images.unsplash.com/photo-1504868584819-f8e8b4b6d7e3?auto=format&fit=crop&w=400&q=60",
-    preview:
-      "https://images.unsplash.com/photo-1504868584819-f8e8b4b6d7e3?auto=format&fit=crop&w=900&q=60",
+    thumbnail: "/images/istockphoto-520259653-1024x1024.jpg",
+    preview: "/images/istockphoto-520259653-1024x1024.jpg",
     elements: [
       {
         id: "lime-accent-web-landing-element",
@@ -2014,10 +1962,8 @@ export const ADDITIONAL_EXAMPLES: Example[] = [
     palette: ["#0E4D45", "#1F6F6B", "#9FC6B4", "#2F8C8C", "#FFFFFF"],
     fonts: ["Sans-serif"],
     layoutTags: ["Oversized hero headline", "Patterned background", "Centered navigation bar", "Two-column text summaries", "Grid-based content cards", "Color-coded sections"],
-    thumbnail:
-      "https://images.unsplash.com/photo-1498050108023-c5249f4df085?auto=format&fit=crop&w=400&q=60",
-    preview:
-      "https://images.unsplash.com/photo-1498050108023-c5249f4df085?auto=format&fit=crop&w=900&q=60",
+    thumbnail: "/images/istockphoto-520261905-2048x2048.jpg",
+    preview: "/images/istockphoto-520261905-2048x2048.jpg",
     elements: [
       {
         id: "green-grid-corporate-blog-element",
@@ -2056,10 +2002,8 @@ export const ADDITIONAL_EXAMPLES: Example[] = [
     palette: ["#2E3B8F", "#DADADA", "#FFFFFF", "#6B7BD1", "#1F1F1F"],
     fonts: ["Sans-serif"],
     layoutTags: ["Circular background motifs", "Hero text slider", "Large circular feature cards", "Multi-column info lists", "Inline login form", "Utility footer with contact details"],
-    thumbnail:
-      "https://images.unsplash.com/photo-1487058792275-0ad4aaf24ca7?auto=format&fit=crop&w=400&q=60",
-    preview:
-      "https://images.unsplash.com/photo-1487058792275-0ad4aaf24ca7?auto=format&fit=crop&w=900&q=60",
+    thumbnail: "/images/istockphoto-520261915-2048x2048.jpg",
+    preview: "/images/istockphoto-520261915-2048x2048.jpg",
     elements: [
       {
         id: "bubble-ui-corporate-landing-element",
@@ -2098,10 +2042,8 @@ export const ADDITIONAL_EXAMPLES: Example[] = [
     palette: ["#1E73B8", "#D1D1D1", "#FFFFFF", "#2E2E2E", "#2C2F6B"],
     fonts: ["Sans-serif"],
     layoutTags: ["Bold hero banner", "Inline login form", "Newsletter subscription bar", "Three-column content layout", "Stacked blog cards", "Utility footer with contact info"],
-    thumbnail:
-      "https://images.unsplash.com/photo-1487058792275-0ad4aaf24ca7?auto=format&fit=crop&w=400&q=60",
-    preview:
-      "https://images.unsplash.com/photo-1487058792275-0ad4aaf24ca7?auto=format&fit=crop&w=900&q=60",
+    thumbnail: "/images/istockphoto-520261923-2048x2048.jpg",
+    preview: "/images/istockphoto-520261923-2048x2048.jpg",
     elements: [
       {
         id: "blue-cta-blog-login-landing-element",
@@ -2168,10 +2110,8 @@ export const ADDITIONAL_EXAMPLES: Example[] = [
     palette: ["#C81E1E", "#F2F2F2", "#FFFFFF", "#1F1F1F", "#9E9E9E"],
     fonts: ["Sans-serif"],
     layoutTags: ["Bold red hero banner", "Diagonal ribbon overlays", "Inline login form", "Sectioned business overview", "Stacked blog highlight cards", "Strong contrast CTAs"],
-    thumbnail:
-      "https://images.unsplash.com/photo-1515895307828-95d45c2cbf0a?auto=format&fit=crop&w=400&q=60",
-    preview:
-      "https://images.unsplash.com/photo-1515895307828-95d45c2cbf0a?auto=format&fit=crop&w=900&q=60",
+    thumbnail: "/images/istockphoto-520261927-2048x2048.jpg",
+    preview: "/images/istockphoto-520261927-2048x2048.jpg",
     elements: [
       {
         id: "red-ribbon-cta-corporate-element",
@@ -2210,10 +2150,8 @@ export const ADDITIONAL_EXAMPLES: Example[] = [
     palette: ["#BFE8EA", "#EDEDED", "#FFFFFF", "#1F1F1F", "#9E9E9E"],
     fonts: ["Sans-serif"],
     layoutTags: ["Dual angled hero panels", "Centered hero slider indicators", "Sectioned business overview", "Three-column blog card grid", "High-contrast CTA buttons", "Minimal decorative accents"],
-    thumbnail:
-      "https://images.unsplash.com/photo-1506905925346-21bda4d32df4?auto=format&fit=crop&w=400&q=60",
-    preview:
-      "https://images.unsplash.com/photo-1506905925346-21bda4d32df4?auto=format&fit=crop&w=900&q=60",
+    thumbnail: "/images/istockphoto-520261931-2048x2048.jpg",
+    preview: "/images/istockphoto-520261931-2048x2048.jpg",
     elements: [
       {
         id: "aqua-dual-panel-blog-landing-element",
@@ -2252,10 +2190,8 @@ export const ADDITIONAL_EXAMPLES: Example[] = [
     palette: ["#6A3D9A", "#2E2B6F", "#FFFFFF", "#1F1F1F", "#3FA9F5"],
     fonts: ["Sans-serif"],
     layoutTags: ["Diagonal split hero", "Large motivational headline", "High-contrast CTA buttons", "Icon-supported value sections", "Bullet-style benefit list", "Footer login form"],
-    thumbnail:
-      "https://images.unsplash.com/photo-1517077304055-6e89abbf09b0?auto=format&fit=crop&w=400&q=60",
-    preview:
-      "https://images.unsplash.com/photo-1517077304055-6e89abbf09b0?auto=format&fit=crop&w=900&q=60",
+    thumbnail: "/images/istockphoto-520261939-2048x2048.jpg",
+    preview: "/images/istockphoto-520261939-2048x2048.jpg",
     elements: [
       {
         id: "diagonal-purple-motivational-landing-element",
@@ -2294,10 +2230,8 @@ export const ADDITIONAL_EXAMPLES: Example[] = [
     palette: ["#C61C1C", "#F2F2F2", "#8A8A8A", "#FFFFFF", "#1F1F1F"],
     fonts: ["Sans-serif"],
     layoutTags: ["Faceted polygon hero background", "Headline with slider indicators", "Three-column service cards", "Icon-led content blocks", "Gallery preview section", "Structured footer with company info"],
-    thumbnail:
-      "https://images.unsplash.com/photo-1517486808906-6ca8b3f04846?auto=format&fit=crop&w=400&q=60",
-    preview:
-      "https://images.unsplash.com/photo-1517486808906-6ca8b3f04846?auto=format&fit=crop&w=900&q=60",
+    thumbnail: "/images/istockphoto-588243744-2048x2048.jpg",
+    preview: "/images/istockphoto-588243744-2048x2048.jpg",
     elements: [
       {
         id: "red-faceted-service-landing-element",
@@ -2339,10 +2273,8 @@ export const ADDITIONAL_EXAMPLES: Example[] = [
     palette: ["#5A5A5A", "#2B2B2B", "#FFFFFF", "#9E9E9E", "#000000"],
     fonts: ["Sans-serif"],
     layoutTags: ["Glassmorphism hero banner", "Centered floating callout", "Pill-style navigation tabs", "Three-column service cards", "Circular gallery placeholders", "Dark minimal footer"],
-    thumbnail:
-      "https://images.unsplash.com/photo-1521737604893-d14cc237f11d?auto=format&fit=crop&w=400&q=60",
-    preview:
-      "https://images.unsplash.com/photo-1521737604893-d14cc237f11d?auto=format&fit=crop&w=900&q=60",
+    thumbnail: "/images/istockphoto-588243926-2048x2048.jpg",
+    preview: "/images/istockphoto-588243926-2048x2048.jpg",
     elements: [
       {
         id: "glass-ui-service-landing-element",
@@ -2381,10 +2313,8 @@ export const ADDITIONAL_EXAMPLES: Example[] = [
     palette: ["#F04B23", "#8BC34A", "#4BB6E8", "#E6E6E6", "#2E2E2E", "#FFFFFF"],
     fonts: ["Sans-serif"],
     layoutTags: ["Abstract network hero graphic", "Circular focal element", "Top tab navigation", "Left-aligned login panel", "Highlighted content band", "Multi-column feature tiles"],
-    thumbnail:
-      "https://images.unsplash.com/photo-1498050108023-c5249f4df085?auto=format&fit=crop&w=400&q=60",
-    preview:
-      "https://images.unsplash.com/photo-1498050108023-c5249f4df085?auto=format&fit=crop&w=900&q=60",
+    thumbnail: "/images/istockphoto-604360684-2048x2048.jpg",
+    preview: "/images/istockphoto-604360684-2048x2048.jpg",
     elements: [
       {
         id: "network-hero-dashboard-landing-element",
@@ -2428,10 +2358,8 @@ export const ADDITIONAL_EXAMPLES: Example[] = [
     palette: ["#1A1A1A", "#4A97B5", "#FFFFFF", "#F2C94C", "#2E2E2E"],
     fonts: ["Sans-serif"],
     layoutTags: ["Dark framed layout", "Panoramic hero image", "Left-aligned login panel", "Multi-column about section", "Icon-based contact links", "Minimal footer navigation"],
-    thumbnail:
-      "https://images.unsplash.com/photo-1492691527719-9d1e07e534b4?auto=format&fit=crop&w=400&q=60",
-    preview:
-      "https://images.unsplash.com/photo-1492691527719-9d1e07e534b4?auto=format&fit=crop&w=900&q=60",
+    thumbnail: "/images/istockphoto-928516162-2048x2048.jpg",
+    preview: "/images/istockphoto-928516162-2048x2048.jpg",
     elements: [
       {
         id: "dark-skyline-about-landing-element",
@@ -2521,10 +2449,8 @@ export const ADDITIONAL_EXAMPLES: Example[] = [
     palette: ["#E91E63", "#F39C12", "#FFFFFF", "#F2F2F2", "#9E9E9E"],
     fonts: ["Sans-serif"],
     layoutTags: ["Gradient navigation bar", "Centered hero slider", "Minimal headline typography", "Three-column content layout", "Soft card-like section dividers", "Gradient footer accent"],
-    thumbnail:
-      "https://images.unsplash.com/photo-1506905925346-21bda4d32df4?auto=format&fit=crop&w=400&q=60",
-    preview:
-      "https://images.unsplash.com/photo-1506905925346-21bda4d32df4?auto=format&fit=crop&w=900&q=60",
+    thumbnail: "/images/istockphoto-1097005808-2048x2048.jpg",
+    preview: "/images/istockphoto-1097005808-2048x2048.jpg",
     elements: [
       {
         id: "gradient-triangle-portfolio-landing-element",
@@ -2613,10 +2539,8 @@ export const ADDITIONAL_EXAMPLES: Example[] = [
     palette: ["#4DB3E6", "#F4C430", "#E74C3C", "#8B1A1A", "#FFFFFF", "#1E1E1E"],
     fonts: ["Sans-serif"],
     layoutTags: ["Illustrated gradient hero", "Layered cloud graphics", "Top navigation with search bar", "Left-side login panel", "Two-column About Us section", "Icon-based feature strip"],
-    thumbnail:
-      "https://images.unsplash.com/photo-1487058792275-0ad4aaf24ca7?auto=format&fit=crop&w=400&q=60",
-    preview:
-      "https://images.unsplash.com/photo-1487058792275-0ad4aaf24ca7?auto=format&fit=crop&w=900&q=60",
+    thumbnail: "/images/istockphoto-1145896481-2048x2048.jpg",
+    preview: "/images/istockphoto-1145896481-2048x2048.jpg",
     elements: [
       {
         id: "colorful-cloud-hero-business-layout-element",
@@ -2660,10 +2584,8 @@ export const ADDITIONAL_EXAMPLES: Example[] = [
     palette: ["#8FAF1F", "#0FA3B1", "#F2C300", "#E53935", "#4A4A4A", "#FFFFFF"],
     fonts: ["Sans-serif"],
     layoutTags: ["Full-width pricing grid", "Color-coded plan cards", "Checklist icons for feature comparison", "Centered plan titles", "Strong call-to-action buttons", "Conversion-oriented design"],
-    thumbnail:
-      "https://images.unsplash.com/photo-1522071820081-009f3129cbfb?auto=format&fit=crop&w=400&q=60",
-    preview:
-      "https://images.unsplash.com/photo-1522071820081-009f3129cbfb?auto=format&fit=crop&w=900&q=60",
+    thumbnail: "/images/istockphoto-1165117159-2048x2048.jpg",
+    preview: "/images/istockphoto-1165117159-2048x2048.jpg",
     elements: [
       {
         id: "bold-multicolor-pricing-grid-element",
@@ -2706,10 +2628,8 @@ export const ADDITIONAL_EXAMPLES: Example[] = [
     palette: ["#2E3A3A", "#8FBAD3", "#EAF3F8", "#FFFFFF", "#6C8FA5"],
     fonts: ["Sans-serif"],
     layoutTags: ["Centered card layout", "Rounded corners", "Blurred hero background", "Horizontal navigation bar", "Sidebar navigation list", "Icon-based feature row"],
-    thumbnail:
-      "https://images.unsplash.com/photo-1517486808906-6ca8b3f04846?auto=format&fit=crop&w=400&q=60",
-    preview:
-      "https://images.unsplash.com/photo-1517486808906-6ca8b3f04846?auto=format&fit=crop&w=900&q=60",
+    thumbnail: "/images/istockphoto-1165571247-1024x1024.jpg",
+    preview: "/images/istockphoto-1165571247-1024x1024.jpg",
     elements: [
       {
         id: "rounded-glass-about-layout-element",
@@ -2818,10 +2738,8 @@ export const ADDITIONAL_EXAMPLES: Example[] = [
     ],
     fonts: ["Sans-serif"],
     layoutTags: ["Rounded container-based layout", "Hero carousel with arrow navigation", "High-contrast callout text in hero", "Three-column card section", "Consistent border radius", "Soft gradients"],
-    thumbnail:
-      "https://images.unsplash.com/photo-1498050108023-c5249f4df085?auto=format&fit=crop&w=400&q=60",
-    preview:
-      "https://images.unsplash.com/photo-1498050108023-c5249f4df085?auto=format&fit=crop&w=900&q=60",
+    thumbnail: "/images/istockphoto-1168448389-2048x2048.jpg",
+    preview: "/images/istockphoto-1168448389-2048x2048.jpg",
     elements: [
       {
         id: "rounded-portfolio-slider-layout-element",

@@ -45,6 +45,7 @@ jobs:
           cp -r dist ../deploy/
           cp index.html manifest.json ../deploy/
           if [ -d "assets" ]; then cp -r assets ../deploy/; fi
+          if [ -d "images" ]; then cp -r images ../deploy/; fi
           if [ ! -f "../deploy/.nojekyll" ]; then touch ../deploy/.nojekyll; fi
 
       - name: Setup Pages
