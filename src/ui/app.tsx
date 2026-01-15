@@ -563,10 +563,14 @@ const ExampleCard: React.FC<{
   // Construct image URL relative to current page location
   const getImageUrl = (path: string) => {
     if (path.startsWith("http")) return path; // Already a full URL
-    // Get base URL by removing the filename from pathname
-    const pathname = window.location.pathname;
-    const basePath = pathname.substring(0, pathname.lastIndexOf("/") + 1);
-    return window.location.origin + basePath + path;
+    // Use URL constructor for reliable relative path resolution
+    try {
+      return new URL(path, window.location.href).href;
+    } catch {
+      // Fallback: construct manually
+      const basePath = window.location.pathname.substring(0, window.location.pathname.lastIndexOf("/") + 1);
+      return window.location.origin + basePath + path;
+    }
   };
   
   return (
@@ -604,10 +608,14 @@ const ExampleDetail: React.FC<{
   // Construct image URL relative to current page location
   const getImageUrl = (path: string) => {
     if (path.startsWith("http")) return path; // Already a full URL
-    // Get base URL by removing the filename from pathname
-    const pathname = window.location.pathname;
-    const basePath = pathname.substring(0, pathname.lastIndexOf("/") + 1);
-    return window.location.origin + basePath + path;
+    // Use URL constructor for reliable relative path resolution
+    try {
+      return new URL(path, window.location.href).href;
+    } catch {
+      // Fallback: construct manually
+      const basePath = window.location.pathname.substring(0, window.location.pathname.lastIndexOf("/") + 1);
+      return window.location.origin + basePath + path;
+    }
   };
   
   return (

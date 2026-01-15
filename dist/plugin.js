@@ -81,8 +81,8 @@
       palette: ["#FFFFFF", "#F6F1EE", "#1A1A1A"],
       fonts: ["Serif", "Sans-serif"],
       layoutTags: ["Two-column layout", "Portrait image left", "Large headline right", "Centered vertical rhythm"],
-      thumbnail: "images/ashley-cortez.jpg",
-      preview: "images/ashley-cortez.jpg",
+      thumbnail: "https://kickdapie.github.io/designAI/images/ashley-cortez.jpg",
+      preview: "https://kickdapie.github.io/designAI/images/ashley-cortez.jpg",
       elements: [
         {
           id: "writer-portfolio-about-hero",
@@ -116,8 +116,8 @@
       palette: ["#FFFFFF", "#B6D76A", "#F2B24C", "#9EDADF", "#D0D0D0", "#1A1A1A"],
       fonts: ["Sans-serif"],
       layoutTags: ["Two-column layout", "Circular portrait image", "Large name headline", "Short bio paragraph", "Circular navigation buttons"],
-      thumbnail: "images/dalya-baron.jpg",
-      preview: "images/dalya-baron.jpg",
+      thumbnail: "https://kickdapie.github.io/designAI/images/dalya-baron.jpg",
+      preview: "https://kickdapie.github.io/designAI/images/dalya-baron.jpg",
       elements: [
         {
           id: "academic-profile-hero",
@@ -152,8 +152,8 @@
       palette: ["#FFFFFF", "#000000", "#F5F5F5", "#CCCCCC"],
       fonts: ["Serif", "Sans-serif"],
       layoutTags: ["Single main content column", "Right sidebar", "Inline profile image", "Long-form text", "Widget-based layout"],
-      thumbnail: "images/Default-Theme.jpg",
-      preview: "images/Default-Theme.jpg",
+      thumbnail: "https://kickdapie.github.io/designAI/images/Default-Theme.jpg",
+      preview: "https://kickdapie.github.io/designAI/images/Default-Theme.jpg",
       elements: [
         {
           id: "default-blog-about-layout",
@@ -373,8 +373,8 @@
       palette: ["#2E2B6F", "#3B3A8F", "#6A3F7A", "#C63A3A", "#E96B2C", "#F5B23C", "#FFFFFF"],
       fonts: ["Sans-serif bold", "Sans-serif regular"],
       layoutTags: ["Full-width gradient hero", "Layered cloud shapes", "Minimal navigation", "Primary and secondary CTAs"],
-      thumbnail: "images/istockphoto-2251958429-2048x2048.jpg",
-      preview: "images/istockphoto-2251958429-2048x2048.jpg",
+      thumbnail: "https://kickdapie.github.io/designAI/images/istockphoto-2251958429-2048x2048.jpg",
+      preview: "https://kickdapie.github.io/designAI/images/istockphoto-2251958429-2048x2048.jpg",
       elements: [
         {
           id: "gradient-cloud-landing-hero",
@@ -411,8 +411,8 @@
       palette: ["#FFFFFF", "#111111", "#777777", "#E85C4A", "#F2F2F2"],
       fonts: ["Sans-serif bold", "Sans-serif regular"],
       layoutTags: ["Centered site title", "Thin horizontal navigation", "Left-aligned main content", "Large featured image", "Right-hand sidebar", "Author bio card"],
-      thumbnail: "images/make-a-blog.png",
-      preview: "images/make-a-blog.png",
+      thumbnail: "https://kickdapie.github.io/designAI/images/make-a-blog.png",
+      preview: "https://kickdapie.github.io/designAI/images/make-a-blog.png",
       elements: [
         {
           id: "minimal-blog-magazine-layout",
@@ -450,8 +450,8 @@
       palette: ["#FAF7F4", "#EADFD6", "#C9A98B", "#000000", "#FFFFFF"],
       fonts: ["Handwritten script", "Clean sans-serif"],
       layoutTags: ["Top announcement bar", "Centered handwritten-style logo", "Minimal navigation with icons", "Hero section featuring brand owner", "Grid-based product previews"],
-      thumbnail: "images/small-business-websites-alyce-alexandra-oca20.webp",
-      preview: "images/small-business-websites-alyce-alexandra-oca20.webp",
+      thumbnail: "https://kickdapie.github.io/designAI/images/small-business-websites-alyce-alexandra-oca20.webp",
+      preview: "https://kickdapie.github.io/designAI/images/small-business-websites-alyce-alexandra-oca20.webp",
       elements: [
         {
           id: "personal-brand-ecommerce-lifestyle",
@@ -488,8 +488,8 @@
       palette: ["#4DB3E6", "#F4C430", "#E74C3C", "#8B1A1A", "#FFFFFF", "#1E1E1E"],
       fonts: ["Sans-serif"],
       layoutTags: ["Illustrated gradient hero", "Layered cloud graphics", "Top navigation with search bar", "Left-side login panel", "Two-column About Us section", "Icon-based feature strip"],
-      thumbnail: "images/istockphoto-1145896481-2048x2048.jpg",
-      preview: "images/istockphoto-1145896481-2048x2048.jpg",
+      thumbnail: "https://kickdapie.github.io/designAI/images/istockphoto-1145896481-2048x2048.jpg",
+      preview: "https://kickdapie.github.io/designAI/images/istockphoto-1145896481-2048x2048.jpg",
       elements: [
         {
           id: "colorful-cloud-hero-business-layout-element",
@@ -526,8 +526,8 @@
       palette: ["#8FAF1F", "#0FA3B1", "#F2C300", "#E53935", "#4A4A4A", "#FFFFFF"],
       fonts: ["Sans-serif"],
       layoutTags: ["Full-width pricing grid", "Color-coded plan cards", "Checklist icons for feature comparison", "Centered plan titles", "Strong call-to-action buttons", "Conversion-oriented design"],
-      thumbnail: "images/istockphoto-1165117159-2048x2048.jpg",
-      preview: "images/istockphoto-1165117159-2048x2048.jpg",
+      thumbnail: "https://kickdapie.github.io/designAI/images/istockphoto-1165117159-2048x2048.jpg",
+      preview: "https://kickdapie.github.io/designAI/images/istockphoto-1165117159-2048x2048.jpg",
       elements: [
         {
           id: "bold-multicolor-pricing-grid-element",
@@ -563,8 +563,8 @@
       palette: ["#2E3A3A", "#8FBAD3", "#EAF3F8", "#FFFFFF", "#6C8FA5"],
       fonts: ["Sans-serif"],
       layoutTags: ["Centered card layout", "Rounded corners", "Blurred hero background", "Horizontal navigation bar", "Sidebar navigation list", "Icon-based feature row"],
-      thumbnail: "images/istockphoto-1165571247-1024x1024.jpg",
-      preview: "images/istockphoto-1165571247-1024x1024.jpg",
+      thumbnail: "https://kickdapie.github.io/designAI/images/istockphoto-1165571247-1024x1024.jpg",
+      preview: "https://kickdapie.github.io/designAI/images/istockphoto-1165571247-1024x1024.jpg",
       elements: [
         {
           id: "rounded-glass-about-layout-element",
@@ -601,8 +601,8 @@
       palette: ["#F5F5F5", "#E8E8E8", "#4A90E2", "#2C3E50", "#FFFFFF", "#1A1A1A"],
       fonts: ["Sans-serif"],
       layoutTags: ["Tabbed interface", "Layered card design", "Color-coded sections", "Centered content", "Icon-based navigation", "Clear visual hierarchy"],
-      thumbnail: "images/istockphoto-1165910056-2048x2048.jpg",
-      preview: "images/istockphoto-1165910056-2048x2048.jpg",
+      thumbnail: "https://kickdapie.github.io/designAI/images/istockphoto-1165910056-2048x2048.jpg",
+      preview: "https://kickdapie.github.io/designAI/images/istockphoto-1165910056-2048x2048.jpg",
       elements: [
         {
           id: "layered-tabbed-about-card-element",
@@ -646,8 +646,8 @@
       ],
       fonts: ["Sans-serif"],
       layoutTags: ["Rounded container-based layout", "Hero carousel with arrow navigation", "High-contrast callout text in hero", "Three-column card section", "Consistent border radius", "Soft gradients"],
-      thumbnail: "images/istockphoto-1168448389-2048x2048.jpg",
-      preview: "images/istockphoto-1168448389-2048x2048.jpg",
+      thumbnail: "https://kickdapie.github.io/designAI/images/istockphoto-1168448389-2048x2048.jpg",
+      preview: "https://kickdapie.github.io/designAI/images/istockphoto-1168448389-2048x2048.jpg",
       elements: [
         {
           id: "rounded-portfolio-slider-layout-element",
@@ -698,8 +698,8 @@
       ],
       fonts: ["Sans-serif bold", "Sans-serif regular"],
       layoutTags: ["Full-width hero slider", "Green gradient background", "Numbered content sections", "Three-column feature strip", "Icon-based contact bar"],
-      thumbnail: "images/istockphoto-1169767728-2048x2048.jpg",
-      preview: "images/istockphoto-1169767728-2048x2048.jpg",
+      thumbnail: "https://kickdapie.github.io/designAI/images/istockphoto-1169767728-2048x2048.jpg",
+      preview: "https://kickdapie.github.io/designAI/images/istockphoto-1169767728-2048x2048.jpg",
       elements: [
         {
           id: "green-idea-slider-layout-element",
@@ -751,8 +751,8 @@
       ],
       fonts: ["Sans-serif bold", "Sans-serif regular"],
       layoutTags: ["Rounded glassmorphism hero", "Gradient background with world map", "Repeating arrow graphics", "Two-column About Us", "Left sidebar navigation", "Minimal icon row"],
-      thumbnail: "images/istockphoto-1206907140-1024x1024.jpg",
-      preview: "images/istockphoto-1206907140-1024x1024.jpg",
+      thumbnail: "https://kickdapie.github.io/designAI/images/istockphoto-1206907140-1024x1024.jpg",
+      preview: "https://kickdapie.github.io/designAI/images/istockphoto-1206907140-1024x1024.jpg",
       elements: [
         {
           id: "arrow-flow-glass-header-layout-element",
@@ -805,8 +805,8 @@
       ],
       fonts: ["Sans-serif bold", "Sans-serif regular"],
       layoutTags: ["Wide rounded hero container", "Vertical line texture background", "Prominent search bar", "Right-aligned globe illustration", "Icon-based feature cards", "Two-column About Us"],
-      thumbnail: "images/istockphoto-1209896633-2048x2048.jpg",
-      preview: "images/istockphoto-1209896633-2048x2048.jpg",
+      thumbnail: "https://kickdapie.github.io/designAI/images/istockphoto-1209896633-2048x2048.jpg",
+      preview: "https://kickdapie.github.io/designAI/images/istockphoto-1209896633-2048x2048.jpg",
       elements: [
         {
           id: "blue-globe-search-header-layout-element",
@@ -860,8 +860,8 @@
       ],
       fonts: ["Sans-serif bold", "Sans-serif regular"],
       layoutTags: ["Diagonal striped background", "Row of large circular icon cards", "Gradient blue content panel", "Dotted globe graphic", "Two-column About Us", "Dark feature strip"],
-      thumbnail: "images/istockphoto-1210609143-2048x2048.jpg",
-      preview: "images/istockphoto-1210609143-2048x2048.jpg",
+      thumbnail: "https://kickdapie.github.io/designAI/images/istockphoto-1210609143-2048x2048.jpg",
+      preview: "https://kickdapie.github.io/designAI/images/istockphoto-1210609143-2048x2048.jpg",
       elements: [
         {
           id: "circular-icon-globe-layout-element",
@@ -915,8 +915,8 @@
       ],
       fonts: ["Sans-serif bold", "Sans-serif regular"],
       layoutTags: ["Olive-green navigation", "Rounded hero slider", "Abstract hexagon mosaic", "Glossy circular icon buttons", "Three-column feature section", "Soft cream background"],
-      thumbnail: "images/istockphoto-1210796733-2048x2048.jpg",
-      preview: "images/istockphoto-1210796733-2048x2048.jpg",
+      thumbnail: "https://kickdapie.github.io/designAI/images/istockphoto-1210796733-2048x2048.jpg",
+      preview: "https://kickdapie.github.io/designAI/images/istockphoto-1210796733-2048x2048.jpg",
       elements: [
         {
           id: "hexagon-slider-olive-layout-element",
@@ -963,8 +963,8 @@
       palette: ["#E8F4F8", "#B8D4E3", "#6B9BD1", "#4A7BA7", "#2E5C8A", "#FFFFFF"],
       fonts: ["Sans-serif"],
       layoutTags: ["Centered content", "Gradient mesh background", "Minimal navigation", "Primary CTA button", "Clean typography"],
-      thumbnail: "images/stock-vector-abstract-wave-futuristic-design-of-landing-page-retro-gradient-mesh-website-design-2559939325.jpg",
-      preview: "images/stock-vector-abstract-wave-futuristic-design-of-landing-page-retro-gradient-mesh-website-design-2559939325.jpg",
+      thumbnail: "https://kickdapie.github.io/designAI/images/stock-vector-abstract-wave-futuristic-design-of-landing-page-retro-gradient-mesh-website-design-2559939325.jpg",
+      preview: "https://kickdapie.github.io/designAI/images/stock-vector-abstract-wave-futuristic-design-of-landing-page-retro-gradient-mesh-website-design-2559939325.jpg",
       elements: [
         {
           id: "soft-gradient-hero-landing-element",
@@ -1001,8 +1001,8 @@
       palette: ["#F2F2F2", "#1F1F1F", "#000000", "#BDBDBD", "#FFFFFF"],
       fonts: ["Sans-serif"],
       layoutTags: ["Top navigation bar", "Oversized hero icon", "Split login and contact forms", "Three-column feature section", "Circular step indicators", "Minimal grayscale palette"],
-      thumbnail: "images/istockphoto-520244093-2048x2048.jpg",
-      preview: "images/istockphoto-520244093-2048x2048.jpg",
+      thumbnail: "https://kickdapie.github.io/designAI/images/istockphoto-520244093-2048x2048.jpg",
+      preview: "https://kickdapie.github.io/designAI/images/istockphoto-520244093-2048x2048.jpg",
       elements: [
         {
           id: "minimal-blog-login-landing-element",
@@ -1038,8 +1038,8 @@
       palette: ["#D6D92B", "#F2F2F2", "#9E9E9E", "#1F1F1F", "#FFFFFF"],
       fonts: ["Sans-serif"],
       layoutTags: ["High-contrast navigation bar", "Centered hero text", "Hero slider indicators", "Rounded feature card grid", "Split login and contact forms", "Accent color highlights"],
-      thumbnail: "images/istockphoto-520259653-1024x1024.jpg",
-      preview: "images/istockphoto-520259653-1024x1024.jpg",
+      thumbnail: "https://kickdapie.github.io/designAI/images/istockphoto-520259653-1024x1024.jpg",
+      preview: "https://kickdapie.github.io/designAI/images/istockphoto-520259653-1024x1024.jpg",
       elements: [
         {
           id: "lime-accent-web-landing-element",
@@ -1075,8 +1075,8 @@
       palette: ["#C81E1E", "#F2F2F2", "#FFFFFF", "#1F1F1F", "#9E9E9E"],
       fonts: ["Sans-serif"],
       layoutTags: ["Bold red hero banner", "Diagonal ribbon overlays", "Inline login form", "Sectioned business overview", "Stacked blog highlight cards", "Strong contrast CTAs"],
-      thumbnail: "images/istockphoto-520261927-2048x2048.jpg",
-      preview: "images/istockphoto-520261927-2048x2048.jpg",
+      thumbnail: "https://kickdapie.github.io/designAI/images/istockphoto-520261927-2048x2048.jpg",
+      preview: "https://kickdapie.github.io/designAI/images/istockphoto-520261927-2048x2048.jpg",
       elements: [
         {
           id: "red-ribbon-cta-corporate-element",
@@ -1112,8 +1112,8 @@
       palette: ["#5A5A5A", "#2B2B2B", "#FFFFFF", "#9E9E9E", "#000000"],
       fonts: ["Sans-serif"],
       layoutTags: ["Glassmorphism hero banner", "Centered floating callout", "Pill-style navigation tabs", "Three-column service cards", "Circular gallery placeholders", "Dark minimal footer"],
-      thumbnail: "images/istockphoto-588243926-2048x2048.jpg",
-      preview: "images/istockphoto-588243926-2048x2048.jpg",
+      thumbnail: "https://kickdapie.github.io/designAI/images/istockphoto-588243926-2048x2048.jpg",
+      preview: "https://kickdapie.github.io/designAI/images/istockphoto-588243926-2048x2048.jpg",
       elements: [
         {
           id: "glass-ui-service-landing-element",
@@ -1149,8 +1149,8 @@
       palette: ["#F04B23", "#8BC34A", "#4BB6E8", "#E6E6E6", "#2E2E2E", "#FFFFFF"],
       fonts: ["Sans-serif"],
       layoutTags: ["Abstract network hero graphic", "Circular focal element", "Top tab navigation", "Left-aligned login panel", "Highlighted content band", "Multi-column feature tiles"],
-      thumbnail: "images/istockphoto-604360684-2048x2048.jpg",
-      preview: "images/istockphoto-604360684-2048x2048.jpg",
+      thumbnail: "https://kickdapie.github.io/designAI/images/istockphoto-604360684-2048x2048.jpg",
+      preview: "https://kickdapie.github.io/designAI/images/istockphoto-604360684-2048x2048.jpg",
       elements: [
         {
           id: "network-hero-dashboard-landing-element",
@@ -1186,8 +1186,8 @@
       palette: ["#1A1A1A", "#4A97B5", "#FFFFFF", "#F2C94C", "#2E2E2E"],
       fonts: ["Sans-serif"],
       layoutTags: ["Dark framed layout", "Panoramic hero image", "Left-aligned login panel", "Multi-column about section", "Icon-based contact links", "Minimal footer navigation"],
-      thumbnail: "images/istockphoto-928516162-2048x2048.jpg",
-      preview: "images/istockphoto-928516162-2048x2048.jpg",
+      thumbnail: "https://kickdapie.github.io/designAI/images/istockphoto-928516162-2048x2048.jpg",
+      preview: "https://kickdapie.github.io/designAI/images/istockphoto-928516162-2048x2048.jpg",
       elements: [
         {
           id: "dark-skyline-about-landing-element",
@@ -1223,8 +1223,8 @@
       palette: ["#FF6B6B", "#4ECDC4", "#FFE66D", "#95E1D3", "#FFFFFF", "#2C3E50"],
       fonts: ["Sans-serif"],
       layoutTags: ["Illustrated hero graphic", "Circular feature cards", "Hand-drawn style", "Colorful palette", "Structured content sections", "Playful aesthetic"],
-      thumbnail: "images/istockphoto-1030345124-2048x2048.jpg",
-      preview: "images/istockphoto-1030345124-2048x2048.jpg",
+      thumbnail: "https://kickdapie.github.io/designAI/images/istockphoto-1030345124-2048x2048.jpg",
+      preview: "https://kickdapie.github.io/designAI/images/istockphoto-1030345124-2048x2048.jpg",
       elements: [
         {
           id: "illustrated-hero-circle-features-element",
@@ -1260,8 +1260,8 @@
       palette: ["#E91E63", "#F39C12", "#FFFFFF", "#F2F2F2", "#9E9E9E"],
       fonts: ["Sans-serif"],
       layoutTags: ["Gradient navigation bar", "Centered hero slider", "Minimal headline typography", "Three-column content layout", "Soft card-like section dividers", "Gradient footer accent"],
-      thumbnail: "images/istockphoto-1097005808-2048x2048.jpg",
-      preview: "images/istockphoto-1097005808-2048x2048.jpg",
+      thumbnail: "https://kickdapie.github.io/designAI/images/istockphoto-1097005808-2048x2048.jpg",
+      preview: "https://kickdapie.github.io/designAI/images/istockphoto-1097005808-2048x2048.jpg",
       elements: [
         {
           id: "gradient-triangle-portfolio-landing-element",
@@ -1297,8 +1297,8 @@
       palette: ["#2C3E50", "#3498DB", "#E74C3C", "#FFFFFF", "#ECF0F1"],
       fonts: ["Sans-serif"],
       layoutTags: ["Mosaic hero grid", "Icon-driven feature row", "Three-column informational sections", "Modular block layout", "Editorial style", "Clear visual hierarchy"],
-      thumbnail: "images/istockphoto-1145896438-2048x2048.jpg",
-      preview: "images/istockphoto-1145896438-2048x2048.jpg",
+      thumbnail: "https://kickdapie.github.io/designAI/images/istockphoto-1145896438-2048x2048.jpg",
+      preview: "https://kickdapie.github.io/designAI/images/istockphoto-1145896438-2048x2048.jpg",
       elements: [
         {
           id: "mosaic-portfolio-icon-landing-element",
