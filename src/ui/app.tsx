@@ -560,13 +560,22 @@ const ExampleCard: React.FC<{
   isActive: boolean;
   onSelect: () => void;
 }> = ({ example, isActive, onSelect }) => {
+  // Construct image URL relative to current page location
+  const getImageUrl = (path: string) => {
+    if (path.startsWith("http")) return path; // Already a full URL
+    // Get base URL by removing the filename from pathname
+    const pathname = window.location.pathname;
+    const basePath = pathname.substring(0, pathname.lastIndexOf("/") + 1);
+    return window.location.origin + basePath + path;
+  };
+  
   return (
     <button
       type="button"
       className={`example-card ${isActive ? "active" : ""}`}
       onClick={onSelect}
     >
-      <img src={example.thumbnail} alt={example.name} loading="lazy" />
+      <img src={getImageUrl(example.thumbnail)} alt={example.name} loading="lazy" />
       <div className="example-name">{example.name}</div>
       <div className="example-tags">
         {example.layoutTags.slice(0, 2).map((tag) => (
@@ -592,10 +601,19 @@ const ExampleDetail: React.FC<{
   onCollectLayout,
   onCollectElement,
 }) => {
+  // Construct image URL relative to current page location
+  const getImageUrl = (path: string) => {
+    if (path.startsWith("http")) return path; // Already a full URL
+    // Get base URL by removing the filename from pathname
+    const pathname = window.location.pathname;
+    const basePath = pathname.substring(0, pathname.lastIndexOf("/") + 1);
+    return window.location.origin + basePath + path;
+  };
+  
   return (
     <div className="example-detail">
       <div className="example-preview">
-        <img src={example.preview} alt={`${example.name} preview`} loading="lazy" />
+        <img src={getImageUrl(example.preview)} alt={`${example.name} preview`} loading="lazy" />
       </div>
 
       <div className="example-meta">
