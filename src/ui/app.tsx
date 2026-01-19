@@ -564,29 +564,52 @@ const ExampleCard: React.FC<{
   const getImageUrl = (path: string) => {
     if (path.startsWith("http")) return path; // Already a full URL
     
-    // Get the base path from the current location
-    // For GitHub Pages: /designAI/ -> basePath = /designAI/
-    // For local dev: / -> basePath = /
-    const currentPath = window.location.pathname;
+    // Get base URL from where bundle.js is loaded (most reliable method)
+    // This works even in iframes and handles GitHub Pages subdirectories
+    let baseUrl = window.location.origin;
     let basePath = "/";
     
-    // Extract base path (everything up to and including the last /)
-    // If pathname is /designAI/index.html or /designAI/, basePath should be /designAI/
-    if (currentPath !== "/" && currentPath !== "/index.html") {
-      // Remove filename if present, keep directory path
-      const pathWithoutFile = currentPath.substring(0, currentPath.lastIndexOf("/") + 1);
-      basePath = pathWithoutFile;
+    // Try to find the script that loaded this bundle to get the correct base path
+    const scripts = document.getElementsByTagName("script");
+    for (let i = 0; i < scripts.length; i++) {
+      const src = scripts[i].src;
+      if (src && (src.includes("bundle.js") || src.includes("dist/bundle.js"))) {
+        try {
+          const scriptUrl = new URL(src);
+          // Extract base path from script URL
+          // e.g., https://kickdapie.github.io/designAI/dist/bundle.js -> /designAI/
+          const scriptPath = scriptUrl.pathname;
+          const distIndex = scriptPath.indexOf("/dist/");
+          if (distIndex > 0) {
+            basePath = scriptPath.substring(0, distIndex + 1);
+          } else {
+            // Fallback: remove filename, keep directory
+            basePath = scriptPath.substring(0, scriptPath.lastIndexOf("/") + 1);
+          }
+          baseUrl = scriptUrl.origin;
+          break;
+        } catch (e) {
+          // If URL parsing fails, fall through to window.location method
+        }
+      }
     }
     
-    // If path starts with /, it's absolute from site root, so we need to prepend basePath
-    // But remove the leading / first, then add basePath
+    // Fallback: use window.location if script detection didn't work
+    if (basePath === "/") {
+      const currentPath = window.location.pathname;
+      if (currentPath !== "/" && currentPath !== "/index.html") {
+        basePath = currentPath.substring(0, currentPath.lastIndexOf("/") + 1);
+      }
+    }
+    
+    // Handle absolute paths (starting with /)
     if (path.startsWith("/")) {
       // Remove leading / and prepend basePath
       const relativePath = path.substring(1);
-      return window.location.origin + basePath + relativePath;
+      return baseUrl + basePath + relativePath;
     } else {
-      // Relative path - resolve against current location
-      return window.location.origin + basePath + path;
+      // Relative path
+      return baseUrl + basePath + path;
     }
   };
   
@@ -626,29 +649,52 @@ const ExampleDetail: React.FC<{
   const getImageUrl = (path: string) => {
     if (path.startsWith("http")) return path; // Already a full URL
     
-    // Get the base path from the current location
-    // For GitHub Pages: /designAI/ -> basePath = /designAI/
-    // For local dev: / -> basePath = /
-    const currentPath = window.location.pathname;
+    // Get base URL from where bundle.js is loaded (most reliable method)
+    // This works even in iframes and handles GitHub Pages subdirectories
+    let baseUrl = window.location.origin;
     let basePath = "/";
     
-    // Extract base path (everything up to and including the last /)
-    // If pathname is /designAI/index.html or /designAI/, basePath should be /designAI/
-    if (currentPath !== "/" && currentPath !== "/index.html") {
-      // Remove filename if present, keep directory path
-      const pathWithoutFile = currentPath.substring(0, currentPath.lastIndexOf("/") + 1);
-      basePath = pathWithoutFile;
+    // Try to find the script that loaded this bundle to get the correct base path
+    const scripts = document.getElementsByTagName("script");
+    for (let i = 0; i < scripts.length; i++) {
+      const src = scripts[i].src;
+      if (src && (src.includes("bundle.js") || src.includes("dist/bundle.js"))) {
+        try {
+          const scriptUrl = new URL(src);
+          // Extract base path from script URL
+          // e.g., https://kickdapie.github.io/designAI/dist/bundle.js -> /designAI/
+          const scriptPath = scriptUrl.pathname;
+          const distIndex = scriptPath.indexOf("/dist/");
+          if (distIndex > 0) {
+            basePath = scriptPath.substring(0, distIndex + 1);
+          } else {
+            // Fallback: remove filename, keep directory
+            basePath = scriptPath.substring(0, scriptPath.lastIndexOf("/") + 1);
+          }
+          baseUrl = scriptUrl.origin;
+          break;
+        } catch (e) {
+          // If URL parsing fails, fall through to window.location method
+        }
+      }
     }
     
-    // If path starts with /, it's absolute from site root, so we need to prepend basePath
-    // But remove the leading / first, then add basePath
+    // Fallback: use window.location if script detection didn't work
+    if (basePath === "/") {
+      const currentPath = window.location.pathname;
+      if (currentPath !== "/" && currentPath !== "/index.html") {
+        basePath = currentPath.substring(0, currentPath.lastIndexOf("/") + 1);
+      }
+    }
+    
+    // Handle absolute paths (starting with /)
     if (path.startsWith("/")) {
       // Remove leading / and prepend basePath
       const relativePath = path.substring(1);
-      return window.location.origin + basePath + relativePath;
+      return baseUrl + basePath + relativePath;
     } else {
-      // Relative path - resolve against current location
-      return window.location.origin + basePath + path;
+      // Relative path
+      return baseUrl + basePath + path;
     }
   };
   
