@@ -564,10 +564,14 @@ const ExampleCard: React.FC<{
   const getImageUrl = (path: string) => {
     if (path.startsWith("http")) return path; // Already a full URL
     
-    // Get base URL from where bundle.js is loaded (most reliable method)
-    // This works even in iframes and handles GitHub Pages subdirectories
+    // Hardcoded GitHub Pages base URL for reliability
+    // This ensures images work even if URL detection fails
+    const GITHUB_PAGES_BASE = "https://kickdapie.github.io/designAI";
+    
+    // Try to detect base path from script source first
     let baseUrl = window.location.origin;
     let basePath = "/";
+    let detected = false;
     
     // Try to find the script that loaded this bundle to get the correct base path
     const scripts = document.getElementsByTagName("script");
@@ -582,34 +586,34 @@ const ExampleCard: React.FC<{
           const distIndex = scriptPath.indexOf("/dist/");
           if (distIndex > 0) {
             basePath = scriptPath.substring(0, distIndex + 1);
-          } else {
-            // Fallback: remove filename, keep directory
-            basePath = scriptPath.substring(0, scriptPath.lastIndexOf("/") + 1);
+            baseUrl = scriptUrl.origin;
+            detected = true;
+            break;
           }
-          baseUrl = scriptUrl.origin;
-          break;
         } catch (e) {
-          // If URL parsing fails, fall through to window.location method
+          // Continue to next method
         }
       }
     }
     
-    // Fallback: use window.location if script detection didn't work
-    if (basePath === "/") {
-      const currentPath = window.location.pathname;
-      if (currentPath !== "/" && currentPath !== "/index.html") {
-        basePath = currentPath.substring(0, currentPath.lastIndexOf("/") + 1);
-      }
+    // If detection failed, use hardcoded GitHub Pages URL
+    if (!detected && window.location.origin.includes("github.io")) {
+      baseUrl = GITHUB_PAGES_BASE.split("/").slice(0, 3).join("/");
+      basePath = "/designAI/";
     }
     
     // Handle absolute paths (starting with /)
     if (path.startsWith("/")) {
       // Remove leading / and prepend basePath
       const relativePath = path.substring(1);
-      return baseUrl + basePath + relativePath;
+      const finalUrl = baseUrl + basePath + relativePath;
+      console.log("[getImageUrl] Resolved:", { path, baseUrl, basePath, finalUrl });
+      return finalUrl;
     } else {
       // Relative path
-      return baseUrl + basePath + path;
+      const finalUrl = baseUrl + basePath + path;
+      console.log("[getImageUrl] Resolved relative:", { path, baseUrl, basePath, finalUrl });
+      return finalUrl;
     }
   };
   
@@ -649,10 +653,14 @@ const ExampleDetail: React.FC<{
   const getImageUrl = (path: string) => {
     if (path.startsWith("http")) return path; // Already a full URL
     
-    // Get base URL from where bundle.js is loaded (most reliable method)
-    // This works even in iframes and handles GitHub Pages subdirectories
+    // Hardcoded GitHub Pages base URL for reliability
+    // This ensures images work even if URL detection fails
+    const GITHUB_PAGES_BASE = "https://kickdapie.github.io/designAI";
+    
+    // Try to detect base path from script source first
     let baseUrl = window.location.origin;
     let basePath = "/";
+    let detected = false;
     
     // Try to find the script that loaded this bundle to get the correct base path
     const scripts = document.getElementsByTagName("script");
@@ -667,34 +675,34 @@ const ExampleDetail: React.FC<{
           const distIndex = scriptPath.indexOf("/dist/");
           if (distIndex > 0) {
             basePath = scriptPath.substring(0, distIndex + 1);
-          } else {
-            // Fallback: remove filename, keep directory
-            basePath = scriptPath.substring(0, scriptPath.lastIndexOf("/") + 1);
+            baseUrl = scriptUrl.origin;
+            detected = true;
+            break;
           }
-          baseUrl = scriptUrl.origin;
-          break;
         } catch (e) {
-          // If URL parsing fails, fall through to window.location method
+          // Continue to next method
         }
       }
     }
     
-    // Fallback: use window.location if script detection didn't work
-    if (basePath === "/") {
-      const currentPath = window.location.pathname;
-      if (currentPath !== "/" && currentPath !== "/index.html") {
-        basePath = currentPath.substring(0, currentPath.lastIndexOf("/") + 1);
-      }
+    // If detection failed, use hardcoded GitHub Pages URL
+    if (!detected && window.location.origin.includes("github.io")) {
+      baseUrl = GITHUB_PAGES_BASE.split("/").slice(0, 3).join("/");
+      basePath = "/designAI/";
     }
     
     // Handle absolute paths (starting with /)
     if (path.startsWith("/")) {
       // Remove leading / and prepend basePath
       const relativePath = path.substring(1);
-      return baseUrl + basePath + relativePath;
+      const finalUrl = baseUrl + basePath + relativePath;
+      console.log("[getImageUrl] Resolved:", { path, baseUrl, basePath, finalUrl });
+      return finalUrl;
     } else {
       // Relative path
-      return baseUrl + basePath + path;
+      const finalUrl = baseUrl + basePath + path;
+      console.log("[getImageUrl] Resolved relative:", { path, baseUrl, basePath, finalUrl });
+      return finalUrl;
     }
   };
   

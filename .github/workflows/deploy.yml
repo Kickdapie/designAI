@@ -48,16 +48,23 @@ jobs:
           # Copy public folder contents (including images) to deploy root
           if [ -d "public" ]; then
             echo "Copying public folder contents..."
-            cp -r public/* ../deploy/
+            cp -r public/* ../deploy/ 2>&1
+            echo "Public folder copied. Contents:"
+            ls -la ../deploy/ | head -10
           else
             echo "Warning: No public folder found!"
+            echo "Current directory contents:"
+            ls -la
           fi
           # Verify images were copied
           if [ -d "../deploy/images" ]; then
-            echo "Images folder exists in deploy directory"
+            echo "✓ Images folder exists in deploy directory"
+            echo "Image count: $(ls -1 ../deploy/images/ | wc -l)"
             ls -la ../deploy/images/ | head -5
           else
-            echo "Error: Images folder not found in deploy directory!"
+            echo "✗ Error: Images folder not found in deploy directory!"
+            echo "Deploy directory contents:"
+            ls -la ../deploy/
           fi
           if [ ! -f "../deploy/.nojekyll" ]; then touch ../deploy/.nojekyll; fi
 
