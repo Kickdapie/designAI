@@ -563,32 +563,29 @@ const ExampleCard: React.FC<{
   // Construct image URL relative to current page location
   const getImageUrl = (path: string) => {
     if (path.startsWith("http")) return path; // Already a full URL
-    // Resolve relative to the plugin's base URL (not the iframe parent)
-    // Try to get the base URL from the script source or use current origin
-    try {
-      // Get the script that loaded this app
-      const scripts = document.getElementsByTagName("script");
-      let baseUrl = window.location.origin + window.location.pathname;
-      
-      // Try to find the script src to determine base URL
-      for (let i = 0; i < scripts.length; i++) {
-        const src = scripts[i].src;
-        if (src && (src.includes("bundle.js") || src.includes("dist/"))) {
-          const scriptUrl = new URL(src);
-          baseUrl = scriptUrl.origin + scriptUrl.pathname.substring(0, scriptUrl.pathname.lastIndexOf("/") + 1);
-          break;
-        }
-      }
-      
-      // If path doesn't start with /, ensure baseUrl ends with /
-      if (!path.startsWith("/") && !baseUrl.endsWith("/")) {
-        baseUrl += "/";
-      }
-      
-      return new URL(path, baseUrl).href;
-    } catch (error) {
-      // Fallback: use current origin and assume images/ is at root
-      const basePath = window.location.pathname.substring(0, window.location.pathname.lastIndexOf("/") + 1);
+    
+    // Get the base path from the current location
+    // For GitHub Pages: /designAI/ -> basePath = /designAI/
+    // For local dev: / -> basePath = /
+    const currentPath = window.location.pathname;
+    let basePath = "/";
+    
+    // Extract base path (everything up to and including the last /)
+    // If pathname is /designAI/index.html or /designAI/, basePath should be /designAI/
+    if (currentPath !== "/" && currentPath !== "/index.html") {
+      // Remove filename if present, keep directory path
+      const pathWithoutFile = currentPath.substring(0, currentPath.lastIndexOf("/") + 1);
+      basePath = pathWithoutFile;
+    }
+    
+    // If path starts with /, it's absolute from site root, so we need to prepend basePath
+    // But remove the leading / first, then add basePath
+    if (path.startsWith("/")) {
+      // Remove leading / and prepend basePath
+      const relativePath = path.substring(1);
+      return window.location.origin + basePath + relativePath;
+    } else {
+      // Relative path - resolve against current location
       return window.location.origin + basePath + path;
     }
   };
@@ -628,32 +625,29 @@ const ExampleDetail: React.FC<{
   // Construct image URL relative to current page location
   const getImageUrl = (path: string) => {
     if (path.startsWith("http")) return path; // Already a full URL
-    // Resolve relative to the plugin's base URL (not the iframe parent)
-    // Try to get the base URL from the script source or use current origin
-    try {
-      // Get the script that loaded this app
-      const scripts = document.getElementsByTagName("script");
-      let baseUrl = window.location.origin + window.location.pathname;
-      
-      // Try to find the script src to determine base URL
-      for (let i = 0; i < scripts.length; i++) {
-        const src = scripts[i].src;
-        if (src && (src.includes("bundle.js") || src.includes("dist/"))) {
-          const scriptUrl = new URL(src);
-          baseUrl = scriptUrl.origin + scriptUrl.pathname.substring(0, scriptUrl.pathname.lastIndexOf("/") + 1);
-          break;
-        }
-      }
-      
-      // If path doesn't start with /, ensure baseUrl ends with /
-      if (!path.startsWith("/") && !baseUrl.endsWith("/")) {
-        baseUrl += "/";
-      }
-      
-      return new URL(path, baseUrl).href;
-    } catch (error) {
-      // Fallback: use current origin and assume images/ is at root
-      const basePath = window.location.pathname.substring(0, window.location.pathname.lastIndexOf("/") + 1);
+    
+    // Get the base path from the current location
+    // For GitHub Pages: /designAI/ -> basePath = /designAI/
+    // For local dev: / -> basePath = /
+    const currentPath = window.location.pathname;
+    let basePath = "/";
+    
+    // Extract base path (everything up to and including the last /)
+    // If pathname is /designAI/index.html or /designAI/, basePath should be /designAI/
+    if (currentPath !== "/" && currentPath !== "/index.html") {
+      // Remove filename if present, keep directory path
+      const pathWithoutFile = currentPath.substring(0, currentPath.lastIndexOf("/") + 1);
+      basePath = pathWithoutFile;
+    }
+    
+    // If path starts with /, it's absolute from site root, so we need to prepend basePath
+    // But remove the leading / first, then add basePath
+    if (path.startsWith("/")) {
+      // Remove leading / and prepend basePath
+      const relativePath = path.substring(1);
+      return window.location.origin + basePath + relativePath;
+    } else {
+      // Relative path - resolve against current location
       return window.location.origin + basePath + path;
     }
   };
