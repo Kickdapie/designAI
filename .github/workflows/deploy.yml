@@ -45,20 +45,19 @@ jobs:
           cp -r dist ../deploy/
           cp index.html manifest.json ../deploy/
           if [ -d "assets" ]; then cp -r assets ../deploy/; fi
-          # Copy images - prioritize root images folder (where they are in GitHub)
-          if [ -d "../images" ]; then
-            echo "Copying images from repository root..."
-            cp -r ../images ../deploy/
-          elif [ -d "images" ]; then
-            echo "Copying images from design-mentor-ai/images..."
-            cp -r images ../deploy/
+          # Copy public folder contents (including images) to deploy root
+          if [ -d "public" ]; then
+            echo "Copying public folder contents..."
+            cp -r public/* ../deploy/
           else
-            echo "Warning: No images folder found!"
+            echo "Warning: No public folder found!"
           fi
           # Verify images were copied
           if [ -d "../deploy/images" ]; then
             echo "Images folder exists in deploy directory"
             ls -la ../deploy/images/ | head -5
+          else
+            echo "Error: Images folder not found in deploy directory!"
           fi
           if [ ! -f "../deploy/.nojekyll" ]; then touch ../deploy/.nojekyll; fi
 
