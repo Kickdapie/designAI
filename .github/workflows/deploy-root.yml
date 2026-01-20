@@ -40,11 +40,36 @@ jobs:
 
       - name: Prepare deployment
         run: |
+          echo "=== Starting deployment preparation ==="
           mkdir -p deploy
           cp -r dist deploy/
           cp index.html manifest.json deploy/
           if [ -d "assets" ]; then cp -r assets deploy/; fi
+          # Copy public folder contents (including images) to deploy root
+          echo "Checking for public folder..."
+          if [ -d "public" ]; then
+            echo "✓ Public folder found! Copying contents..."
+            cp -r public/* deploy/ 2>&1
+            echo "Public folder copied. Deploy directory contents:"
+            ls -la deploy/ | head -10
+          else
+            echo "✗ Warning: No public folder found!"
+            echo "Current directory contents:"
+            ls -la
+          fi
+          # Verify images were copied
+          echo "Verifying images folder..."
+          if [ -d "deploy/images" ]; then
+            echo "✓ Images folder exists in deploy directory"
+            echo "Image count: $(ls -1 deploy/images/ | wc -l)"
+            ls -la deploy/images/ | head -5
+          else
+            echo "✗ Error: Images folder not found in deploy directory!"
+            echo "Deploy directory contents:"
+            ls -la deploy/
+          fi
           if [ ! -f "deploy/.nojekyll" ]; then touch deploy/.nojekyll; fi
+          echo "=== Deployment preparation complete ==="
 
       - name: Setup Pages
         uses: actions/configure-pages@v4
