@@ -82,8 +82,9 @@
       }
 
       .app-shell.minimized .app-main {
-        display: flex;
-        flex-direction: column;
+        display: flex !important;
+        flex-direction: column !important;
+        grid-template-columns: none !important;
         gap: 12px;
         overflow-y: auto;
       }
@@ -94,23 +95,30 @@
 
       .app-shell.minimized .panel {
         flex-shrink: 0;
+        width: 100% !important;
+        max-width: 100% !important;
+        position: relative !important;
+        z-index: auto;
       }
 
       .app-shell.minimized .results-panel {
         order: 1;
-        flex: 1;
+        flex: 1 1 auto;
         min-height: 0;
+        overflow-y: auto;
       }
 
       .app-shell.minimized .collection-panel {
         order: 2;
-        max-height: 40vh;
+        flex: 0 0 auto;
+        max-height: 250px;
         min-height: 150px;
         overflow-y: auto;
+        margin-top: 12px;
       }
 
       .app-shell.minimized .panel:not(.results-panel):not(.collection-panel) {
-        display: none;
+        display: none !important;
       }
 
       .badge-lab {
@@ -640,11 +648,11 @@
       }
 
       @media (max-width: 860px) {
-        .app-shell {
+        .app-shell:not(.minimized) {
           padding: 16px;
         }
 
-        .app-main {
+        .app-shell:not(.minimized) .app-main {
           grid-template-columns: 1fr;
         }
 
