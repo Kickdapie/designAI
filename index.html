@@ -84,9 +84,15 @@
       .app-shell.minimized .app-main {
         display: flex !important;
         flex-direction: column !important;
-        grid-template-columns: none !important;
+        grid-template-columns: unset !important;
+        grid-template-rows: unset !important;
+        grid-auto-flow: unset !important;
+        align-items: stretch !important;
+        align-content: flex-start !important;
         gap: 12px;
         overflow-y: auto;
+        height: 100%;
+        flex-wrap: nowrap !important;
       }
 
       .app-shell.minimized .app-header p {
@@ -99,22 +105,37 @@
         max-width: 100% !important;
         position: relative !important;
         z-index: auto;
+        grid-column: unset !important;
+        grid-row: unset !important;
+        transform: none !important;
+        margin: 0 !important;
       }
 
       .app-shell.minimized .results-panel {
-        order: 1;
-        flex: 1 1 auto;
+        order: 1 !important;
+        flex: 1 1 0;
         min-height: 0;
+        max-height: calc(100% - 280px);
         overflow-y: auto;
+        overflow-x: hidden;
+        display: flex !important;
+        flex-direction: column;
+        position: relative;
+        z-index: 1;
       }
 
       .app-shell.minimized .collection-panel {
-        order: 2;
+        order: 2 !important;
         flex: 0 0 auto;
         max-height: 250px;
         min-height: 150px;
         overflow-y: auto;
-        margin-top: 12px;
+        overflow-x: hidden;
+        margin-top: auto !important;
+        display: flex !important;
+        flex-direction: column;
+        position: relative;
+        z-index: 2;
       }
 
       .app-shell.minimized .panel:not(.results-panel):not(.collection-panel) {
