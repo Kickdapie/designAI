@@ -118,6 +118,20 @@ export type CanvasAnalysisResponse = {
   };
 };
 
+/** Canvas data extracted by plugin; UI runs AI analysis with this. */
+export type CanvasDataForAnalysis = {
+  type: "canvas-data-for-analysis";
+  payload: {
+    colors: string[];
+    fonts: string[];
+    shapeCount: number;
+    textCount: number;
+    textSamples?: string[];
+    layoutInfo?: string;
+    error?: string;
+  };
+};
+
 export type PluginMessage =
   | ApplyTraitsMessage
   | SearchExamplesMessage

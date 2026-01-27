@@ -8,6 +8,7 @@ import React, {
 import {
   ApplyTraitsMessage,
   CanvasAnalysisResponse,
+  CanvasDataForAnalysis,
   ChatMessage,
   ElementTrait,
   Example,
@@ -20,6 +21,7 @@ import {
   TypographyTrait,
 } from "../types/catalog";
 import { DEFAULT_RESULTS, EXAMPLE_DATASET } from "../catalog/examples";
+import { aiService } from "../services/aiService";
 
 const INITIAL_ASSISTANT: ChatMessage = {
   id: "assistant-welcome",
@@ -150,6 +152,44 @@ export const App: React.FC = () => {
           } else if (payload?.error) {
             pushAssistantMessage(`❌ ${payload.error}`);
           }
+          break;
+        }
+        case "canvas-data-for-analysis": {
+          const payload = message.payload as CanvasDataForAnalysis["payload"];
+          if (payload?.error) {
+            setIsAnalyzing(false);
+            pushAssistantMessage(`❌ ${payload.error}`);
+            break;
+          }
+          // Run AI in the UI context where we have the API key
+          const apiKey = typeof window !== "undefined" ? window.localStorage.getItem(STORAGE_KEY) : null;
+          if (!apiKey) {
+            setIsAnalyzing(false);
+            pushAssistantMessage("❌ No API key found. Please add your OpenAI API key in AI Settings and save.");
+            break;
+          }
+          aiService.initialize(apiKey);
+          aiService
+            .analyzeCanvas({
+              colors: payload.colors ?? [],
+              fonts: payload.fonts ?? [],
+              shapeCount: payload.shapeCount ?? 0,
+              textCount: payload.textCount ?? 0,
+              textSamples: payload.textSamples,
+              layoutInfo: payload.layoutInfo,
+            })
+            .then((result) => {
+              setIsAnalyzing(false);
+              if (result.analysis) {
+                pushAssistantMessage(`🎨 Canvas Analysis:\n\n${result.analysis}`);
+              } else {
+                pushAssistantMessage(`❌ ${result.error || "AI analysis failed. Please try again."}`);
+              }
+            })
+            .catch((err) => {
+              setIsAnalyzing(false);
+              pushAssistantMessage(`❌ ${err instanceof Error ? err.message : "AI analysis failed."}`);
+            });
           break;
         }
         default:
@@ -342,8 +382,8 @@ export const App: React.FC = () => {
   }, [sendToPlugin]);
 
   const handleAnalyzeCanvas = useCallback((analyzeSelection: boolean = false) => {
-    const apiKey = typeof window !== "undefined" ? window.localStorage.getItem(STORAGE_KEY) : null;
-    if (!apiKey && !aiEnabled) {
+    const hasKey = typeof window !== "undefined" && !!window.localStorage.getItem(STORAGE_KEY);
+    if (!hasKey && !aiEnabled) {
       pushAssistantMessage("⚠️ AI is not enabled. Please configure your API key in settings to analyze your canvas.");
       return;
     }
@@ -351,7 +391,7 @@ export const App: React.FC = () => {
     pushAssistantMessage("🔍 Analyzing your canvas...");
     sendToPlugin({
       type: "analyze-canvas",
-      payload: { analyzeSelection, apiKey: apiKey || undefined },
+      payload: { analyzeSelection },
     });
   }, [aiEnabled, sendToPlugin, pushAssistantMessage]);
 

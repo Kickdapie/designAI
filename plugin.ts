@@ -15,6 +15,7 @@ import { aiService } from "./src/services/aiService";
 import type {
   ApplyTraitsMessage,
   CanvasAnalysisResponse,
+  CanvasDataForAnalysis,
   ElementTrait,
   Example,
   LayoutTrait,
@@ -57,7 +58,7 @@ penpot.ui.onMessage((message: PluginMessage | { type: string; payload?: any }) =
       handleResize(message as ResizeWindowMessage);
       break;
     case "analyze-canvas":
-      handleAnalyzeCanvas(message.payload?.analyzeSelection ?? false, message.payload?.apiKey);
+      handleAnalyzeCanvas(message.payload?.analyzeSelection ?? false);
       break;
     default:
       console.log("[Plugin] Unknown message type:", message.type);
@@ -131,24 +132,8 @@ function handleAIConfiguration(apiKey?: string) {
   }
 }
 
-async function handleAnalyzeCanvas(analyzeSelection: boolean, apiKeyFromUI?: string) {
+async function handleAnalyzeCanvas(analyzeSelection: boolean) {
   console.log("[Plugin] Analyzing canvas, selection only:", analyzeSelection);
-  
-  // Use API key from message so it works regardless of plugin context (e.g. different origin/localStorage)
-  if (apiKeyFromUI) {
-    aiService.initialize(apiKeyFromUI);
-  }
-  
-  if (!aiService.isAvailable()) {
-    penpot.ui.sendMessage({
-      type: "canvas-analysis",
-      payload: {
-        success: false,
-        error: "AI is not enabled. Please configure your API key in settings.",
-      },
-    } as CanvasAnalysisResponse);
-    return;
-  }
 
   try {
     // Get shapes to analyze
@@ -159,12 +144,15 @@ async function handleAnalyzeCanvas(analyzeSelection: boolean, apiKeyFromUI?: str
       shapesToAnalyze = penpot.selection ?? [];
       if (shapesToAnalyze.length === 0) {
         penpot.ui.sendMessage({
-          type: "canvas-analysis",
+          type: "canvas-data-for-analysis",
           payload: {
-            success: false,
+            colors: [],
+            fonts: [],
+            shapeCount: 0,
+            textCount: 0,
             error: "No shapes selected. Please select shapes on the canvas to analyze.",
           },
-        } as CanvasAnalysisResponse);
+        } as CanvasDataForAnalysis);
         return;
       }
     } else {
@@ -180,15 +168,16 @@ async function handleAnalyzeCanvas(analyzeSelection: boolean, apiKeyFromUI?: str
           // Try to get shapes from the page if available
           // This is a workaround - the actual API might differ
           if (shapesToAnalyze.length === 0) {
-            // If no selection, we can't analyze all shapes easily
-            // For now, we'll require selection or analyze what we can
             penpot.ui.sendMessage({
-              type: "canvas-analysis",
+              type: "canvas-data-for-analysis",
               payload: {
-                success: false,
+                colors: [],
+                fonts: [],
+                shapeCount: 0,
+                textCount: 0,
                 error: "No shapes found. Please select shapes on the canvas to analyze, or ensure your canvas has content.",
               },
-            } as CanvasAnalysisResponse);
+            } as CanvasDataForAnalysis);
             return;
           }
         }
@@ -200,12 +189,15 @@ async function handleAnalyzeCanvas(analyzeSelection: boolean, apiKeyFromUI?: str
 
     if (shapesToAnalyze.length === 0) {
       penpot.ui.sendMessage({
-        type: "canvas-analysis",
+        type: "canvas-data-for-analysis",
         payload: {
-          success: false,
+          colors: [],
+          fonts: [],
+          shapeCount: 0,
+          textCount: 0,
           error: "No shapes to analyze. Please add shapes to your canvas or select existing ones.",
         },
-      } as CanvasAnalysisResponse);
+      } as CanvasDataForAnalysis);
       return;
     }
 
@@ -327,63 +319,43 @@ async function handleAnalyzeCanvas(analyzeSelection: boolean, apiKeyFromUI?: str
     if (shapeCount === 0) {
       console.warn("[Plugin] No shapes found to analyze");
       penpot.ui.sendMessage({
-        type: "canvas-analysis",
+        type: "canvas-data-for-analysis",
         payload: {
-          success: false,
+          colors: [],
+          fonts: [],
+          shapeCount: 0,
+          textCount: 0,
           error: "No shapes found on canvas. Please add some shapes, text, or colors to analyze.",
         },
-      } as CanvasAnalysisResponse);
+      } as CanvasDataForAnalysis);
       return;
     }
 
-    // Send to AI for analysis
-    console.log("[Plugin] Sending canvas data to AI service...");
-    const result = await aiService.analyzeCanvas({
-      colors,
-      fonts,
-      shapeCount,
-      textCount,
-      textSamples: textSamples.length > 0 ? textSamples : undefined,
-      layoutInfo: layoutInfo || undefined,
-    });
-    
-    console.log("[Plugin] AI analysis result:", { 
-      hasAnalysis: !!result.analysis, 
-      error: result.error 
-    });
-
-    if (result.analysis) {
-      penpot.ui.sendMessage({
-        type: "canvas-analysis",
-        payload: {
-          success: true,
-          analysis: result.analysis,
-          colors,
-          fonts,
-          shapeCount,
-          textCount,
-        },
-      } as CanvasAnalysisResponse);
-    } else {
-      const errorMsg = result.error || "AI analysis failed. Please try again.";
-      console.error("[Plugin] Canvas analysis error:", errorMsg);
-      penpot.ui.sendMessage({
-        type: "canvas-analysis",
-        payload: {
-          success: false,
-          error: errorMsg,
-        },
-      } as CanvasAnalysisResponse);
-    }
-  } catch (error) {
-    console.error("[Plugin] Error analyzing canvas:", error);
+    // Send canvas data to UI; the UI (which has the API key) will call the AI
+    console.log("[Plugin] Sending canvas data to UI for AI analysis...");
     penpot.ui.sendMessage({
-      type: "canvas-analysis",
+      type: "canvas-data-for-analysis",
       payload: {
-        success: false,
-        error: `Analysis failed: ${error instanceof Error ? error.message : "Unknown error"}`,
+        colors,
+        fonts,
+        shapeCount,
+        textCount,
+        textSamples: textSamples.length > 0 ? textSamples : undefined,
+        layoutInfo: layoutInfo || undefined,
       },
-    } as CanvasAnalysisResponse);
+    } as CanvasDataForAnalysis);
+  } catch (error) {
+    console.error("[Plugin] Error extracting canvas data:", error);
+    penpot.ui.sendMessage({
+      type: "canvas-data-for-analysis",
+      payload: {
+        colors: [],
+        fonts: [],
+        shapeCount: 0,
+        textCount: 0,
+        error: `Could not read canvas: ${error instanceof Error ? error.message : "Unknown error"}`,
+      },
+    } as CanvasDataForAnalysis);
   }
 }
 
