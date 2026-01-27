@@ -120,19 +120,24 @@ class AIService {
     textCount: number;
     textSamples?: string[];
     layoutInfo?: string;
-  }): Promise<string> {
+  }): Promise<{ analysis: string; error?: string }> {
     if (!this.isAvailable()) {
-      return "";
+      return { analysis: "", error: "AI is not available" };
     }
 
     try {
       const analysis = await this.callLLM(
         this.buildCanvasAnalysisPrompt(canvasData)
       );
-      return analysis || "";
+      if (analysis && analysis.trim()) {
+        return { analysis: analysis.trim() };
+      } else {
+        return { analysis: "", error: "AI returned empty response" };
+      }
     } catch (error) {
-      console.warn("[AI Service] Canvas analysis failed:", error);
-      return "";
+      console.error("[AI Service] Canvas analysis failed:", error);
+      const errorMessage = error instanceof Error ? error.message : String(error);
+      return { analysis: "", error: errorMessage };
     }
   }
 
@@ -226,12 +231,26 @@ class AIService {
     });
 
     if (!response.ok) {
-      const error = await response.json().catch(() => ({ error: "Unknown error" }));
-      throw new Error(`API error: ${error.error?.message || "Failed to get response"}`);
+      let errorMessage = "Unknown error";
+      try {
+        const errorData = await response.json();
+        errorMessage = errorData.error?.message || errorData.error || `HTTP ${response.status}: ${response.statusText}`;
+        console.error("[AI Service] API error details:", errorData);
+      } catch (e) {
+        errorMessage = `HTTP ${response.status}: ${response.statusText}`;
+      }
+      throw new Error(`OpenAI API error: ${errorMessage}`);
     }
 
     const data = await response.json();
-    return data.choices[0]?.message?.content?.trim() || "";
+    const content = data.choices[0]?.message?.content?.trim();
+    
+    if (!content) {
+      console.warn("[AI Service] Empty response from API:", data);
+      throw new Error("AI returned empty response");
+    }
+    
+    return content;
   }
 
   /**
@@ -451,6 +470,11 @@ Example format:
     textSamples?: string[];
     layoutInfo?: string;
   }): string {
+    // Handle empty canvas case
+    if (canvasData.shapeCount === 0) {
+      return `A user has an empty canvas and wants design advice. Provide encouraging, actionable suggestions for getting started with their design project. Keep it brief (2-3 sentences) and friendly.`;
+    }
+
     const colorList = canvasData.colors.length > 0 
       ? canvasData.colors.join(", ")
       : "No colors detected";
@@ -467,13 +491,22 @@ Example format:
       ? `\nLayout context: ${canvasData.layoutInfo}`
       : "";
 
+    // Build context about what's on the canvas
+    let contextNotes = "";
+    if (canvasData.colors.length === 0 && canvasData.shapeCount > 0) {
+      contextNotes += "\nNote: Shapes are present but no colors were detected. They may be using default colors or fills.";
+    }
+    if (canvasData.textCount > 0 && canvasData.fonts.length === 0) {
+      contextNotes += "\nNote: Text elements are present but font information wasn't extracted.";
+    }
+
     return `Analyze this design canvas and provide specific, actionable recommendations:
 
 Canvas Content:
 - Colors used: ${colorList}
 - Fonts used: ${fontList}
 - Shapes: ${canvasData.shapeCount}
-- Text elements: ${canvasData.textCount}${textInfo}${layoutInfo}
+- Text elements: ${canvasData.textCount}${textInfo}${layoutInfo}${contextNotes}
 
 Provide a brief analysis (3-4 sentences) that:
 1. Observes the current design (color palette, typography, composition)
@@ -481,7 +514,7 @@ Provide a brief analysis (3-4 sentences) that:
 3. Suggests specific enhancements (e.g., "Your palette is monochromatic - consider adding an accent color like #FF6B6B for CTAs" or "You're using 4 different fonts - consider consolidating to 2 for better consistency")
 4. Offers actionable next steps
 
-Be specific, constructive, and design-focused. Keep it concise and friendly.`;
+Be specific, constructive, and design-focused. Keep it concise and friendly. If the canvas is minimal, provide encouraging suggestions for building it out.`;
   }
 
   /**

@@ -313,10 +313,27 @@ async function handleAnalyzeCanvas(analyzeSelection: boolean) {
       shapeCount,
       textCount,
       textSamples: textSamples.length,
+      colorList: colors,
+      fontList: fonts,
+      layoutInfo,
     });
 
+    // Validate we have something to analyze
+    if (shapeCount === 0) {
+      console.warn("[Plugin] No shapes found to analyze");
+      penpot.ui.sendMessage({
+        type: "canvas-analysis",
+        payload: {
+          success: false,
+          error: "No shapes found on canvas. Please add some shapes, text, or colors to analyze.",
+        },
+      } as CanvasAnalysisResponse);
+      return;
+    }
+
     // Send to AI for analysis
-    const analysis = await aiService.analyzeCanvas({
+    console.log("[Plugin] Sending canvas data to AI service...");
+    const result = await aiService.analyzeCanvas({
       colors,
       fonts,
       shapeCount,
@@ -324,13 +341,18 @@ async function handleAnalyzeCanvas(analyzeSelection: boolean) {
       textSamples: textSamples.length > 0 ? textSamples : undefined,
       layoutInfo: layoutInfo || undefined,
     });
+    
+    console.log("[Plugin] AI analysis result:", { 
+      hasAnalysis: !!result.analysis, 
+      error: result.error 
+    });
 
-    if (analysis) {
+    if (result.analysis) {
       penpot.ui.sendMessage({
         type: "canvas-analysis",
         payload: {
           success: true,
-          analysis,
+          analysis: result.analysis,
           colors,
           fonts,
           shapeCount,
@@ -338,11 +360,13 @@ async function handleAnalyzeCanvas(analyzeSelection: boolean) {
         },
       } as CanvasAnalysisResponse);
     } else {
+      const errorMsg = result.error || "AI analysis failed. Please try again.";
+      console.error("[Plugin] Canvas analysis error:", errorMsg);
       penpot.ui.sendMessage({
         type: "canvas-analysis",
         payload: {
           success: false,
-          error: "AI analysis failed. Please try again.",
+          error: errorMsg,
         },
       } as CanvasAnalysisResponse);
     }
