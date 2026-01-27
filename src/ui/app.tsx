@@ -7,6 +7,7 @@ import React, {
 } from "react";
 import {
   ApplyTraitsMessage,
+  CanvasAnalysisResponse,
   ChatMessage,
   ElementTrait,
   Example,
@@ -42,6 +43,7 @@ export const App: React.FC = () => {
   const [aiEnabled, setAiEnabled] = useState(false);
   const [showAISettings, setShowAISettings] = useState(false);
   const [apiKeyInput, setApiKeyInput] = useState("");
+  const [isAnalyzing, setIsAnalyzing] = useState(false);
   const chatEndRef = useRef<HTMLDivElement | null>(null);
   const fallbackTimerRef = useRef<number | null>(null);
   const handshakeRef = useRef(false);
@@ -133,6 +135,16 @@ export const App: React.FC = () => {
             pushAssistantMessage(
               "Update sent to your canvas. Let me know if anything looks off.",
             );
+          }
+          break;
+        }
+        case "canvas-analysis": {
+          setIsAnalyzing(false);
+          const payload = message.payload as CanvasAnalysisResponse["payload"];
+          if (payload?.success && payload.analysis) {
+            pushAssistantMessage(`🎨 Canvas Analysis:\n\n${payload.analysis}`);
+          } else if (payload?.error) {
+            pushAssistantMessage(`❌ ${payload.error}`);
           }
           break;
         }
@@ -308,6 +320,19 @@ export const App: React.FC = () => {
     });
   }, [sendToPlugin]);
 
+  const handleAnalyzeCanvas = useCallback((analyzeSelection: boolean = false) => {
+    if (!aiEnabled) {
+      pushAssistantMessage("⚠️ AI is not enabled. Please configure your API key in settings to analyze your canvas.");
+      return;
+    }
+    setIsAnalyzing(true);
+    pushAssistantMessage("🔍 Analyzing your canvas...");
+    sendToPlugin({
+      type: "analyze-canvas",
+      payload: { analyzeSelection },
+    });
+  }, [aiEnabled, sendToPlugin, pushAssistantMessage]);
+
   const collectionSummary = useMemo(() => collection.length, [collection.length]);
 
   return (
@@ -423,8 +448,24 @@ export const App: React.FC = () => {
       <main className="app-main">
         <section className="panel">
           <header className="panel-header">
-            <h3>Conversation</h3>
-            <span className="panel-subhead">Guide the assistant with intent</span>
+            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", width: "100%" }}>
+              <div>
+                <h3>Conversation</h3>
+                <span className="panel-subhead">Guide the assistant with intent</span>
+              </div>
+              {aiEnabled && !isMinimized && (
+                <button
+                  className="secondary-button"
+                  type="button"
+                  onClick={() => handleAnalyzeCanvas(false)}
+                  disabled={isAnalyzing}
+                  title="Analyze your canvas and get AI recommendations"
+                  style={{ fontSize: "11px", padding: "6px 12px", whiteSpace: "nowrap" }}
+                >
+                  {isAnalyzing ? "⏳ Analyzing..." : "🎨 Analyze Canvas"}
+                </button>
+              )}
+            </div>
           </header>
           <form className="prompt-form" onSubmit={handlePromptSubmit}>
             <textarea

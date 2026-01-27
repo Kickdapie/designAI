@@ -14,6 +14,7 @@ import { scoreExamples } from "./src/catalog/search";
 import { aiService } from "./src/services/aiService";
 import type {
   ApplyTraitsMessage,
+  CanvasAnalysisResponse,
   ElementTrait,
   Example,
   LayoutTrait,
@@ -54,6 +55,9 @@ penpot.ui.onMessage((message: PluginMessage | { type: string; payload?: any }) =
       break;
     case "resize-window":
       handleResize(message as ResizeWindowMessage);
+      break;
+    case "analyze-canvas":
+      handleAnalyzeCanvas(message.payload?.analyzeSelection ?? false);
       break;
     default:
       console.log("[Plugin] Unknown message type:", message.type);
@@ -124,6 +128,233 @@ function handleAIConfiguration(apiKey?: string) {
         enabled: false,
       },
     });
+  }
+}
+
+async function handleAnalyzeCanvas(analyzeSelection: boolean) {
+  console.log("[Plugin] Analyzing canvas, selection only:", analyzeSelection);
+  
+  if (!aiService.isAvailable()) {
+    penpot.ui.sendMessage({
+      type: "canvas-analysis",
+      payload: {
+        success: false,
+        error: "AI is not enabled. Please configure your API key in settings.",
+      },
+    } as CanvasAnalysisResponse);
+    return;
+  }
+
+  try {
+    // Get shapes to analyze
+    let shapesToAnalyze: Shape[] = [];
+    
+    if (analyzeSelection) {
+      // Analyze only selected shapes
+      shapesToAnalyze = penpot.selection ?? [];
+      if (shapesToAnalyze.length === 0) {
+        penpot.ui.sendMessage({
+          type: "canvas-analysis",
+          payload: {
+            success: false,
+            error: "No shapes selected. Please select shapes on the canvas to analyze.",
+          },
+        } as CanvasAnalysisResponse);
+        return;
+      }
+    } else {
+      // Analyze all shapes on the current page
+      try {
+        const page = penpot.currentPage;
+        if (page) {
+          // Get all shapes from the page
+          // Note: Penpot API may not have a direct "getAllShapes" method
+          // We'll use selection as a fallback or try to access page shapes
+          shapesToAnalyze = penpot.selection ?? [];
+          
+          // Try to get shapes from the page if available
+          // This is a workaround - the actual API might differ
+          if (shapesToAnalyze.length === 0) {
+            // If no selection, we can't analyze all shapes easily
+            // For now, we'll require selection or analyze what we can
+            penpot.ui.sendMessage({
+              type: "canvas-analysis",
+              payload: {
+                success: false,
+                error: "No shapes found. Please select shapes on the canvas to analyze, or ensure your canvas has content.",
+              },
+            } as CanvasAnalysisResponse);
+            return;
+          }
+        }
+      } catch (error) {
+        console.warn("[Plugin] Could not access page, using selection:", error);
+        shapesToAnalyze = penpot.selection ?? [];
+      }
+    }
+
+    if (shapesToAnalyze.length === 0) {
+      penpot.ui.sendMessage({
+        type: "canvas-analysis",
+        payload: {
+          success: false,
+          error: "No shapes to analyze. Please add shapes to your canvas or select existing ones.",
+        },
+      } as CanvasAnalysisResponse);
+      return;
+    }
+
+    // Extract colors from shapes
+    const colors: string[] = [];
+    const fonts: string[] = [];
+    const textSamples: string[] = [];
+    let textCount = 0;
+    let shapeCount = shapesToAnalyze.length;
+
+    // Use Penpot's shapesColors utility if available
+    try {
+      const colorData = penpot.shapesColors(shapesToAnalyze);
+      if (colorData && Array.isArray(colorData)) {
+        colorData.forEach((colorInfo: any) => {
+          if (colorInfo?.color) {
+            const colorStr = typeof colorInfo.color === "string" 
+              ? colorInfo.color 
+              : colorInfo.color.hex || colorInfo.color.value;
+            if (colorStr && !colors.includes(colorStr)) {
+              colors.push(colorStr);
+            }
+          }
+        });
+      }
+    } catch (error) {
+      console.warn("[Plugin] Could not extract colors via shapesColors:", error);
+    }
+
+    // Extract fonts and text from text shapes
+    shapesToAnalyze.forEach((shape) => {
+      try {
+        if (penpot.utils.types.isText(shape)) {
+          textCount++;
+          const textShape = shape as any; // Use any to access plugin API properties
+          
+          // Try to get font family (may be fontFamily or fontId)
+          const fontFamily = textShape.fontFamily || textShape.fontId;
+          if (fontFamily && typeof fontFamily === "string" && !fonts.includes(fontFamily)) {
+            fonts.push(fontFamily);
+          }
+          
+          // Try to get text content (characters property in Penpot API)
+          const textContent = textShape.characters || textShape.content;
+          if (textContent && textSamples.length < 10) {
+            const textStr = typeof textContent === "string"
+              ? textContent
+              : String(textContent);
+            if (textStr.trim()) {
+              textSamples.push(textStr.trim().substring(0, 100)); // Limit length
+            }
+          }
+        }
+      } catch (error) {
+        console.warn("[Plugin] Error processing text shape:", error);
+      }
+    });
+
+    // Extract additional colors from shape fills (fallback)
+    if (colors.length === 0) {
+      shapesToAnalyze.forEach((shape) => {
+        try {
+          // Try to access fill property
+          if ((shape as any).fills && Array.isArray((shape as any).fills)) {
+            (shape as any).fills.forEach((fill: any) => {
+              if (fill?.color) {
+                const colorStr = typeof fill.color === "string"
+                  ? fill.color
+                  : fill.color.hex || fill.color.value;
+                if (colorStr && !colors.includes(colorStr)) {
+                  colors.push(colorStr);
+                }
+              }
+            });
+          }
+        } catch (error) {
+          // Ignore errors for individual shapes
+        }
+      });
+    }
+
+    // Analyze layout (basic info)
+    let layoutInfo = "";
+    if (shapesToAnalyze.length > 1) {
+      try {
+        const positions = shapesToAnalyze.map((s: any) => ({
+          x: s.x || 0,
+          y: s.y || 0,
+          width: s.width || 0,
+          height: s.height || 0,
+        }));
+        
+        const minX = Math.min(...positions.map(p => p.x));
+        const maxX = Math.max(...positions.map(p => p.x + p.width));
+        const minY = Math.min(...positions.map(p => p.y));
+        const maxY = Math.max(...positions.map(p => p.y + p.height));
+        
+        const width = maxX - minX;
+        const height = maxY - minY;
+        
+        layoutInfo = `${shapesToAnalyze.length} shapes arranged in ${Math.round(width)}x${Math.round(height)} area`;
+      } catch (error) {
+        // Ignore layout analysis errors
+      }
+    }
+
+    console.log("[Plugin] Extracted canvas data:", {
+      colors: colors.length,
+      fonts: fonts.length,
+      shapeCount,
+      textCount,
+      textSamples: textSamples.length,
+    });
+
+    // Send to AI for analysis
+    const analysis = await aiService.analyzeCanvas({
+      colors,
+      fonts,
+      shapeCount,
+      textCount,
+      textSamples: textSamples.length > 0 ? textSamples : undefined,
+      layoutInfo: layoutInfo || undefined,
+    });
+
+    if (analysis) {
+      penpot.ui.sendMessage({
+        type: "canvas-analysis",
+        payload: {
+          success: true,
+          analysis,
+          colors,
+          fonts,
+          shapeCount,
+          textCount,
+        },
+      } as CanvasAnalysisResponse);
+    } else {
+      penpot.ui.sendMessage({
+        type: "canvas-analysis",
+        payload: {
+          success: false,
+          error: "AI analysis failed. Please try again.",
+        },
+      } as CanvasAnalysisResponse);
+    }
+  } catch (error) {
+    console.error("[Plugin] Error analyzing canvas:", error);
+    penpot.ui.sendMessage({
+      type: "canvas-analysis",
+      payload: {
+        success: false,
+        error: `Analysis failed: ${error instanceof Error ? error.message : "Unknown error"}`,
+      },
+    } as CanvasAnalysisResponse);
   }
 }
 

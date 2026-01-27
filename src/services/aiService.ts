@@ -110,6 +110,33 @@ class AIService {
   }
 
   /**
+   * Analyze canvas content and provide design recommendations
+   * Analyzes colors, typography, layout, and provides contextual suggestions
+   */
+  async analyzeCanvas(canvasData: {
+    colors: string[];
+    fonts: string[];
+    shapeCount: number;
+    textCount: number;
+    textSamples?: string[];
+    layoutInfo?: string;
+  }): Promise<string> {
+    if (!this.isAvailable()) {
+      return "";
+    }
+
+    try {
+      const analysis = await this.callLLM(
+        this.buildCanvasAnalysisPrompt(canvasData)
+      );
+      return analysis || "";
+    } catch (error) {
+      console.warn("[AI Service] Canvas analysis failed:", error);
+      return "";
+    }
+  }
+
+  /**
    * Generate intelligent layout specs based on element descriptions
    * Uses AI to understand what the element represents and creates appropriate layouts
    */
@@ -411,6 +438,50 @@ Example format:
       console.warn("[AI Service] Failed to parse layout specs:", error, response);
       return [];
     }
+  }
+
+  /**
+   * Build prompt for canvas analysis
+   */
+  private buildCanvasAnalysisPrompt(canvasData: {
+    colors: string[];
+    fonts: string[];
+    shapeCount: number;
+    textCount: number;
+    textSamples?: string[];
+    layoutInfo?: string;
+  }): string {
+    const colorList = canvasData.colors.length > 0 
+      ? canvasData.colors.join(", ")
+      : "No colors detected";
+    
+    const fontList = canvasData.fonts.length > 0
+      ? canvasData.fonts.join(", ")
+      : "No fonts detected";
+    
+    const textInfo = canvasData.textSamples && canvasData.textSamples.length > 0
+      ? `\nText samples: ${canvasData.textSamples.slice(0, 5).join("; ")}`
+      : "";
+    
+    const layoutInfo = canvasData.layoutInfo
+      ? `\nLayout context: ${canvasData.layoutInfo}`
+      : "";
+
+    return `Analyze this design canvas and provide specific, actionable recommendations:
+
+Canvas Content:
+- Colors used: ${colorList}
+- Fonts used: ${fontList}
+- Shapes: ${canvasData.shapeCount}
+- Text elements: ${canvasData.textCount}${textInfo}${layoutInfo}
+
+Provide a brief analysis (3-4 sentences) that:
+1. Observes the current design (color palette, typography, composition)
+2. Identifies strengths and potential improvements
+3. Suggests specific enhancements (e.g., "Your palette is monochromatic - consider adding an accent color like #FF6B6B for CTAs" or "You're using 4 different fonts - consider consolidating to 2 for better consistency")
+4. Offers actionable next steps
+
+Be specific, constructive, and design-focused. Keep it concise and friendly.`;
   }
 
   /**

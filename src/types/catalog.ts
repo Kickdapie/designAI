@@ -100,11 +100,30 @@ export type ConfigureAIMessage = {
   payload?: { apiKey?: string };
 };
 
+export type AnalyzeCanvasMessage = {
+  type: "analyze-canvas";
+  payload?: { analyzeSelection?: boolean };
+};
+
+export type CanvasAnalysisResponse = {
+  type: "canvas-analysis";
+  payload: {
+    success: boolean;
+    analysis?: string;
+    error?: string;
+    colors?: string[];
+    fonts?: string[];
+    shapeCount?: number;
+    textCount?: number;
+  };
+};
+
 export type PluginMessage =
   | ApplyTraitsMessage
   | SearchExamplesMessage
   | UiReadyMessage
-  | ConfigureAIMessage;
+  | ConfigureAIMessage
+  | AnalyzeCanvasMessage;
 
 // Layout automation types
 export type ViewportInfo = {
