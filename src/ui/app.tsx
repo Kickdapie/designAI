@@ -42,7 +42,11 @@ export const App: React.FC = () => {
   const [isMinimized, setIsMinimized] = useState(false);
   const [aiEnabled, setAiEnabled] = useState(false);
   const [showAISettings, setShowAISettings] = useState(false);
-  const [apiKeyInput, setApiKeyInput] = useState("");
+  const STORAGE_KEY = "openai_api_key";
+  const [apiKeyInput, setApiKeyInput] = useState(() => {
+    if (typeof window === "undefined") return "";
+    return window.localStorage.getItem(STORAGE_KEY) || "";
+  });
   const [isAnalyzing, setIsAnalyzing] = useState(false);
   const chatEndRef = useRef<HTMLDivElement | null>(null);
   const fallbackTimerRef = useRef<number | null>(null);
@@ -167,6 +171,12 @@ export const App: React.FC = () => {
     }, FALLBACK_TIMEOUT_MS);
 
     sendToPlugin({ type: "ui-ready" });
+
+    // If we have a stored API key, send it to the plugin so it stays configured
+    const storedKey = typeof window !== "undefined" ? window.localStorage.getItem(STORAGE_KEY) : null;
+    if (storedKey) {
+      sendToPlugin({ type: "configure-ai", payload: { apiKey: storedKey } });
+    }
 
     return () => {
       window.removeEventListener("message", handleMessage);
@@ -306,14 +316,25 @@ export const App: React.FC = () => {
   }, [isMinimized, sendToPlugin]);
 
   const handleSaveAPIKey = useCallback(() => {
+    const key = apiKeyInput.trim() || undefined;
+    if (typeof window !== "undefined") {
+      if (key) {
+        window.localStorage.setItem(STORAGE_KEY, key);
+      } else {
+        window.localStorage.removeItem(STORAGE_KEY);
+      }
+    }
     sendToPlugin({
       type: "configure-ai",
-      payload: { apiKey: apiKeyInput.trim() || undefined },
+      payload: { apiKey: key },
     });
   }, [apiKeyInput, sendToPlugin]);
 
   const handleClearAPIKey = useCallback(() => {
     setApiKeyInput("");
+    if (typeof window !== "undefined") {
+      window.localStorage.removeItem(STORAGE_KEY);
+    }
     sendToPlugin({
       type: "configure-ai",
       payload: { apiKey: undefined },
@@ -321,7 +342,8 @@ export const App: React.FC = () => {
   }, [sendToPlugin]);
 
   const handleAnalyzeCanvas = useCallback((analyzeSelection: boolean = false) => {
-    if (!aiEnabled) {
+    const apiKey = typeof window !== "undefined" ? window.localStorage.getItem(STORAGE_KEY) : null;
+    if (!apiKey && !aiEnabled) {
       pushAssistantMessage("⚠️ AI is not enabled. Please configure your API key in settings to analyze your canvas.");
       return;
     }
@@ -329,7 +351,7 @@ export const App: React.FC = () => {
     pushAssistantMessage("🔍 Analyzing your canvas...");
     sendToPlugin({
       type: "analyze-canvas",
-      payload: { analyzeSelection },
+      payload: { analyzeSelection, apiKey: apiKey || undefined },
     });
   }, [aiEnabled, sendToPlugin, pushAssistantMessage]);
 

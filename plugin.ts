@@ -57,7 +57,7 @@ penpot.ui.onMessage((message: PluginMessage | { type: string; payload?: any }) =
       handleResize(message as ResizeWindowMessage);
       break;
     case "analyze-canvas":
-      handleAnalyzeCanvas(message.payload?.analyzeSelection ?? false);
+      handleAnalyzeCanvas(message.payload?.analyzeSelection ?? false, message.payload?.apiKey);
       break;
     default:
       console.log("[Plugin] Unknown message type:", message.type);
@@ -131,8 +131,13 @@ function handleAIConfiguration(apiKey?: string) {
   }
 }
 
-async function handleAnalyzeCanvas(analyzeSelection: boolean) {
+async function handleAnalyzeCanvas(analyzeSelection: boolean, apiKeyFromUI?: string) {
   console.log("[Plugin] Analyzing canvas, selection only:", analyzeSelection);
+  
+  // Use API key from message so it works regardless of plugin context (e.g. different origin/localStorage)
+  if (apiKeyFromUI) {
+    aiService.initialize(apiKeyFromUI);
+  }
   
   if (!aiService.isAvailable()) {
     penpot.ui.sendMessage({

@@ -102,7 +102,7 @@ export type ConfigureAIMessage = {
 
 export type AnalyzeCanvasMessage = {
   type: "analyze-canvas";
-  payload?: { analyzeSelection?: boolean };
+  payload?: { analyzeSelection?: boolean; apiKey?: string };
 };
 
 export type CanvasAnalysisResponse = {
