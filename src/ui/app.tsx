@@ -56,7 +56,7 @@ export const App: React.FC = () => {
 
   const sendToPlugin = useCallback((message: unknown) => {
     if (typeof window !== "undefined") {
-      window.parent?.postMessage(message, "*");
+      window.parent?.postMessage({ pluginMessage: message }, "*");
     }
   }, []);
 
@@ -77,7 +77,7 @@ export const App: React.FC = () => {
 
   useEffect(() => {
     const handleMessage = (event: MessageEvent) => {
-      const message = event.data;
+      const message = event.data?.pluginMessage;
       if (!message || typeof message !== "object") return;
 
       switch (message.type) {

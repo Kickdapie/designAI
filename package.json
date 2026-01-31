@@ -5,7 +5,9 @@
   "scripts": {
     "build:plugin": "esbuild plugin.ts --bundle --format=iife --outfile=dist/plugin.js --loader:.ts=ts --banner:js=\"/* eslint-disable */\" --define:process.env.NODE_ENV='\"production\"' --platform=browser",
     "build:ui": "esbuild src/ui/index.tsx --bundle --format=esm --outfile=dist/bundle.js --loader:.ts=ts --loader:.tsx=tsx",
-    "build": "npm run build:plugin && npm run build:ui",
+    "build:code": "esbuild code.ts --bundle --format=iife --outfile=dist/code.js --loader:.ts=ts --platform=browser",
+    "build:figma": "npm run build:ui && node -e \"require('fs').mkdirSync('dist',{recursive:true}); require('fs').copyFileSync('ui.html','dist/ui.html');\" && npm run build:code && node scripts/inject-html.js",
+    "build": "npm run build:figma",
     "dev": "npm run build:ui -- --watch"
   },
   "dependencies": {
@@ -14,6 +16,7 @@
     "react-dom": "^18.3.1"
   },
   "devDependencies": {
+    "@figma/plugin-typings": "^1.100.0",
     "@types/react": "^18.3.8",
     "@types/react-dom": "^18.3.0",
     "esbuild": "^0.21.5",
