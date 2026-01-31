@@ -20,6 +20,7 @@ if (!fs.existsSync(codePath)) {
 
 const html = fs.readFileSync(uiPath, "utf8");
 const codeContent = fs.readFileSync(codePath, "utf8");
-const injected = "const __html__ = " + JSON.stringify(html) + ";\n" + codeContent;
+// Use __pluginUiHtml__ to avoid "invalid redefinition of lexical identifier" when Figma injects __html__
+const injected = "var __pluginUiHtml__ = " + JSON.stringify(html) + ";\n" + codeContent;
 fs.writeFileSync(codePath, injected);
-console.log("Injected __html__ into dist/code.js");
+console.log("Injected __pluginUiHtml__ into dist/code.js");

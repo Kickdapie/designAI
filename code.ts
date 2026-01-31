@@ -3,7 +3,8 @@
  * Replaces Penpot plugin; uses Figma Plugin API for UI and canvas.
  */
 /// <reference types="@figma/plugin-typings" />
-declare const __html__: string;
+/** Injected at build time by scripts/inject-html.js to avoid redefining Figma's __html__ */
+declare var __pluginUiHtml__: string;
 
 import {
   DEFAULT_RESULTS,
@@ -32,7 +33,7 @@ const UI_MINIMIZED_WIDTH = 400;
 const UI_MINIMIZED_HEIGHT = 300;
 
 // Show UI: use __html__ from manifest when "ui" is set
-figma.showUI(__html__, { width: UI_WIDTH, height: UI_HEIGHT });
+figma.showUI(typeof __pluginUiHtml__ !== "undefined" ? __pluginUiHtml__ : (typeof __html__ !== "undefined" ? __html__ : ""), { width: UI_WIDTH, height: UI_HEIGHT });
 
 // No localStorage in plugin context; API key is passed from UI via configure-ai
 figma.ui.onmessage = (message: PluginMessage | { type: string; payload?: unknown }) => {
