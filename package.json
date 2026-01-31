@@ -4,8 +4,8 @@
   "private": true,
   "scripts": {
     "build:plugin": "esbuild plugin.ts --bundle --format=iife --outfile=dist/plugin.js --loader:.ts=ts --banner:js=\"/* eslint-disable */\" --define:process.env.NODE_ENV='\"production\"' --platform=browser",
-    "build:ui": "esbuild src/ui/index.tsx --bundle --format=esm --outfile=dist/bundle.js --loader:.ts=ts --loader:.tsx=tsx",
-    "build:code": "esbuild code.ts --bundle --format=iife --outfile=dist/code.js --loader:.ts=ts --platform=browser",
+    "build:ui": "esbuild src/ui/index.tsx --bundle --format=esm --outfile=dist/bundle.js --loader:.ts=ts --loader:.tsx=tsx --target=es2015",
+    "build:code": "esbuild code.ts --bundle --format=iife --outfile=dist/code.js --loader:.ts=ts --platform=browser --target=es2015",
     "build:figma": "npm run build:ui && node -e \"require('fs').mkdirSync('dist',{recursive:true}); require('fs').copyFileSync('ui.html','dist/ui.html');\" && npm run build:code && node scripts/inject-html.js",
     "build": "npm run build:figma",
     "dev": "npm run build:ui -- --watch"
