@@ -55,8 +55,13 @@ export const App: React.FC = () => {
   const handshakeRef = useRef(false);
 
   const sendToPlugin = useCallback((message: unknown) => {
-    if (typeof window !== "undefined") {
-      window.parent?.postMessage({ pluginMessage: message }, "*");
+    if (typeof window === "undefined") return;
+    const payload: { pluginMessage: unknown; pluginId?: string } = { pluginMessage: message };
+    if (window.location.origin !== "null" && window.location.protocol.startsWith("http")) {
+      payload.pluginId = "design-discovery-assistant";
+      window.parent?.postMessage(payload, "https://www.figma.com");
+    } else {
+      window.parent?.postMessage(payload, "*");
     }
   }, []);
 

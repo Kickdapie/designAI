@@ -32,8 +32,20 @@ const UI_HEIGHT = 900;
 const UI_MINIMIZED_WIDTH = 400;
 const UI_MINIMIZED_HEIGHT = 300;
 
-// Show UI: use __html__ from manifest when "ui" is set
-figma.showUI(typeof __pluginUiHtml__ !== "undefined" ? __pluginUiHtml__ : (typeof __html__ !== "undefined" ? __html__ : ""), { width: UI_WIDTH, height: UI_HEIGHT });
+/** Deployed UI URL (e.g. GitHub Pages). Loads UI from URL to avoid Figma iframe document.write/syntax issues. Add domain to manifest networkAccess. Use "" to try inlined UI. */
+const UI_BASE_URL = "https://kickdapie.github.io/designAI/";
+
+if (UI_BASE_URL && UI_BASE_URL.startsWith("http")) {
+  figma.showUI(
+    '<script>window.location.href = "' + UI_BASE_URL.replace(/"/g, "\\\"") + 'index.html"</script>',
+    { width: UI_WIDTH, height: UI_HEIGHT }
+  );
+} else {
+  figma.showUI(
+    typeof __pluginUiHtml__ !== "undefined" ? __pluginUiHtml__ : (typeof __html__ !== "undefined" ? __html__ : ""),
+    { width: UI_WIDTH, height: UI_HEIGHT }
+  );
+}
 
 // No localStorage in plugin context; API key is passed from UI via configure-ai
 figma.ui.onmessage = (message: PluginMessage | { type: string; payload?: unknown }) => {

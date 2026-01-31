@@ -7,7 +7,10 @@
   "documentAccess": "dynamic-page",
   "editorType": ["figma"],
   "networkAccess": {
-    "allowedDomains": ["https://api.openai.com"],
-    "reasoning": "Required for AI-powered search summaries, canvas analysis, and layout recommendations via OpenAI API."
+    "allowedDomains": [
+      "https://api.openai.com",
+      "https://kickdapie.github.io"
+    ],
+    "reasoning": "OpenAI for AI features; kickdapie.github.io for loading plugin UI from URL (avoids Figma iframe document.write issues)."
   }
 }
