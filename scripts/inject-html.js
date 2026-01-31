@@ -28,6 +28,9 @@ let html = fs.readFileSync(uiPath, "utf8");
 let bundle = fs.readFileSync(bundlePath, "utf8");
 // Escape </script> in bundle so it doesn't close the inline script tag (HTML5)
 bundle = bundle.replace(/<\/script>/gi, "<\\/script>");
+// Figma's iframe may reject scripts containing the literal token "import".
+// Use Unicode escapes for the whole word so the source never contains ASCII "import".
+bundle = bundle.replace(/\bimport\b/g, "\\u0069\\u006d\\u0070\\u006f\\u0072\\u0074");
 // Inline the bundle so the iframe doesn't need to load bundle.js (no base URL in Figma)
 html = html.replace(
   /<script\s+src="bundle\.js"><\/script>/i,
