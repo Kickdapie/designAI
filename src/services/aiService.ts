@@ -1,4 +1,4 @@
-import { Example, ElementTrait, LayoutSpec, ViewportInfo } from "../types/catalog";
+import { Example, ElementTrait, LayoutSpec, ViewportInfo, VisualDecompositionResult } from "../types/catalog";
 
 /**
  * AI Service for intelligent design recommendations and semantic search
@@ -106,6 +106,30 @@ class AIService {
     } catch (error) {
       console.warn("[AI Service] Recommendation generation failed:", error);
       return "";
+    }
+  }
+
+  /**
+   * Reasoning & remix: GPT receives structured elements from UI detector (YOLO/Detectron2)
+   * and narrates/suggests without doing extraction. Use when you have decomposition JSON.
+   */
+  async analyzeFromStructuredElements(decomposition: VisualDecompositionResult): Promise<{ analysis: string; error?: string }> {
+    if (!this.isAvailable()) {
+      return { analysis: "", error: "AI is not available" };
+    }
+
+    try {
+      const analysis = await this.callLLM(
+        this.buildStructuredAnalysisPrompt(decomposition)
+      );
+      if (analysis && analysis.trim()) {
+        return { analysis: analysis.trim() };
+      }
+      return { analysis: "", error: "AI returned empty response" };
+    } catch (error) {
+      console.error("[AI Service] Structured analysis failed:", error);
+      const errorMessage = error instanceof Error ? error.message : String(error);
+      return { analysis: "", error: errorMessage };
     }
   }
 
@@ -457,6 +481,41 @@ Example format:
       console.warn("[AI Service] Failed to parse layout specs:", error, response);
       return [];
     }
+  }
+
+  /**
+   * Build prompt for GPT reasoning from structured UI elements (YOLO/Detectron2 output).
+   * GPT narrates and suggests; it does not extract.
+   */
+  private buildStructuredAnalysisPrompt(decomposition: VisualDecompositionResult): string {
+    const elements = decomposition.elements || [];
+    const palette = decomposition.palette || [];
+
+    const elementsText = elements
+      .slice(0, 50)
+      .map(
+        (el) =>
+          `- ${el.type}: bbox [${el.bbox.join(", ")}]` +
+          (el.bg_color ? ` bg=${el.bg_color}` : "") +
+          (el.text_color ? ` text_color=${el.text_color}` : "") +
+          (el.font_size ? ` font_size=${el.font_size}` : "") +
+          (el.text ? ` text="${(el.text || "").slice(0, 80)}"` : "")
+      )
+      .join("\n");
+
+    return `You are a design mentor. A UI detector (YOLO/Detectron2) has already decomposed a design screenshot into structured elements. Your job is to reason and narrate—not to extract.
+
+Structured elements from the detector:
+${elementsText || "(none)"}
+${palette.length > 0 ? `\nDetected palette: ${palette.join(", ")}` : ""}
+
+Provide a brief analysis (3–4 sentences) that:
+1. Observes what UI elements and layout are present (buttons, text blocks, colors, typography)
+2. Identifies strengths and potential improvements
+3. Suggests specific enhancements (e.g., contrast, hierarchy, spacing)
+4. Offers actionable next steps for the designer
+
+Be specific, constructive, and design-focused. Do not repeat raw data; interpret and advise.`;
   }
 
   /**

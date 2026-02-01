@@ -9,8 +9,9 @@
   "networkAccess": {
     "allowedDomains": [
       "https://api.openai.com",
-      "https://kickdapie.github.io"
+      "https://kickdapie.github.io",
+      "http://localhost:8000"
     ],
-    "reasoning": "OpenAI for AI features; kickdapie.github.io for loading plugin UI from URL (avoids Figma iframe document.write issues)."
+    "reasoning": "OpenAI for AI; kickdapie.github.io for plugin UI; localhost:8000 for optional UI detection backend (YOLO/Detectron2). Add your deployed backend domain if different."
   }
 }

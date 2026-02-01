@@ -22,6 +22,11 @@ import {
 } from "../types/catalog";
 import { DEFAULT_RESULTS, EXAMPLE_DATASET } from "../catalog/examples";
 import { aiService } from "../services/aiService";
+import {
+  getDetectionConfig,
+  setDetectionConfig,
+  analyzeImage as detectImage,
+} from "../services/uiDetectionService";
 
 const INITIAL_ASSISTANT: ChatMessage = {
   id: "assistant-welcome",
@@ -50,6 +55,8 @@ export const App: React.FC = () => {
     return window.localStorage.getItem(STORAGE_KEY) || "";
   });
   const [isAnalyzing, setIsAnalyzing] = useState(false);
+  const [detectionApiUrl, setDetectionApiUrl] = useState(() => getDetectionConfig().baseUrl || "");
+  const [detectionApiKey, setDetectionApiKey] = useState(() => (typeof window !== "undefined" ? window.localStorage.getItem("ui_detection_api_key") : null) || "");
   const chatEndRef = useRef<HTMLDivElement | null>(null);
   const fallbackTimerRef = useRef<number | null>(null);
   const handshakeRef = useRef(false);
@@ -194,6 +201,43 @@ export const App: React.FC = () => {
             .catch((err) => {
               setIsAnalyzing(false);
               pushAssistantMessage(`❌ ${err instanceof Error ? err.message : "AI analysis failed."}`);
+            });
+          break;
+        }
+        case "screenshot-for-analysis": {
+          const payload = message.payload as { imageBytes?: number[]; error?: string };
+          if (payload?.error) {
+            setIsAnalyzing(false);
+            pushAssistantMessage(`❌ ${payload.error}`);
+            break;
+          }
+          const imageBytes = payload?.imageBytes;
+          if (!imageBytes || !imageBytes.length) {
+            setIsAnalyzing(false);
+            pushAssistantMessage("❌ No image received.");
+            break;
+          }
+          const apiKey = typeof window !== "undefined" ? window.localStorage.getItem(STORAGE_KEY) : null;
+          if (!apiKey) {
+            setIsAnalyzing(false);
+            pushAssistantMessage("❌ No OpenAI API key. Add it in AI Settings for GPT reasoning.");
+            break;
+          }
+          aiService.initialize(apiKey);
+          const base64 = btoa(String.fromCharCode.apply(null, new Uint8Array(imageBytes)));
+          detectImage(base64)
+            .then((decomposition) => aiService.analyzeFromStructuredElements(decomposition))
+            .then((result) => {
+              setIsAnalyzing(false);
+              if (result.analysis) {
+                pushAssistantMessage(`🎨 Screenshot Analysis (YOLO/Detectron2 + GPT):\n\n${result.analysis}`);
+              } else {
+                pushAssistantMessage(`❌ ${result.error || "Analysis failed."}`);
+              }
+            })
+            .catch((err) => {
+              setIsAnalyzing(false);
+              pushAssistantMessage(`❌ ${err instanceof Error ? err.message : "Screenshot analysis failed."}`);
             });
           break;
         }
@@ -400,6 +444,22 @@ export const App: React.FC = () => {
     });
   }, [aiEnabled, sendToPlugin, pushAssistantMessage]);
 
+  const handleAnalyzeScreenshot = useCallback(() => {
+    const hasKey = typeof window !== "undefined" && !!window.localStorage.getItem(STORAGE_KEY);
+    const { baseUrl } = getDetectionConfig();
+    if (!baseUrl) {
+      pushAssistantMessage("⚠️ Set the UI Detection API URL in AI Settings (e.g. http://localhost:8000 for local YOLO/Detectron2 backend).");
+      return;
+    }
+    if (!hasKey && !aiEnabled) {
+      pushAssistantMessage("⚠️ Add your OpenAI API key in AI Settings for GPT reasoning.");
+      return;
+    }
+    setIsAnalyzing(true);
+    pushAssistantMessage("🔍 Exporting selection and running UI detector + GPT...");
+    sendToPlugin({ type: "analyze-screenshot" });
+  }, [aiEnabled, sendToPlugin, pushAssistantMessage]);
+
   const collectionSummary = useMemo(() => collection.length, [collection.length]);
 
   return (
@@ -506,6 +566,56 @@ export const App: React.FC = () => {
                     platform.openai.com/api-keys
                   </a>
                 </p>
+                <h4 style={{ margin: "16px 0 8px 0", fontSize: "13px", fontWeight: "600" }}>
+                  UI Detection API (YOLO / Detectron2)
+                </h4>
+                <p style={{ margin: "0 0 8px 0", fontSize: "11px", opacity: 0.8 }}>
+                  Optional. Base URL of your visual decomposition backend (e.g. http://localhost:8000). Add the domain to the plugin manifest networkAccess.
+                </p>
+                <div style={{ display: "flex", gap: "8px", alignItems: "center", flexWrap: "wrap" }}>
+                  <input
+                    type="url"
+                    placeholder="http://localhost:8000"
+                    value={detectionApiUrl}
+                    onChange={(e) => setDetectionApiUrl(e.target.value)}
+                    style={{
+                      flex: "1 1 200px",
+                      minWidth: "180px",
+                      padding: "8px 12px",
+                      background: "rgba(0, 0, 0, 0.3)",
+                      border: "1px solid rgba(255, 255, 255, 0.2)",
+                      borderRadius: "4px",
+                      color: "white",
+                      fontSize: "12px",
+                    }}
+                  />
+                  <input
+                    type="password"
+                    placeholder="API key (optional)"
+                    value={detectionApiKey}
+                    onChange={(e) => setDetectionApiKey(e.target.value)}
+                    style={{
+                      flex: "0 1 140px",
+                      padding: "8px 12px",
+                      background: "rgba(0, 0, 0, 0.3)",
+                      border: "1px solid rgba(255, 255, 255, 0.2)",
+                      borderRadius: "4px",
+                      color: "white",
+                      fontSize: "12px",
+                    }}
+                  />
+                  <button
+                    className="secondary-button"
+                    type="button"
+                    onClick={() => {
+                      setDetectionConfig(detectionApiUrl.trim() || null, detectionApiKey.trim() || null);
+                      pushAssistantMessage("UI Detection API URL saved. Use «Analyze Screenshot» after selecting a frame.");
+                    }}
+                    style={{ fontSize: "12px", padding: "8px 16px" }}
+                  >
+                    Save
+                  </button>
+                </div>
               </div>
             )}
           </>
@@ -521,16 +631,28 @@ export const App: React.FC = () => {
                 <span className="panel-subhead">Guide the assistant with intent</span>
               </div>
               {aiEnabled && !isMinimized && (
-                <button
-                  className="secondary-button"
-                  type="button"
-                  onClick={() => handleAnalyzeCanvas(false)}
+                <div style={{ display: "flex", gap: "8px", flexWrap: "wrap" }}>
+                  <button
+                    className="secondary-button"
+                    type="button"
+                    onClick={() => handleAnalyzeCanvas(false)}
                   disabled={isAnalyzing}
                   title="Analyze your canvas and get AI recommendations"
                   style={{ fontSize: "11px", padding: "6px 12px", whiteSpace: "nowrap" }}
                 >
                   {isAnalyzing ? "⏳ Analyzing..." : "🎨 Analyze Canvas"}
                 </button>
+                  <button
+                    className="secondary-button"
+                    type="button"
+                    disabled={isAnalyzing}
+                    onClick={handleAnalyzeScreenshot}
+                    title="Export selection as screenshot → YOLO/Detectron2 → GPT reasoning"
+                    style={{ fontSize: "11px", padding: "6px 12px", whiteSpace: "nowrap" }}
+                  >
+                    📷 Analyze Screenshot
+                  </button>
+                </div>
               )}
             </div>
           </header>

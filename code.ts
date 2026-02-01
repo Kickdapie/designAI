@@ -69,6 +69,9 @@ figma.ui.onmessage = (message: PluginMessage | { type: string; payload?: unknown
     case "analyze-canvas":
       handleAnalyzeCanvas((message.payload as { analyzeSelection?: boolean })?.analyzeSelection ?? false);
       break;
+    case "analyze-screenshot":
+      handleAnalyzeScreenshot();
+      break;
     default:
       console.log("[Plugin] Unknown message type:", (message as { type: string }).type);
       break;
@@ -275,6 +278,30 @@ async function handleAnalyzeCanvas(analyzeSelection: boolean): Promise<void> {
         textCount: 0,
         error: err instanceof Error ? err.message : "Unknown error",
       },
+    });
+  }
+}
+
+async function handleAnalyzeScreenshot(): Promise<void> {
+  try {
+    const selection = [...figma.currentPage.selection];
+    if (selection.length === 0) {
+      postToUI({
+        type: "screenshot-for-analysis",
+        payload: { error: "Select one or more frames/nodes to export as screenshot." },
+      });
+      return;
+    }
+    const bytes = await figma.exportAsync(selection, { format: "PNG", constraint: { type: "SCALE", value: 2 } });
+    postToUI({
+      type: "screenshot-for-analysis",
+      payload: { imageBytes: Array.from(bytes) },
+    });
+  } catch (err) {
+    console.error("[Plugin] Error exporting screenshot:", err);
+    postToUI({
+      type: "screenshot-for-analysis",
+      payload: { error: err instanceof Error ? err.message : "Export failed" },
     });
   }
 }

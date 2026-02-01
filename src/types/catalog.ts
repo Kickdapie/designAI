@@ -105,6 +105,11 @@ export type AnalyzeCanvasMessage = {
   payload?: { analyzeSelection?: boolean; apiKey?: string };
 };
 
+export type AnalyzeScreenshotMessage = {
+  type: "analyze-screenshot";
+  payload?: Record<string, unknown>;
+};
+
 export type CanvasAnalysisResponse = {
   type: "canvas-analysis";
   payload: {
@@ -132,12 +137,19 @@ export type CanvasDataForAnalysis = {
   };
 };
 
+/** Screenshot (PNG bytes) from plugin; UI runs detection API + GPT reasoning. */
+export type ScreenshotForAnalysis = {
+  type: "screenshot-for-analysis";
+  payload: { imageBytes: number[] } | { error: string };
+};
+
 export type PluginMessage =
   | ApplyTraitsMessage
   | SearchExamplesMessage
   | UiReadyMessage
   | ConfigureAIMessage
-  | AnalyzeCanvasMessage;
+  | AnalyzeCanvasMessage
+  | AnalyzeScreenshotMessage;
 
 // Layout automation types
 export type ViewportInfo = {
@@ -163,5 +175,20 @@ export type LayoutSpec = {
   color?: string;
   font?: string;
   text?: string;
+};
+
+/** Visual decomposition output from UI detector (YOLO/Detectron2 backend). */
+export type VisualDecompositionElement = {
+  type: string;
+  bbox: [number, number, number, number];
+  bg_color?: string;
+  text_color?: string;
+  font_size?: string;
+  text?: string;
+};
+
+export type VisualDecompositionResult = {
+  elements: VisualDecompositionElement[];
+  palette?: string[];
 };
 
