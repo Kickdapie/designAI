@@ -15,6 +15,7 @@ import { aiService } from "./src/services/aiService";
 import type {
   ApplyTraitsMessage,
   CanvasDataForAnalysis,
+  DetectedDesignElement,
   ElementTrait,
   LayoutSpec,
   LayoutTrait,
@@ -71,6 +72,9 @@ figma.ui.onmessage = (message: PluginMessage | { type: string; payload?: unknown
       break;
     case "analyze-screenshot":
       handleAnalyzeScreenshot();
+      break;
+    case "apply-detected-elements":
+      handleApplyDetectedElements((message.payload as { elements?: unknown[] })?.elements ?? []);
       break;
     default:
       console.log("[Plugin] Unknown message type:", (message as { type: string }).type);
@@ -304,6 +308,118 @@ async function handleAnalyzeScreenshot(): Promise<void> {
       payload: { error: err instanceof Error ? err.message : "Export failed" },
     });
   }
+}
+
+async function handleApplyDetectedElements(elements: unknown[]): Promise<void> {
+  if (!elements || elements.length === 0) {
+    postToUI({ type: "collection-applied", payload: { success: false, error: "No elements to apply." } });
+    return;
+  }
+
+  try {
+    const viewport = figma.viewport.center;
+    const startX = viewport.x - 200;
+    let currentY = viewport.y - 200;
+    const GAP = 20;
+    const createdNodes: SceneNode[] = [];
+
+    // Load a default font for text
+    await figma.loadFontAsync({ family: "Inter", style: "Regular" });
+    await figma.loadFontAsync({ family: "Inter", style: "Bold" });
+
+    for (const raw of elements) {
+      const el = raw as {
+        label?: string;
+        type?: string;
+        width?: number;
+        height?: number;
+        bg_color?: string;
+        text_color?: string;
+        text?: string;
+        font_size?: string;
+      };
+
+      const w = el.width || 200;
+      const h = el.height || 60;
+
+      // Create a frame for this element
+      const frame = figma.createFrame();
+      frame.name = el.label || el.type || "Element";
+      frame.resize(w, h);
+      frame.x = startX;
+      frame.y = currentY;
+
+      // Apply background color
+      if (el.bg_color) {
+        const rgb = hexToRgb(el.bg_color);
+        if (rgb) {
+          frame.fills = [{ type: "SOLID", color: { r: rgb.r / 255, g: rgb.g / 255, b: rgb.b / 255 } }];
+        }
+      }
+
+      // Add text if present
+      if (el.text) {
+        const textNode = figma.createText();
+        textNode.fontName = { family: "Inter", style: "Regular" };
+        textNode.characters = el.text;
+
+        // Parse font size
+        let fontSize = 16;
+        if (el.font_size) {
+          const parsed = parseInt(el.font_size, 10);
+          if (!isNaN(parsed) && parsed > 0) fontSize = parsed;
+        }
+        textNode.fontSize = fontSize;
+
+        // Apply text color
+        if (el.text_color) {
+          const rgb = hexToRgb(el.text_color);
+          if (rgb) {
+            textNode.fills = [{ type: "SOLID", color: { r: rgb.r / 255, g: rgb.g / 255, b: rgb.b / 255 } }];
+          }
+        }
+
+        // Center text in frame
+        textNode.x = 10;
+        textNode.y = Math.max(0, (h - fontSize) / 2);
+        textNode.resize(Math.max(1, w - 20), fontSize + 4);
+        frame.appendChild(textNode);
+      }
+
+      figma.currentPage.appendChild(frame);
+      createdNodes.push(frame);
+      currentY += h + GAP;
+    }
+
+    // Select the newly created nodes
+    figma.currentPage.selection = createdNodes;
+    figma.viewport.scrollAndZoomIntoView(createdNodes);
+
+    postToUI({
+      type: "collection-applied",
+      payload: {
+        success: true,
+        message: `Created ${createdNodes.length} element(s) on your canvas. You can move, resize, and style them further.`,
+      },
+    });
+  } catch (err) {
+    console.error("[Plugin] Error applying detected elements:", err);
+    postToUI({
+      type: "collection-applied",
+      payload: { success: false, error: err instanceof Error ? err.message : "Failed to create elements." },
+    });
+  }
+}
+
+function hexToRgb(hex: string): { r: number; g: number; b: number } | null {
+  const result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
+  return result
+    ? {
+        r: parseInt(result[1], 16),
+        g: parseInt(result[2], 16),
+        b: parseInt(result[3], 16),
+      }
+    : null;
 }
 
 function isDescendantOfAny(node: BaseNode, ancestors: SceneNode[]): boolean {

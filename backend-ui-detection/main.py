@@ -186,6 +186,25 @@ class AnalyzeRequest(BaseModel):
     image_base64: str
 
 
+class AnalyzeUrlRequest(BaseModel):
+    image_url: str
+
+
+class SearchImagesRequest(BaseModel):
+    query: str
+    num_results: int = 8
+
+
+def fetch_image_bytes(url: str) -> bytes:
+    """Download image from URL and return bytes."""
+    import requests as req
+    resp = req.get(url, timeout=15, headers={
+        "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36"
+    })
+    resp.raise_for_status()
+    return resp.content
+
+
 @app.post("/analyze")
 def analyze(request: AnalyzeRequest) -> dict[str, Any]:
     """Accept base64 PNG; return structured elements (and optional palette)."""
@@ -199,6 +218,66 @@ def analyze(request: AnalyzeRequest) -> dict[str, Any]:
 
     result = run_yolo_detection(image_bytes)
     return result
+
+
+@app.post("/analyze-url")
+def analyze_url(request: AnalyzeUrlRequest) -> dict[str, Any]:
+    """Fetch image from URL, run YOLO, return structured elements."""
+    if not request.image_url:
+        raise HTTPException(status_code=400, detail="image_url is required")
+    try:
+        image_bytes = fetch_image_bytes(request.image_url)
+    except Exception as e:
+        raise HTTPException(status_code=400, detail=f"Could not fetch image: {e}")
+
+    result = run_yolo_detection(image_bytes)
+    result["source_url"] = request.image_url
+    return result
+
+
+@app.post("/search-images")
+def search_images(request: SearchImagesRequest) -> dict[str, Any]:
+    """Search for website design images. Uses Google Custom Search if configured, else returns guidance."""
+    api_key = os.environ.get("GOOGLE_CSE_API_KEY", "").strip()
+    cx = os.environ.get("GOOGLE_CSE_CX", "").strip()
+
+    if not api_key or not cx:
+        # Return instructions + a fallback using the query for the user
+        return {
+            "results": [],
+            "message": "Google Custom Search not configured. Set GOOGLE_CSE_API_KEY and GOOGLE_CSE_CX env vars. See README.",
+            "fallback_url": f"https://www.google.com/search?q={request.query}+website+design&tbm=isch",
+        }
+
+    try:
+        import requests as req
+        resp = req.get(
+            "https://www.googleapis.com/customsearch/v1",
+            params={
+                "key": api_key,
+                "cx": cx,
+                "q": request.query + " website design",
+                "searchType": "image",
+                "num": min(request.num_results, 10),
+                "imgSize": "large",
+            },
+            timeout=10,
+        )
+        resp.raise_for_status()
+        data = resp.json()
+
+        results = []
+        for item in data.get("items", []):
+            results.append({
+                "title": item.get("title", ""),
+                "image_url": item.get("link", ""),
+                "thumbnail": item.get("image", {}).get("thumbnailLink", item.get("link", "")),
+                "source": item.get("displayLink", ""),
+            })
+
+        return {"results": results}
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Search failed: {e}")
 
 
 @app.get("/health")

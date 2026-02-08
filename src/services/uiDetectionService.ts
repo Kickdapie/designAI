@@ -1,4 +1,4 @@
-import type { VisualDecompositionResult } from "../types/catalog";
+import type { VisualDecompositionResult, ImageSearchResult } from "../types/catalog";
 
 /**
  * Client for the visual decomposition backend (YOLO / Detectron2).
@@ -31,9 +31,17 @@ export function setDetectionConfig(baseUrl: string | null, apiKey: string | null
   else window.localStorage.removeItem(STORAGE_KEY_API_KEY);
 }
 
+function buildHeaders(): Record<string, string> {
+  const headers: Record<string, string> = {
+    "Content-Type": "application/json",
+  };
+  const apiKey = getApiKey();
+  if (apiKey) headers["Authorization"] = `Bearer ${apiKey}`;
+  return headers;
+}
+
 /**
  * POST image (base64 PNG) to the detection API; returns structured elements.
- * Backend should run YOLO/Detectron2 and return JSON matching VisualDecompositionResult.
  */
 export async function analyzeImage(imageBase64Png: string): Promise<VisualDecompositionResult> {
   const baseUrl = getBaseUrl();
@@ -42,19 +50,11 @@ export async function analyzeImage(imageBase64Png: string): Promise<VisualDecomp
   }
 
   const url = baseUrl.replace(/\/$/, "") + "/analyze";
-  const apiKey = getApiKey();
-
-  const headers: Record<string, string> = {
-    "Content-Type": "application/json",
-  };
-  if (apiKey) headers["Authorization"] = `Bearer ${apiKey}`;
-
-  const body = JSON.stringify({ image_base64: imageBase64Png });
 
   const response = await fetch(url, {
     method: "POST",
-    headers,
-    body,
+    headers: buildHeaders(),
+    body: JSON.stringify({ image_base64: imageBase64Png }),
   });
 
   if (!response.ok) {
@@ -68,4 +68,63 @@ export async function analyzeImage(imageBase64Png: string): Promise<VisualDecomp
   }
 
   return data;
+}
+
+/**
+ * Analyze an image by URL (the backend fetches it). Used for dataset + Google examples.
+ */
+export async function analyzeImageByUrl(imageUrl: string): Promise<VisualDecompositionResult> {
+  const baseUrl = getBaseUrl();
+  if (!baseUrl) {
+    throw new Error("UI Detection API URL not set. Add it in AI Settings.");
+  }
+
+  const url = baseUrl.replace(/\/$/, "") + "/analyze-url";
+
+  const response = await fetch(url, {
+    method: "POST",
+    headers: buildHeaders(),
+    body: JSON.stringify({ image_url: imageUrl }),
+  });
+
+  if (!response.ok) {
+    const text = await response.text();
+    throw new Error(`UI Detection API error: ${response.status} ${response.statusText}. ${text}`);
+  }
+
+  const data = (await response.json()) as VisualDecompositionResult;
+  if (!data || !Array.isArray(data.elements)) {
+    throw new Error("Invalid response: expected { elements: [...] }");
+  }
+
+  return data;
+}
+
+/**
+ * Search for design images via the backend (Google Custom Search).
+ */
+export async function searchDesignImages(query: string, numResults: number = 8): Promise<{
+  results: ImageSearchResult[];
+  message?: string;
+  fallback_url?: string;
+}> {
+  const baseUrl = getBaseUrl();
+  if (!baseUrl) {
+    throw new Error("UI Detection API URL not set. Add it in AI Settings.");
+  }
+
+  const url = baseUrl.replace(/\/$/, "") + "/search-images";
+
+  const response = await fetch(url, {
+    method: "POST",
+    headers: buildHeaders(),
+    body: JSON.stringify({ query, num_results: numResults }),
+  });
+
+  if (!response.ok) {
+    const text = await response.text();
+    throw new Error(`Search API error: ${response.status} ${response.statusText}. ${text}`);
+  }
+
+  return await response.json();
 }

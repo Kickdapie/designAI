@@ -110,6 +110,11 @@ export type AnalyzeScreenshotMessage = {
   payload?: Record<string, unknown>;
 };
 
+export type ApplyDetectedElementsMessage = {
+  type: "apply-detected-elements";
+  payload: { elements: DetectedDesignElement[] };
+};
+
 export type CanvasAnalysisResponse = {
   type: "canvas-analysis";
   payload: {
@@ -149,7 +154,8 @@ export type PluginMessage =
   | UiReadyMessage
   | ConfigureAIMessage
   | AnalyzeCanvasMessage
-  | AnalyzeScreenshotMessage;
+  | AnalyzeScreenshotMessage
+  | ApplyDetectedElementsMessage;
 
 // Layout automation types
 export type ViewportInfo = {
@@ -190,5 +196,28 @@ export type VisualDecompositionElement = {
 export type VisualDecompositionResult = {
   elements: VisualDecompositionElement[];
   palette?: string[];
+  source_url?: string;
+};
+
+/** A single actionable element GPT extracted from YOLO output; user can pick which to add. */
+export type DetectedDesignElement = {
+  id: string;
+  label: string;
+  type: string;
+  description: string;
+  width: number;
+  height: number;
+  bg_color?: string;
+  text_color?: string;
+  text?: string;
+  font_size?: string;
+};
+
+/** Google image search result */
+export type ImageSearchResult = {
+  title: string;
+  image_url: string;
+  thumbnail: string;
+  source: string;
 };
 

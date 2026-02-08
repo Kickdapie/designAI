@@ -1,4 +1,4 @@
-import { Example, ElementTrait, LayoutSpec, ViewportInfo, VisualDecompositionResult } from "../types/catalog";
+import { Example, ElementTrait, LayoutSpec, ViewportInfo, VisualDecompositionResult, DetectedDesignElement } from "../types/catalog";
 
 /**
  * AI Service for intelligent design recommendations and semantic search
@@ -130,6 +130,29 @@ class AIService {
       console.error("[AI Service] Structured analysis failed:", error);
       const errorMessage = error instanceof Error ? error.message : String(error);
       return { analysis: "", error: errorMessage };
+    }
+  }
+
+  /**
+   * From YOLO output, have GPT describe each element as an actionable design component
+   * the user can choose to add to their canvas.
+   */
+  async extractActionableElements(decomposition: VisualDecompositionResult): Promise<{ elements: DetectedDesignElement[]; summary: string; error?: string }> {
+    if (!this.isAvailable()) {
+      return { elements: [], summary: "", error: "AI is not available" };
+    }
+
+    try {
+      const response = await this.callLLM(
+        this.buildActionableElementsPrompt(decomposition)
+      );
+      if (!response || !response.trim()) {
+        return { elements: [], summary: "", error: "AI returned empty response" };
+      }
+      return this.parseActionableElementsResponse(response, decomposition);
+    } catch (error) {
+      console.error("[AI Service] Actionable elements extraction failed:", error);
+      return { elements: [], summary: "", error: error instanceof Error ? error.message : String(error) };
     }
   }
 
@@ -516,6 +539,134 @@ Provide a brief analysis (3–4 sentences) that:
 4. Offers actionable next steps for the designer
 
 Be specific, constructive, and design-focused. Do not repeat raw data; interpret and advise.`;
+  }
+
+  /**
+   * Build prompt that asks GPT to list individual design elements from YOLO output
+   * as actionable items the user can choose to add to their canvas.
+   */
+  private buildActionableElementsPrompt(decomposition: VisualDecompositionResult): string {
+    const elements = decomposition.elements || [];
+    const palette = decomposition.palette || [];
+
+    const elementsText = elements
+      .slice(0, 50)
+      .map(
+        (el, i) =>
+          `${i + 1}. type="${el.type}" bbox=[${el.bbox.join(",")}]` +
+          (el.bg_color ? ` bg=${el.bg_color}` : "") +
+          (el.text_color ? ` text_color=${el.text_color}` : "") +
+          (el.font_size ? ` font_size=${el.font_size}` : "") +
+          (el.text ? ` text="${(el.text || "").slice(0, 80)}"` : "")
+      )
+      .join("\n");
+
+    return `You are a design assistant. A UI detector (YOLO) analyzed a website screenshot and found these elements:
+
+${elementsText || "(none detected)"}
+${palette.length > 0 ? `\nColor palette: ${palette.join(", ")}` : ""}
+
+Your task:
+1. Write a short 1-2 sentence summary of the overall design.
+2. Then list each meaningful design element as a JSON array. Group tiny/duplicate detections into logical components.
+
+Respond in EXACTLY this format (no extra text outside):
+SUMMARY: <your 1-2 sentence summary>
+ELEMENTS_JSON:
+[
+  {
+    "label": "Primary CTA Button",
+    "type": "button",
+    "description": "Blue call-to-action button with white text",
+    "width": 280,
+    "height": 60,
+    "bg_color": "#2563EB",
+    "text_color": "#FFFFFF",
+    "text": "Get Started",
+    "font_size": "16px"
+  }
+]
+
+Rules:
+- Each element should be a meaningful, self-contained design component a user might want to add to their canvas.
+- Merge overlapping detections into one logical element (e.g. icon+text = one nav item).
+- "width" and "height" are the element dimensions in pixels from the bbox.
+- Include bg_color, text_color, text, font_size only when detected or reasonably inferable.
+- Maximum 15 elements. Skip tiny decorative items.`;
+  }
+
+  /**
+   * Parse GPT response into DetectedDesignElement[] + summary.
+   */
+  private parseActionableElementsResponse(
+    response: string,
+    decomposition: VisualDecompositionResult,
+  ): { elements: DetectedDesignElement[]; summary: string; error?: string } {
+    let summary = "";
+    let elements: DetectedDesignElement[] = [];
+
+    // Extract summary
+    const summaryMatch = response.match(/SUMMARY:\s*(.+?)(?=\nELEMENTS_JSON:|\n\[)/s);
+    if (summaryMatch) {
+      summary = summaryMatch[1].trim();
+    }
+
+    // Extract JSON
+    const jsonMatch = response.match(/ELEMENTS_JSON:\s*(\[[\s\S]*\])/);
+    if (jsonMatch) {
+      try {
+        const parsed = JSON.parse(jsonMatch[1]);
+        if (Array.isArray(parsed)) {
+          elements = parsed.map((el: any, i: number) => ({
+            id: `detected-${i}-${Date.now()}`,
+            label: el.label || `Element ${i + 1}`,
+            type: el.type || "unknown",
+            description: el.description || "",
+            width: el.width || 100,
+            height: el.height || 50,
+            bg_color: el.bg_color,
+            text_color: el.text_color,
+            text: el.text,
+            font_size: el.font_size,
+          }));
+        }
+      } catch (e) {
+        console.warn("[AI Service] Failed to parse actionable elements JSON:", e);
+      }
+    }
+
+    // If JSON parse failed, try to extract any JSON array from the response
+    if (elements.length === 0) {
+      const fallbackJson = response.match(/\[[\s\S]*\]/);
+      if (fallbackJson) {
+        try {
+          const parsed = JSON.parse(fallbackJson[0]);
+          if (Array.isArray(parsed)) {
+            elements = parsed.map((el: any, i: number) => ({
+              id: `detected-${i}-${Date.now()}`,
+              label: el.label || `Element ${i + 1}`,
+              type: el.type || "unknown",
+              description: el.description || "",
+              width: el.width || 100,
+              height: el.height || 50,
+              bg_color: el.bg_color,
+              text_color: el.text_color,
+              text: el.text,
+              font_size: el.font_size,
+            }));
+          }
+        } catch (e) {
+          // give up parsing
+        }
+      }
+    }
+
+    if (!summary && elements.length === 0) {
+      // Entire response is probably plain text
+      summary = response.trim();
+    }
+
+    return { elements, summary };
   }
 
   /**

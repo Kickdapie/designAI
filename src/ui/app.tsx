@@ -10,10 +10,12 @@ import {
   CanvasAnalysisResponse,
   CanvasDataForAnalysis,
   ChatMessage,
+  DetectedDesignElement,
   ElementTrait,
   Example,
   ExampleElement,
   ExampleSearchResponse,
+  ImageSearchResult,
   LayoutTrait,
   PaletteTrait,
   ResizeWindowMessage,
@@ -26,6 +28,8 @@ import {
   getDetectionConfig,
   setDetectionConfig,
   analyzeImage as detectImage,
+  analyzeImageByUrl,
+  searchDesignImages,
 } from "../services/uiDetectionService";
 
 const INITIAL_ASSISTANT: ChatMessage = {
@@ -57,6 +61,15 @@ export const App: React.FC = () => {
   const [isAnalyzing, setIsAnalyzing] = useState(false);
   const [detectionApiUrl, setDetectionApiUrl] = useState(() => getDetectionConfig().baseUrl || "");
   const [detectionApiKey, setDetectionApiKey] = useState(() => (typeof window !== "undefined" ? window.localStorage.getItem("ui_detection_api_key") : null) || "");
+  // Google search
+  const [googleQuery, setGoogleQuery] = useState("");
+  const [googleResults, setGoogleResults] = useState<ImageSearchResult[]>([]);
+  const [isSearchingGoogle, setIsSearchingGoogle] = useState(false);
+  // Detected elements from YOLO + GPT
+  const [detectedElements, setDetectedElements] = useState<DetectedDesignElement[]>([]);
+  const [selectedDetectedIds, setSelectedDetectedIds] = useState<Set<string>>(new Set());
+  const [isAnalyzingExample, setIsAnalyzingExample] = useState(false);
+  const [analyzedExampleName, setAnalyzedExampleName] = useState("");
   const chatEndRef = useRef<HTMLDivElement | null>(null);
   const fallbackTimerRef = useRef<number | null>(null);
   const handshakeRef = useRef(false);
@@ -460,6 +473,116 @@ export const App: React.FC = () => {
     sendToPlugin({ type: "analyze-screenshot" });
   }, [aiEnabled, sendToPlugin, pushAssistantMessage]);
 
+  // ---------- Google Image Search ----------
+  const handleGoogleSearch = useCallback(async () => {
+    const q = googleQuery.trim();
+    if (!q) return;
+    const { baseUrl } = getDetectionConfig();
+    if (!baseUrl) {
+      pushAssistantMessage("⚠️ Set the UI Detection API URL in AI Settings first (e.g. http://localhost:8000).");
+      return;
+    }
+    setIsSearchingGoogle(true);
+    try {
+      const data = await searchDesignImages(q);
+      if (data.results && data.results.length > 0) {
+        setGoogleResults(data.results);
+        pushAssistantMessage(`Found ${data.results.length} design references for "${q}". Click one to analyze it with YOLO.`);
+      } else {
+        setGoogleResults([]);
+        if (data.fallback_url) {
+          pushAssistantMessage(
+            `Google Custom Search is not configured on the backend. You can manually browse: ${data.fallback_url}\n\n${data.message || ""}`
+          );
+        } else {
+          pushAssistantMessage(`No results for "${q}". Try a different search.`);
+        }
+      }
+    } catch (err) {
+      pushAssistantMessage(`❌ Search failed: ${err instanceof Error ? err.message : String(err)}`);
+    } finally {
+      setIsSearchingGoogle(false);
+    }
+  }, [googleQuery, pushAssistantMessage]);
+
+  // ---------- Analyze Example with YOLO ----------
+  const handleAnalyzeExample = useCallback(async (imageUrl: string, name: string) => {
+    const { baseUrl } = getDetectionConfig();
+    if (!baseUrl) {
+      pushAssistantMessage("⚠️ Set the UI Detection API URL in AI Settings first.");
+      return;
+    }
+    const apiKey = typeof window !== "undefined" ? window.localStorage.getItem(STORAGE_KEY) : null;
+    if (!apiKey) {
+      pushAssistantMessage("⚠️ Add your OpenAI API key in AI Settings.");
+      return;
+    }
+
+    setIsAnalyzingExample(true);
+    setAnalyzedExampleName(name);
+    setDetectedElements([]);
+    setSelectedDetectedIds(new Set());
+    pushAssistantMessage(`🔍 Analyzing "${name}" with YOLO + GPT...`);
+
+    try {
+      aiService.initialize(apiKey);
+      const decomposition = await analyzeImageByUrl(imageUrl);
+      const result = await aiService.extractActionableElements(decomposition);
+
+      if (result.error) {
+        pushAssistantMessage(`❌ ${result.error}`);
+      } else {
+        if (result.summary) {
+          pushAssistantMessage(`🎨 ${name}: ${result.summary}`);
+        }
+        if (result.elements.length > 0) {
+          setDetectedElements(result.elements);
+          // Select all by default
+          setSelectedDetectedIds(new Set(result.elements.map((el) => el.id)));
+          pushAssistantMessage(
+            `Found ${result.elements.length} design elements. Pick the ones you'd like to add to your canvas, then click "Add Selected to Canvas".`
+          );
+        } else {
+          pushAssistantMessage("No actionable elements detected. Try a different example.");
+        }
+      }
+    } catch (err) {
+      pushAssistantMessage(`❌ Analysis failed: ${err instanceof Error ? err.message : String(err)}`);
+    } finally {
+      setIsAnalyzingExample(false);
+    }
+  }, [pushAssistantMessage]);
+
+  // ---------- Apply Detected Elements to Canvas ----------
+  const handleApplyDetectedElements = useCallback(() => {
+    const selected = detectedElements.filter((el) => selectedDetectedIds.has(el.id));
+    if (selected.length === 0) {
+      pushAssistantMessage("⚠️ Select at least one element to add.");
+      return;
+    }
+
+    sendToPlugin({
+      type: "apply-detected-elements",
+      payload: { elements: selected },
+    });
+
+    pushAssistantMessage(
+      `Placing ${selected.length} element(s) on your canvas from "${analyzedExampleName}".`
+    );
+  }, [detectedElements, selectedDetectedIds, analyzedExampleName, pushAssistantMessage, sendToPlugin]);
+
+  const toggleDetectedElement = useCallback((id: string) => {
+    setSelectedDetectedIds((prev) => {
+      const next = new Set(prev);
+      if (next.has(id)) {
+        next.delete(id);
+      } else {
+        next.add(id);
+      }
+      return next;
+    });
+  }, []);
+
   const collectionSummary = useMemo(() => collection.length, [collection.length]);
 
   return (
@@ -685,11 +808,51 @@ export const App: React.FC = () => {
           <header className="panel-header">
             <h3>Example Matches</h3>
             <span className="panel-subhead">
-              {examples.length} {examples.length === 1 ? "result" : "results"}
+              {examples.length + googleResults.length} {(examples.length + googleResults.length) === 1 ? "result" : "results"}
             </span>
           </header>
 
+          {/* Google Image Search */}
+          <div style={{ padding: "8px 12px", borderBottom: "1px solid rgba(255,255,255,0.08)" }}>
+            <form onSubmit={(e) => { e.preventDefault(); handleGoogleSearch(); }} style={{ display: "flex", gap: "6px" }}>
+              <input
+                type="text"
+                placeholder="Search web for design examples..."
+                value={googleQuery}
+                onChange={(e) => setGoogleQuery(e.target.value)}
+                style={{
+                  flex: 1,
+                  padding: "6px 10px",
+                  background: "rgba(0,0,0,0.3)",
+                  border: "1px solid rgba(255,255,255,0.15)",
+                  borderRadius: "4px",
+                  color: "white",
+                  fontSize: "12px",
+                }}
+              />
+              <button
+                className="secondary-button"
+                type="submit"
+                disabled={isSearchingGoogle || !googleQuery.trim()}
+                style={{ fontSize: "11px", padding: "6px 12px", whiteSpace: "nowrap" }}
+              >
+                {isSearchingGoogle ? "Searching..." : "Search Web"}
+              </button>
+            </form>
+          </div>
+
           <div className="examples-grid">
+            {/* Google results first */}
+            {googleResults.map((gr, i) => (
+              <GoogleResultCard
+                key={`google-${i}`}
+                result={gr}
+                isActive={false}
+                onAnalyze={() => handleAnalyzeExample(gr.image_url, gr.title || `Web Result ${i + 1}`)}
+                isAnalyzing={isAnalyzingExample}
+              />
+            ))}
+            {/* Dataset examples */}
             {examples.map((example) => (
               <ExampleCard
                 key={example.id}
@@ -698,9 +861,9 @@ export const App: React.FC = () => {
                 onSelect={() => setSelectedExample(example)}
               />
             ))}
-            {!examples.length && !isLoading && (
+            {!examples.length && !googleResults.length && !isLoading && (
               <div className="empty-state">
-                <p>No examples yet. Try adjusting your prompt.</p>
+                <p>No examples yet. Try adjusting your prompt or search the web.</p>
               </div>
             )}
           </div>
@@ -713,9 +876,116 @@ export const App: React.FC = () => {
               onCollectTypography={handleCollectTypography}
               onCollectLayout={handleCollectLayout}
               onCollectElement={handleCollectElement}
+              onAnalyzeWithYolo={handleAnalyzeExample}
+              isAnalyzingExample={isAnalyzingExample}
             />
           )}
         </section>
+
+        {/* Detected Elements Panel (from YOLO + GPT analysis) */}
+        {detectedElements.length > 0 && (
+          <section className="panel" style={{ minWidth: "260px" }}>
+            <header className="panel-header">
+              <div>
+                <h3>Detected Elements</h3>
+                <span className="panel-subhead">
+                  {analyzedExampleName} — {selectedDetectedIds.size}/{detectedElements.length} selected
+                </span>
+              </div>
+            </header>
+            <div style={{ padding: "8px 12px", display: "flex", gap: "6px", borderBottom: "1px solid rgba(255,255,255,0.08)" }}>
+              <button
+                className="tertiary-button"
+                type="button"
+                onClick={() => setSelectedDetectedIds(new Set(detectedElements.map((el) => el.id)))}
+                style={{ fontSize: "11px" }}
+              >
+                Select All
+              </button>
+              <button
+                className="tertiary-button"
+                type="button"
+                onClick={() => setSelectedDetectedIds(new Set())}
+                style={{ fontSize: "11px" }}
+              >
+                Deselect All
+              </button>
+            </div>
+            <div className="element-list" style={{ padding: "8px 12px", maxHeight: "400px", overflowY: "auto" }}>
+              {detectedElements.map((el) => (
+                <label
+                  key={el.id}
+                  className="element-card"
+                  style={{
+                    display: "flex",
+                    gap: "10px",
+                    alignItems: "flex-start",
+                    cursor: "pointer",
+                    opacity: selectedDetectedIds.has(el.id) ? 1 : 0.5,
+                    border: selectedDetectedIds.has(el.id)
+                      ? "1px solid rgba(74, 158, 255, 0.5)"
+                      : "1px solid rgba(255,255,255,0.08)",
+                    borderRadius: "6px",
+                    padding: "10px",
+                    marginBottom: "6px",
+                    background: selectedDetectedIds.has(el.id) ? "rgba(74, 158, 255, 0.08)" : "transparent",
+                  }}
+                >
+                  <input
+                    type="checkbox"
+                    checked={selectedDetectedIds.has(el.id)}
+                    onChange={() => toggleDetectedElement(el.id)}
+                    style={{ marginTop: "3px", flexShrink: 0 }}
+                  />
+                  <div style={{ flex: 1, minWidth: 0 }}>
+                    <div style={{ display: "flex", alignItems: "center", gap: "6px", marginBottom: "4px" }}>
+                      <strong style={{ fontSize: "12px" }}>{el.label}</strong>
+                      <span style={{
+                        fontSize: "10px",
+                        padding: "1px 6px",
+                        borderRadius: "3px",
+                        background: "rgba(255,255,255,0.1)",
+                        color: "rgba(255,255,255,0.7)",
+                      }}>
+                        {el.type}
+                      </span>
+                    </div>
+                    <p style={{ fontSize: "11px", margin: "0 0 4px 0", color: "rgba(203, 213, 225, 0.8)", lineHeight: "1.4" }}>
+                      {el.description}
+                    </p>
+                    <div style={{ display: "flex", gap: "8px", flexWrap: "wrap", fontSize: "10px", color: "rgba(148,163,184,0.8)" }}>
+                      <span>{el.width}x{el.height}px</span>
+                      {el.bg_color && (
+                        <span style={{ display: "flex", alignItems: "center", gap: "3px" }}>
+                          <span style={{ width: "10px", height: "10px", borderRadius: "2px", background: el.bg_color, display: "inline-block", border: "1px solid rgba(255,255,255,0.2)" }} />
+                          {el.bg_color}
+                        </span>
+                      )}
+                      {el.text_color && (
+                        <span style={{ display: "flex", alignItems: "center", gap: "3px" }}>
+                          <span style={{ width: "10px", height: "10px", borderRadius: "2px", background: el.text_color, display: "inline-block", border: "1px solid rgba(255,255,255,0.2)" }} />
+                          text: {el.text_color}
+                        </span>
+                      )}
+                      {el.text && <span>"{el.text}"</span>}
+                    </div>
+                  </div>
+                </label>
+              ))}
+            </div>
+            <div style={{ padding: "10px 12px" }}>
+              <button
+                className="primary-button"
+                type="button"
+                disabled={selectedDetectedIds.size === 0}
+                onClick={handleApplyDetectedElements}
+                style={{ width: "100%" }}
+              >
+                Add {selectedDetectedIds.size} Element{selectedDetectedIds.size !== 1 ? "s" : ""} to Canvas
+              </button>
+            </div>
+          </section>
+        )}
 
         <section className="panel collection-panel">
           <header className="panel-header">
@@ -864,6 +1134,41 @@ const ExampleCard: React.FC<{
   );
 };
 
+const GoogleResultCard: React.FC<{
+  result: ImageSearchResult;
+  isActive: boolean;
+  onAnalyze: () => void;
+  isAnalyzing: boolean;
+}> = ({ result, isActive, onAnalyze, isAnalyzing }) => {
+  return (
+    <div
+      className={`example-card ${isActive ? "active" : ""}`}
+      style={{ position: "relative" }}
+    >
+      <img src={result.thumbnail} alt={result.title} loading="lazy" style={{ width: "100%", height: "auto", borderRadius: "4px" }} />
+      <div className="example-name" style={{ fontSize: "11px", marginTop: "4px" }}>
+        {result.title ? result.title.slice(0, 50) : "Web Result"}
+      </div>
+      <div className="example-tags">
+        <span style={{ fontSize: "9px" }}>{result.source}</span>
+        <span style={{ fontSize: "9px", background: "rgba(74,158,255,0.2)", color: "#4A9EFF" }}>Web</span>
+      </div>
+      <button
+        className="primary-button"
+        type="button"
+        disabled={isAnalyzing}
+        onClick={(e) => {
+          e.stopPropagation();
+          onAnalyze();
+        }}
+        style={{ fontSize: "10px", padding: "4px 8px", marginTop: "6px", width: "100%" }}
+      >
+        {isAnalyzing ? "Analyzing..." : "Analyze with YOLO"}
+      </button>
+    </div>
+  );
+};
+
 const ExampleDetail: React.FC<{
   example: Example;
   onCollectPalette: (example: Example) => void;
@@ -871,6 +1176,8 @@ const ExampleDetail: React.FC<{
   onCollectTypography: (example: Example) => void;
   onCollectLayout: (example: Example) => void;
   onCollectElement: (element: ExampleElement) => void;
+  onAnalyzeWithYolo: (imageUrl: string, name: string) => void;
+  isAnalyzingExample: boolean;
 }> = ({
   example,
   onCollectPalette,
@@ -878,6 +1185,8 @@ const ExampleDetail: React.FC<{
   onCollectTypography,
   onCollectLayout,
   onCollectElement,
+  onAnalyzeWithYolo,
+  isAnalyzingExample,
 }) => {
   // Construct image URL relative to current page location
   const getImageUrl = (path: string) => {
@@ -952,6 +1261,18 @@ const ExampleDetail: React.FC<{
       </div>
 
       <div className="example-actions">
+        <button
+          className="primary-button"
+          type="button"
+          disabled={isAnalyzingExample}
+          onClick={() => {
+            const imgUrl = getImageUrl(example.preview);
+            onAnalyzeWithYolo(imgUrl, example.name);
+          }}
+          style={{ fontSize: "12px" }}
+        >
+          {isAnalyzingExample ? "Analyzing..." : "Analyze with YOLO"}
+        </button>
         <button
           className="secondary-button"
           type="button"
