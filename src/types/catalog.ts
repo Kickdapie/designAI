@@ -191,6 +191,7 @@ export type VisualDecompositionElement = {
   text_color?: string;
   font_size?: string;
   text?: string;
+  crop_base64?: string;
 };
 
 export type VisualDecompositionResult = {
@@ -211,6 +212,7 @@ export type DetectedDesignElement = {
   text_color?: string;
   text?: string;
   font_size?: string;
+  crop_base64?: string;
 };
 
 /** Google image search result */

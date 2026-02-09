@@ -323,9 +323,8 @@ async function handleApplyDetectedElements(elements: unknown[]): Promise<void> {
     const GAP = 20;
     const createdNodes: SceneNode[] = [];
 
-    // Load a default font for text
+    // Load a default font for text labels
     await figma.loadFontAsync({ family: "Inter", style: "Regular" });
-    await figma.loadFontAsync({ family: "Inter", style: "Bold" });
 
     for (const raw of elements) {
       const el = raw as {
@@ -337,6 +336,7 @@ async function handleApplyDetectedElements(elements: unknown[]): Promise<void> {
         text_color?: string;
         text?: string;
         font_size?: string;
+        crop_base64?: string;
       };
 
       const w = el.width || 200;
@@ -349,46 +349,52 @@ async function handleApplyDetectedElements(elements: unknown[]): Promise<void> {
       frame.x = startX;
       frame.y = currentY;
 
-      // Apply background color
-      if (el.bg_color) {
+      if (el.crop_base64) {
+        // Use the actual cropped image from the reference as the fill
+        try {
+          const binaryString = atob(el.crop_base64);
+          const bytes = new Uint8Array(binaryString.length);
+          for (let j = 0; j < binaryString.length; j++) {
+            bytes[j] = binaryString.charCodeAt(j);
+          }
+          const imageHash = figma.createImage(bytes);
+          frame.fills = [{
+            type: "IMAGE",
+            imageHash: imageHash.hash,
+            scaleMode: "FILL",
+          }];
+        } catch (imgErr) {
+          console.warn("[Plugin] Failed to create image fill, falling back to color:", imgErr);
+          // Fallback to solid color
+          if (el.bg_color) {
+            const rgb = hexToRgb(el.bg_color);
+            if (rgb) {
+              frame.fills = [{ type: "SOLID", color: { r: rgb.r / 255, g: rgb.g / 255, b: rgb.b / 255 } }];
+            }
+          }
+        }
+      } else if (el.bg_color) {
+        // No crop available; use solid color
         const rgb = hexToRgb(el.bg_color);
         if (rgb) {
           frame.fills = [{ type: "SOLID", color: { r: rgb.r / 255, g: rgb.g / 255, b: rgb.b / 255 } }];
         }
       }
 
-      // Add text if present
-      if (el.text) {
-        const textNode = figma.createText();
-        textNode.fontName = { family: "Inter", style: "Regular" };
-        textNode.characters = el.text;
-
-        // Parse font size
-        let fontSize = 16;
-        if (el.font_size) {
-          const parsed = parseInt(el.font_size, 10);
-          if (!isNaN(parsed) && parsed > 0) fontSize = parsed;
-        }
-        textNode.fontSize = fontSize;
-
-        // Apply text color
-        if (el.text_color) {
-          const rgb = hexToRgb(el.text_color);
-          if (rgb) {
-            textNode.fills = [{ type: "SOLID", color: { r: rgb.r / 255, g: rgb.g / 255, b: rgb.b / 255 } }];
-          }
-        }
-
-        // Center text in frame
-        textNode.x = 10;
-        textNode.y = Math.max(0, (h - fontSize) / 2);
-        textNode.resize(Math.max(1, w - 20), fontSize + 4);
-        frame.appendChild(textNode);
-      }
+      // Add a label below the frame so the user knows what it is
+      const labelNode = figma.createText();
+      labelNode.fontName = { family: "Inter", style: "Regular" };
+      labelNode.characters = el.label || el.type || "Element";
+      labelNode.fontSize = 12;
+      labelNode.fills = [{ type: "SOLID", color: { r: 0.7, g: 0.7, b: 0.7 } }];
+      labelNode.x = startX;
+      labelNode.y = currentY + h + 4;
+      figma.currentPage.appendChild(labelNode);
 
       figma.currentPage.appendChild(frame);
       createdNodes.push(frame);
-      currentY += h + GAP;
+      createdNodes.push(labelNode);
+      currentY += h + GAP + 20; // extra space for label
     }
 
     // Select the newly created nodes
@@ -399,7 +405,7 @@ async function handleApplyDetectedElements(elements: unknown[]): Promise<void> {
       type: "collection-applied",
       payload: {
         success: true,
-        message: `Created ${createdNodes.length} element(s) on your canvas. You can move, resize, and style them further.`,
+        message: `Created ${elements.length} element(s) on your canvas with actual visuals from the reference. You can move, resize, and restyle them.`,
       },
     });
   } catch (err) {

@@ -937,6 +937,20 @@ export const App: React.FC = () => {
                     onChange={() => toggleDetectedElement(el.id)}
                     style={{ marginTop: "3px", flexShrink: 0 }}
                   />
+                  {el.crop_base64 && (
+                    <img
+                      src={`data:image/png;base64,${el.crop_base64}`}
+                      alt={el.label}
+                      style={{
+                        width: "60px",
+                        height: "40px",
+                        objectFit: "cover",
+                        borderRadius: "4px",
+                        border: "1px solid rgba(255,255,255,0.15)",
+                        flexShrink: 0,
+                      }}
+                    />
+                  )}
                   <div style={{ flex: 1, minWidth: 0 }}>
                     <div style={{ display: "flex", alignItems: "center", gap: "6px", marginBottom: "4px" }}>
                       <strong style={{ fontSize: "12px" }}>{el.label}</strong>

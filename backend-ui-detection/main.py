@@ -163,6 +163,17 @@ def run_yolo_detection(image_bytes: bytes) -> dict[str, Any]:
             bg = dominant_color_from_region(image_bytes, int(x1), int(y1), int(w), int(h))
             if bg:
                 el["bg_color"] = bg
+
+            # Crop the detected region and encode as base64 PNG
+            try:
+                crop_box = (int(x1), int(y1), int(x2), int(y2))
+                cropped = img_rgb.crop(crop_box)
+                buf = BytesIO()
+                cropped.save(buf, format="PNG")
+                el["crop_base64"] = base64.b64encode(buf.getvalue()).decode("utf-8")
+            except Exception:
+                pass  # Skip crop if it fails
+
             elements.append(el)
 
     palette = palette_from_image(image_bytes)

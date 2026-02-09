@@ -605,6 +605,25 @@ Rules:
     let summary = "";
     let elements: DetectedDesignElement[] = [];
 
+    // Build a lookup of crop data from the original YOLO decomposition
+    const yoloElements = decomposition.elements || [];
+
+    const attachCrop = (el: DetectedDesignElement, index: number): DetectedDesignElement => {
+      // Match by index first (GPT elements correspond roughly to YOLO order)
+      if (index < yoloElements.length && yoloElements[index].crop_base64) {
+        el.crop_base64 = yoloElements[index].crop_base64;
+      } else {
+        // Try matching by type + similar bbox size
+        const match = yoloElements.find(
+          (y) => y.crop_base64 && y.type === el.type && Math.abs(y.bbox[2] - el.width) < 50
+        );
+        if (match) {
+          el.crop_base64 = match.crop_base64;
+        }
+      }
+      return el;
+    };
+
     // Extract summary
     const summaryMatch = response.match(/SUMMARY:\s*(.+?)(?=\nELEMENTS_JSON:|\n\[)/s);
     if (summaryMatch) {
@@ -617,7 +636,7 @@ Rules:
       try {
         const parsed = JSON.parse(jsonMatch[1]);
         if (Array.isArray(parsed)) {
-          elements = parsed.map((el: any, i: number) => ({
+          elements = parsed.map((el: any, i: number) => attachCrop({
             id: `detected-${i}-${Date.now()}`,
             label: el.label || `Element ${i + 1}`,
             type: el.type || "unknown",
@@ -628,7 +647,7 @@ Rules:
             text_color: el.text_color,
             text: el.text,
             font_size: el.font_size,
-          }));
+          }, i));
         }
       } catch (e) {
         console.warn("[AI Service] Failed to parse actionable elements JSON:", e);
@@ -642,7 +661,7 @@ Rules:
         try {
           const parsed = JSON.parse(fallbackJson[0]);
           if (Array.isArray(parsed)) {
-            elements = parsed.map((el: any, i: number) => ({
+            elements = parsed.map((el: any, i: number) => attachCrop({
               id: `detected-${i}-${Date.now()}`,
               label: el.label || `Element ${i + 1}`,
               type: el.type || "unknown",
@@ -653,7 +672,7 @@ Rules:
               text_color: el.text_color,
               text: el.text,
               font_size: el.font_size,
-            }));
+            }, i));
           }
         } catch (e) {
           // give up parsing
