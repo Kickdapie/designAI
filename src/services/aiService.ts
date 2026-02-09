@@ -151,11 +151,22 @@ class AIService {
 
       if (sourceImageBase64) {
         // Use GPT-4o Vision — send the actual image for much better analysis
-        response = await this.callLLMWithVision(
-          this.buildVisionElementsPrompt(decomposition),
-          sourceImageBase64,
-        );
+        console.log("[AI Service] Using GPT-4o Vision with source image (" + Math.round(sourceImageBase64.length / 1024) + " KB)");
+        try {
+          response = await this.callLLMWithVision(
+            this.buildVisionElementsPrompt(decomposition),
+            sourceImageBase64,
+          );
+          console.log("[AI Service] Vision response received, length:", response.length);
+        } catch (visionError) {
+          // If vision fails (e.g. model not available), fall back to text-only with warning
+          console.warn("[AI Service] Vision call failed, falling back to text-only:", visionError);
+          response = await this.callLLM(
+            this.buildActionableElementsPrompt(decomposition),
+          );
+        }
       } else {
+        console.log("[AI Service] No source image available, using text-only analysis");
         // Fallback: text-only with YOLO metadata
         response = await this.callLLM(
           this.buildActionableElementsPrompt(decomposition),
@@ -165,6 +176,7 @@ class AIService {
       if (!response || !response.trim()) {
         return { elements: [], summary: "", error: "AI returned empty response" };
       }
+      console.log("[AI Service] GPT response (first 200 chars):", response.substring(0, 200));
       return this.parseActionableElementsResponse(response, decomposition);
     } catch (error) {
       console.error("[AI Service] Actionable elements extraction failed:", error);
