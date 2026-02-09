@@ -198,6 +198,7 @@ export type VisualDecompositionResult = {
   elements: VisualDecompositionElement[];
   palette?: string[];
   source_url?: string;
+  source_image_base64?: string;
 };
 
 /** A single actionable element GPT extracted from YOLO output; user can pick which to add. */

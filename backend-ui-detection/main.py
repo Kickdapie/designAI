@@ -233,7 +233,7 @@ def analyze(request: AnalyzeRequest) -> dict[str, Any]:
 
 @app.post("/analyze-url")
 def analyze_url(request: AnalyzeUrlRequest) -> dict[str, Any]:
-    """Fetch image from URL, run YOLO, return structured elements."""
+    """Fetch image from URL, run YOLO, return structured elements + full source image."""
     if not request.image_url:
         raise HTTPException(status_code=400, detail="image_url is required")
     try:
@@ -243,6 +243,8 @@ def analyze_url(request: AnalyzeUrlRequest) -> dict[str, Any]:
 
     result = run_yolo_detection(image_bytes)
     result["source_url"] = request.image_url
+    # Include the full source image so the frontend can send it to GPT-4o Vision
+    result["source_image_base64"] = base64.b64encode(image_bytes).decode("utf-8")
     return result
 
 

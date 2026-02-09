@@ -318,18 +318,20 @@ async function handleApplyDetectedElements(elements: unknown[]): Promise<void> {
 
   try {
     const viewport = figma.viewport.center;
-    const startX = viewport.x - 200;
-    let currentY = viewport.y - 200;
-    const GAP = 20;
+    const startX = viewport.x - 300;
+    let currentY = viewport.y - 400;
+    const GAP = 30;
     const createdNodes: SceneNode[] = [];
 
-    // Load a default font for text labels
+    // Load fonts for text layers
     await figma.loadFontAsync({ family: "Inter", style: "Regular" });
+    await figma.loadFontAsync({ family: "Inter", style: "Bold" });
 
     for (const raw of elements) {
       const el = raw as {
         label?: string;
         type?: string;
+        description?: string;
         width?: number;
         height?: number;
         bg_color?: string;
@@ -339,18 +341,27 @@ async function handleApplyDetectedElements(elements: unknown[]): Promise<void> {
         crop_base64?: string;
       };
 
-      const w = el.width || 200;
-      const h = el.height || 60;
+      const w = Math.max(el.width || 400, 200);
+      const h = Math.max(el.height || 100, 60);
 
-      // Create a frame for this element
+      // Create a section frame
       const frame = figma.createFrame();
-      frame.name = el.label || el.type || "Element";
+      frame.name = el.label || el.type || "Section";
       frame.resize(w, h);
       frame.x = startX;
       frame.y = currentY;
+      frame.clipsContent = true;
 
+      // Apply background color
+      if (el.bg_color) {
+        const rgb = hexToRgb(el.bg_color);
+        if (rgb) {
+          frame.fills = [{ type: "SOLID", color: { r: rgb.r / 255, g: rgb.g / 255, b: rgb.b / 255 } }];
+        }
+      }
+
+      // If we have a YOLO crop image, set it as background
       if (el.crop_base64) {
-        // Use the actual cropped image from the reference as the fill
         try {
           const binaryString = atob(el.crop_base64);
           const bytes = new Uint8Array(binaryString.length);
@@ -364,37 +375,55 @@ async function handleApplyDetectedElements(elements: unknown[]): Promise<void> {
             scaleMode: "FILL",
           }];
         } catch (imgErr) {
-          console.warn("[Plugin] Failed to create image fill, falling back to color:", imgErr);
-          // Fallback to solid color
-          if (el.bg_color) {
-            const rgb = hexToRgb(el.bg_color);
-            if (rgb) {
-              frame.fills = [{ type: "SOLID", color: { r: rgb.r / 255, g: rgb.g / 255, b: rgb.b / 255 } }];
-            }
-          }
-        }
-      } else if (el.bg_color) {
-        // No crop available; use solid color
-        const rgb = hexToRgb(el.bg_color);
-        if (rgb) {
-          frame.fills = [{ type: "SOLID", color: { r: rgb.r / 255, g: rgb.g / 255, b: rgb.b / 255 } }];
+          console.warn("[Plugin] Failed to create image fill:", imgErr);
         }
       }
 
-      // Add a label below the frame so the user knows what it is
-      const labelNode = figma.createText();
-      labelNode.fontName = { family: "Inter", style: "Regular" };
-      labelNode.characters = el.label || el.type || "Element";
-      labelNode.fontSize = 12;
-      labelNode.fills = [{ type: "SOLID", color: { r: 0.7, g: 0.7, b: 0.7 } }];
-      labelNode.x = startX;
-      labelNode.y = currentY + h + 4;
-      figma.currentPage.appendChild(labelNode);
+      // Add text content as editable text layers inside the frame
+      if (el.text) {
+        const lines = el.text.split("\\n").filter((l: string) => l.trim());
+        let textY = 20;
+        const textPadding = 20;
+
+        for (let li = 0; li < lines.length; li++) {
+          const line = lines[li].trim();
+          if (!line) continue;
+
+          const textNode = figma.createText();
+          // First line = heading (bold, larger), rest = body text
+          const isHeading = li === 0;
+          textNode.fontName = { family: "Inter", style: isHeading ? "Bold" : "Regular" };
+          textNode.characters = line;
+
+          // Size based on font_size hint or default
+          let fontSize = isHeading ? 28 : 14;
+          if (el.font_size && isHeading) {
+            const parsed = parseInt(el.font_size, 10);
+            if (!isNaN(parsed) && parsed > 0) fontSize = parsed;
+          }
+          textNode.fontSize = fontSize;
+
+          // Text color
+          if (el.text_color) {
+            const rgb = hexToRgb(el.text_color);
+            if (rgb) {
+              textNode.fills = [{ type: "SOLID", color: { r: rgb.r / 255, g: rgb.g / 255, b: rgb.b / 255 } }];
+            }
+          } else {
+            textNode.fills = [{ type: "SOLID", color: { r: 1, g: 1, b: 1 } }];
+          }
+
+          textNode.x = textPadding;
+          textNode.y = textY;
+          textNode.resize(Math.max(1, w - textPadding * 2), fontSize + 6);
+          frame.appendChild(textNode);
+          textY += fontSize + 10;
+        }
+      }
 
       figma.currentPage.appendChild(frame);
       createdNodes.push(frame);
-      createdNodes.push(labelNode);
-      currentY += h + GAP + 20; // extra space for label
+      currentY += h + GAP;
     }
 
     // Select the newly created nodes
@@ -405,7 +434,7 @@ async function handleApplyDetectedElements(elements: unknown[]): Promise<void> {
       type: "collection-applied",
       payload: {
         success: true,
-        message: `Created ${elements.length} element(s) on your canvas with actual visuals from the reference. You can move, resize, and restyle them.`,
+        message: `Created ${elements.length} section(s) on your canvas with actual text content from the reference. Each section has editable text layers you can modify.`,
       },
     });
   } catch (err) {

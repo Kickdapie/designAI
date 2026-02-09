@@ -527,7 +527,11 @@ export const App: React.FC = () => {
     try {
       aiService.initialize(apiKey);
       const decomposition = await analyzeImageByUrl(imageUrl);
-      const result = await aiService.extractActionableElements(decomposition);
+      // Pass source image to GPT-4o Vision for much better analysis
+      const result = await aiService.extractActionableElements(
+        decomposition,
+        decomposition.source_image_base64,
+      );
 
       if (result.error) {
         pushAssistantMessage(`❌ ${result.error}`);

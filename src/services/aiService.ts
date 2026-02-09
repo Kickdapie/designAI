@@ -134,18 +134,34 @@ class AIService {
   }
 
   /**
-   * From YOLO output, have GPT describe each element as an actionable design component
-   * the user can choose to add to their canvas.
+   * From YOLO output + source image, have GPT-4o Vision identify meaningful page sections
+   * with actual text content that the user can choose to add to their canvas.
+   * Falls back to text-only analysis if no source image is provided.
    */
-  async extractActionableElements(decomposition: VisualDecompositionResult): Promise<{ elements: DetectedDesignElement[]; summary: string; error?: string }> {
+  async extractActionableElements(
+    decomposition: VisualDecompositionResult,
+    sourceImageBase64?: string,
+  ): Promise<{ elements: DetectedDesignElement[]; summary: string; error?: string }> {
     if (!this.isAvailable()) {
       return { elements: [], summary: "", error: "AI is not available" };
     }
 
     try {
-      const response = await this.callLLM(
-        this.buildActionableElementsPrompt(decomposition)
-      );
+      let response: string;
+
+      if (sourceImageBase64) {
+        // Use GPT-4o Vision — send the actual image for much better analysis
+        response = await this.callLLMWithVision(
+          this.buildVisionElementsPrompt(decomposition),
+          sourceImageBase64,
+        );
+      } else {
+        // Fallback: text-only with YOLO metadata
+        response = await this.callLLM(
+          this.buildActionableElementsPrompt(decomposition),
+        );
+      }
+
       if (!response || !response.trim()) {
         return { elements: [], summary: "", error: "AI returned empty response" };
       }
@@ -297,6 +313,66 @@ class AIService {
       throw new Error("AI returned empty response");
     }
     
+    return content;
+  }
+
+  /**
+   * Call GPT-4o with vision (image + text prompt). Used for analyzing actual screenshots.
+   */
+  private async callLLMWithVision(prompt: string, imageBase64: string): Promise<string> {
+    if (!this.config.apiKey) {
+      throw new Error("API key not configured");
+    }
+
+    const response = await fetch("https://api.openai.com/v1/chat/completions", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        "Authorization": `Bearer ${this.config.apiKey}`,
+      },
+      body: JSON.stringify({
+        model: "gpt-4o", // Vision requires gpt-4o (not mini)
+        messages: [
+          {
+            role: "system",
+            content: "You are a design assistant that analyzes website screenshots. You identify meaningful page sections, read all visible text, describe layout and styling. Always respond with structured data as requested.",
+          },
+          {
+            role: "user",
+            content: [
+              {
+                type: "text",
+                text: prompt,
+              },
+              {
+                type: "image_url",
+                image_url: {
+                  url: `data:image/png;base64,${imageBase64}`,
+                  detail: "high",
+                },
+              },
+            ],
+          },
+        ],
+        temperature: 0.3,
+        max_tokens: 2000,
+      }),
+    });
+
+    if (!response.ok) {
+      let errorMessage = "Unknown error";
+      try {
+        const errorData = await response.json();
+        errorMessage = errorData.error?.message || errorData.error || `HTTP ${response.status}: ${response.statusText}`;
+      } catch (e) {
+        errorMessage = `HTTP ${response.status}: ${response.statusText}`;
+      }
+      throw new Error(`OpenAI Vision API error: ${errorMessage}`);
+    }
+
+    const data = await response.json();
+    const content = data.choices[0]?.message?.content?.trim();
+    if (!content) throw new Error("Vision API returned empty response");
     return content;
   }
 
@@ -686,6 +762,66 @@ Rules:
     }
 
     return { elements, summary };
+  }
+
+  /**
+   * Build prompt for GPT-4o Vision — it can see the actual image, read text, understand layout.
+   * Much better than text-only YOLO metadata.
+   */
+  private buildVisionElementsPrompt(decomposition: VisualDecompositionResult): string {
+    const yoloCount = (decomposition.elements || []).length;
+    const palette = decomposition.palette || [];
+
+    return `You are analyzing a website screenshot. A YOLO model detected ${yoloCount} UI elements in this image.
+${palette.length > 0 ? `Detected color palette: ${palette.join(", ")}` : ""}
+
+Your task: Identify the **meaningful page sections** visible in this screenshot. For each section, extract the ACTUAL text content you can read from the image.
+
+Think in terms of page sections a designer would want to reuse:
+- Navigation bar (with actual menu items)
+- Hero section (with actual heading, subheading, CTA button text)
+- Features/services grid
+- Testimonials
+- Footer
+- Cards, sidebars, forms, etc.
+
+Respond in EXACTLY this format:
+SUMMARY: <1-2 sentence description of the overall page design>
+ELEMENTS_JSON:
+[
+  {
+    "label": "Hero Section",
+    "type": "hero",
+    "description": "Dark background hero with portrait photo, heading, subtext, and CTA buttons",
+    "width": 1200,
+    "height": 600,
+    "bg_color": "#1A1A2E",
+    "text_color": "#FFFFFF",
+    "text": "I am Jonathan Doe\\nI'm Jonathan, professional web developer with long time experience in this field.\\nHire me | My Services",
+    "font_size": "48px"
+  },
+  {
+    "label": "Navigation Bar",
+    "type": "navigation",
+    "description": "Horizontal nav with logo and menu links",
+    "width": 1200,
+    "height": 60,
+    "bg_color": "#16213E",
+    "text_color": "#FFFFFF",
+    "text": "amike | Home | About | Services | Work | Portfolio | Blog | Contact",
+    "font_size": "14px"
+  }
+]
+
+IMPORTANT RULES:
+- READ the actual text visible in the image — headings, paragraphs, button labels, nav items. Include it in the "text" field.
+- Use "\\n" to separate lines within one section (heading vs subtext vs button).
+- "width" and "height" should approximate the section's size as seen in the screenshot.
+- "bg_color" should be the dominant background color of that section.
+- "text_color" should be the primary text color.
+- Focus on 3-8 major sections, not individual buttons or icons.
+- The "description" should explain the visual design (layout, imagery, style).
+- Maximum 10 sections.`;
   }
 
   /**
