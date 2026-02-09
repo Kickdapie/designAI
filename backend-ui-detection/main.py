@@ -237,45 +237,28 @@ def analyze_url(request: AnalyzeUrlRequest) -> dict[str, Any]:
 
 @app.post("/search-images")
 def search_images(request: SearchImagesRequest) -> dict[str, Any]:
-    """Search for website design images. Uses Google Custom Search if configured, else returns guidance."""
-    api_key = os.environ.get("GOOGLE_CSE_API_KEY", "").strip()
-    cx = os.environ.get("GOOGLE_CSE_CX", "").strip()
-
-    if not api_key or not cx:
-        # Return instructions + a fallback using the query for the user
-        return {
-            "results": [],
-            "message": "Google Custom Search not configured. Set GOOGLE_CSE_API_KEY and GOOGLE_CSE_CX env vars. See README.",
-            "fallback_url": f"https://www.google.com/search?q={request.query}+website+design&tbm=isch",
-        }
-
+    """Search for website design images using DuckDuckGo (no API key needed)."""
     try:
-        import requests as req
-        resp = req.get(
-            "https://www.googleapis.com/customsearch/v1",
-            params={
-                "key": api_key,
-                "cx": cx,
-                "q": request.query + " website design",
-                "searchType": "image",
-                "num": min(request.num_results, 10),
-                "imgSize": "large",
-            },
-            timeout=10,
-        )
-        resp.raise_for_status()
-        data = resp.json()
+        from duckduckgo_search import DDGS
 
+        query = request.query + " website design"
         results = []
-        for item in data.get("items", []):
-            results.append({
-                "title": item.get("title", ""),
-                "image_url": item.get("link", ""),
-                "thumbnail": item.get("image", {}).get("thumbnailLink", item.get("link", "")),
-                "source": item.get("displayLink", ""),
-            })
+
+        with DDGS() as ddgs:
+            for r in ddgs.images(query, max_results=min(request.num_results, 10)):
+                results.append({
+                    "title": r.get("title", ""),
+                    "image_url": r.get("image", ""),
+                    "thumbnail": r.get("thumbnail", r.get("image", "")),
+                    "source": r.get("source", ""),
+                })
 
         return {"results": results}
+    except ImportError:
+        raise HTTPException(
+            status_code=500,
+            detail="duckduckgo_search not installed. Run: pip install duckduckgo_search",
+        )
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Search failed: {e}")
 
