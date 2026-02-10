@@ -602,7 +602,7 @@ export const App: React.FC = () => {
               </span>
             )}
           </div>
-          <div style={{ display: "flex", gap: "8px", alignItems: "center" }}>
+          <div style={{ display: "flex", gap: "6px", alignItems: "center" }}>
             {!isMinimized && (
               <button
                 className="secondary-button"
@@ -613,6 +613,27 @@ export const App: React.FC = () => {
               >
                 {aiEnabled ? "⚙️ AI Settings" : "🤖 Enable AI"}
               </button>
+            )}
+            {!isMinimized && (
+              <div style={{ display: "flex", gap: "3px", alignItems: "center" }}>
+                {([
+                  { label: "S", w: 600, h: 500 },
+                  { label: "M", w: 900, h: 700 },
+                  { label: "L", w: 1300, h: 900 },
+                  { label: "XL", w: 1600, h: 1000 },
+                ] as { label: string; w: number; h: number }[]).map((preset) => (
+                  <button
+                    key={preset.label}
+                    className="resize-toggle"
+                    type="button"
+                    onClick={() => sendToPlugin({ type: "resize-window", payload: { width: preset.w, height: preset.h } })}
+                    title={`${preset.w}x${preset.h}`}
+                    style={{ fontSize: "10px", padding: "2px 6px", minWidth: "24px" }}
+                  >
+                    {preset.label}
+                  </button>
+                ))}
+              </div>
             )}
             <button
               className="resize-toggle"
