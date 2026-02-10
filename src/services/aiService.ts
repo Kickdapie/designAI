@@ -831,9 +831,17 @@ IMPORTANT RULES:
 - "width" and "height" should approximate the section's size as seen in the screenshot.
 - "bg_color" should be the dominant background color of that section.
 - "text_color" should be the primary text color.
-- Focus on 3-8 major sections, not individual buttons or icons.
 - The "description" should explain the visual design (layout, imagery, style).
-- Maximum 10 sections.`;
+
+SECTION TYPES to include:
+1. **Page sections** (hero, navigation, features, testimonials, footer, etc.) — these are the large blocks.
+2. **Individual interactive elements** — also list buttons, CTAs, links, and form elements you can see. For these, use smaller width/height and type like "button", "cta", "link", "form_field". Include their exact visible text.
+
+Example for a button:
+  { "label": "CTA Button - Hire Me", "type": "button", "description": "Rounded blue call-to-action button", "width": 160, "height": 48, "bg_color": "#2563EB", "text_color": "#FFFFFF", "text": "Hire me", "font_size": "16px" }
+
+- List page sections first, then individual elements.
+- Maximum 12 items total.`;
   }
 
   /**

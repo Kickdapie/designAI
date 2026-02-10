@@ -527,11 +527,6 @@ export const App: React.FC = () => {
     try {
       aiService.initialize(apiKey);
       const decomposition = await analyzeImageByUrl(imageUrl);
-      const hasImg = !!decomposition.source_image_base64;
-      const imgSize = hasImg ? Math.round(decomposition.source_image_base64!.length / 1024) : 0;
-      pushAssistantMessage(
-        `[Debug] YOLO found ${decomposition.elements.length} elements. Source image: ${hasImg ? imgSize + " KB" : "NOT received"}. ${hasImg ? "Sending to GPT-4o Vision..." : "Falling back to text-only GPT."}`
-      );
       // Pass source image to GPT-4o Vision for much better analysis
       const result = await aiService.extractActionableElements(
         decomposition,
