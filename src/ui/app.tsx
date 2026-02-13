@@ -907,15 +907,26 @@ export const App: React.FC = () => {
           )}
         </section>
 
-        {/* Detected Elements Panel (from YOLO + GPT analysis) */}
-        {detectedElements.length > 0 && (
-          <section className="panel" style={{ minWidth: "260px" }}>
+        {/* Detected Elements Panel — replaces Collected Traits when active */}
+        {detectedElements.length > 0 ? (
+          <section className="panel collection-panel">
             <header className="panel-header">
-              <div>
-                <h3>Detected Elements</h3>
-                <span className="panel-subhead">
-                  {analyzedExampleName} — {selectedDetectedIds.size}/{detectedElements.length} selected
-                </span>
+              <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", width: "100%" }}>
+                <div>
+                  <h3>Detected Elements</h3>
+                  <span className="panel-subhead">
+                    {analyzedExampleName} — {selectedDetectedIds.size}/{detectedElements.length} selected
+                  </span>
+                </div>
+                <button
+                  className="tertiary-button"
+                  type="button"
+                  onClick={() => setDetectedElements([])}
+                  title="Dismiss and go back to Collected Traits"
+                  style={{ fontSize: "10px", padding: "3px 8px", flexShrink: 0 }}
+                >
+                  Dismiss
+                </button>
               </div>
             </header>
             <div style={{ padding: "8px 12px", display: "flex", gap: "6px", borderBottom: "1px solid rgba(255,255,255,0.08)" }}>
@@ -1024,8 +1035,7 @@ export const App: React.FC = () => {
               </button>
             </div>
           </section>
-        )}
-
+        ) : (
         <section className="panel collection-panel">
           <header className="panel-header">
             <h3>Collected Traits</h3>
@@ -1085,6 +1095,7 @@ export const App: React.FC = () => {
             )}
           </div>
         </section>
+        )}
       </main>
     </div>
   );
