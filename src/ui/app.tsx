@@ -633,6 +633,16 @@ export const App: React.FC = () => {
                     {preset.label}
                   </button>
                 ))}
+                <span style={{ color: "rgba(255,255,255,0.3)", fontSize: "10px" }}>|</span>
+                <button
+                  className="resize-toggle"
+                  type="button"
+                  onClick={() => sendToPlugin({ type: "resize-window", payload: { width: 1600, height: 450 } })}
+                  title="Wide & short — half height so you can see the canvas above (1600x450)"
+                  style={{ fontSize: "10px", padding: "2px 6px" }}
+                >
+                  Half
+                </button>
               </div>
             )}
             <button
