@@ -65,6 +65,8 @@ export const App: React.FC = () => {
   const [googleQuery, setGoogleQuery] = useState("");
   const [googleResults, setGoogleResults] = useState<ImageSearchResult[]>([]);
   const [isSearchingGoogle, setIsSearchingGoogle] = useState(false);
+  // Image lightbox
+  const [lightboxImage, setLightboxImage] = useState<{ url: string; title: string } | null>(null);
   // Detected elements from YOLO + GPT
   const [detectedElements, setDetectedElements] = useState<DetectedDesignElement[]>([]);
   const [selectedDetectedIds, setSelectedDetectedIds] = useState<Set<string>>(new Set());
@@ -885,6 +887,7 @@ export const App: React.FC = () => {
                 isActive={false}
                 onAnalyze={() => handleAnalyzeExample(gr.image_url, gr.title || `Web Result ${i + 1}`)}
                 isAnalyzing={isAnalyzingExample}
+                onImageClick={(url, title) => setLightboxImage({ url, title })}
               />
             ))}
             {/* Dataset examples */}
@@ -894,6 +897,7 @@ export const App: React.FC = () => {
                 example={example}
                 isActive={selectedExample?.id === example.id}
                 onSelect={() => setSelectedExample(example)}
+                onImageClick={(url, title) => setLightboxImage({ url, title })}
               />
             ))}
             {!examples.length && !googleResults.length && !isLoading && (
@@ -1107,6 +1111,46 @@ export const App: React.FC = () => {
         </section>
         )}
       </main>
+
+      {/* Image Lightbox */}
+      {lightboxImage && (
+        <div
+          style={{
+            position: "fixed",
+            top: 0,
+            left: 0,
+            right: 0,
+            bottom: 0,
+            background: "rgba(0,0,0,0.85)",
+            zIndex: 9999,
+            display: "flex",
+            flexDirection: "column",
+            alignItems: "center",
+            justifyContent: "center",
+            cursor: "pointer",
+          }}
+          onClick={() => setLightboxImage(null)}
+        >
+          <div style={{ color: "white", fontSize: "14px", marginBottom: "12px", fontWeight: 600 }}>
+            {lightboxImage.title}
+          </div>
+          <img
+            src={lightboxImage.url}
+            alt={lightboxImage.title}
+            style={{
+              maxWidth: "90%",
+              maxHeight: "80%",
+              objectFit: "contain",
+              borderRadius: "8px",
+              boxShadow: "0 8px 32px rgba(0,0,0,0.5)",
+            }}
+            onClick={(e) => e.stopPropagation()}
+          />
+          <div style={{ color: "rgba(255,255,255,0.5)", fontSize: "11px", marginTop: "12px" }}>
+            Click anywhere to close
+          </div>
+        </div>
+      )}
     </div>
   );
 };
@@ -1119,7 +1163,8 @@ const ExampleCard: React.FC<{
   example: Example;
   isActive: boolean;
   onSelect: () => void;
-}> = ({ example, isActive, onSelect }) => {
+  onImageClick: (url: string, title: string) => void;
+}> = ({ example, isActive, onSelect, onImageClick }) => {
   // Construct image URL relative to current page location
   const getImageUrl = (path: string) => {
     if (path.startsWith("http")) return path; // Already a full URL
@@ -1183,7 +1228,16 @@ const ExampleCard: React.FC<{
       className={`example-card ${isActive ? "active" : ""}`}
       onClick={onSelect}
     >
-      <img src={getImageUrl(example.thumbnail)} alt={example.name} loading="lazy" />
+      <img
+        src={getImageUrl(example.thumbnail)}
+        alt={example.name}
+        loading="lazy"
+        style={{ cursor: "zoom-in" }}
+        onClick={(e) => {
+          e.stopPropagation();
+          onImageClick(getImageUrl(example.preview), example.name);
+        }}
+      />
       <div className="example-name">{example.name}</div>
       <div className="example-tags">
         {example.layoutTags.slice(0, 2).map((tag) => (
@@ -1199,13 +1253,23 @@ const GoogleResultCard: React.FC<{
   isActive: boolean;
   onAnalyze: () => void;
   isAnalyzing: boolean;
-}> = ({ result, isActive, onAnalyze, isAnalyzing }) => {
+  onImageClick: (url: string, title: string) => void;
+}> = ({ result, isActive, onAnalyze, isAnalyzing, onImageClick }) => {
   return (
     <div
       className={`example-card ${isActive ? "active" : ""}`}
       style={{ position: "relative" }}
     >
-      <img src={result.thumbnail} alt={result.title} loading="lazy" style={{ width: "100%", height: "auto", borderRadius: "4px" }} />
+      <img
+        src={result.thumbnail}
+        alt={result.title}
+        loading="lazy"
+        style={{ width: "100%", height: "auto", borderRadius: "4px", cursor: "zoom-in" }}
+        onClick={(e) => {
+          e.stopPropagation();
+          onImageClick(result.image_url || result.thumbnail, result.title || "Web Result");
+        }}
+      />
       <div className="example-name" style={{ fontSize: "11px", marginTop: "4px" }}>
         {result.title ? result.title.slice(0, 50) : "Web Result"}
       </div>
