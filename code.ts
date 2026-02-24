@@ -317,9 +317,8 @@ async function handleApplyDetectedElements(elements: unknown[]): Promise<void> {
   }
 
   try {
-    const viewport = figma.viewport.center;
-    const startX = viewport.x - 300;
-    let currentY = viewport.y - 400;
+    const { startX, startY } = getDetectedElementsPlacementAnchor();
+    let currentY = startY;
     const GAP = 30;
     const createdNodes: SceneNode[] = [];
 
@@ -444,6 +443,48 @@ async function handleApplyDetectedElements(elements: unknown[]): Promise<void> {
       payload: { success: false, error: err instanceof Error ? err.message : "Failed to create elements." },
     });
   }
+}
+
+function getDetectedElementsPlacementAnchor(): { startX: number; startY: number } {
+  const selectionBounds = getSelectionBounds(figma.currentPage.selection);
+  if (selectionBounds) {
+    // Keep detected elements near the currently highlighted region.
+    return {
+      startX: selectionBounds.maxX + 80,
+      startY: selectionBounds.minY,
+    };
+  }
+
+  const viewport = figma.viewport.center;
+  return { startX: viewport.x - 300, startY: viewport.y - 400 };
+}
+
+function getSelectionBounds(
+  nodes: readonly SceneNode[]
+): { minX: number; minY: number; maxX: number; maxY: number } | null {
+  const bounds = nodes
+    .filter((node) => "x" in node && "y" in node && "width" in node && "height" in node)
+    .map((node) => {
+      const n = node as SceneNode & { x: number; y: number; width: number; height: number };
+      return {
+        minX: n.x,
+        minY: n.y,
+        maxX: n.x + n.width,
+        maxY: n.y + n.height,
+      };
+    });
+
+  if (bounds.length === 0) return null;
+
+  return bounds.reduce(
+    (acc, b) => ({
+      minX: Math.min(acc.minX, b.minX),
+      minY: Math.min(acc.minY, b.minY),
+      maxX: Math.max(acc.maxX, b.maxX),
+      maxY: Math.max(acc.maxY, b.maxY),
+    }),
+    bounds[0]
+  );
 }
 
 function hexToRgb(hex: string): { r: number; g: number; b: number } | null {
