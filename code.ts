@@ -317,16 +317,16 @@ async function handleApplyDetectedElements(elements: unknown[]): Promise<void> {
   }
 
   try {
-    const { startX, startY } = getDetectedElementsPlacementAnchor();
-    let currentY = startY;
-    const GAP = 30;
+    const targetBounds = getSelectionBounds(figma.currentPage.selection);
+    const GAP = 24;
+    const PADDING = 24;
     const createdNodes: SceneNode[] = [];
 
     // Load fonts for text layers
     await figma.loadFontAsync({ family: "Inter", style: "Regular" });
     await figma.loadFontAsync({ family: "Inter", style: "Bold" });
 
-    for (const raw of elements) {
+    const parsedElements = elements.map((raw) => {
       const el = raw as {
         label?: string;
         type?: string;
@@ -340,14 +340,50 @@ async function handleApplyDetectedElements(elements: unknown[]): Promise<void> {
         crop_base64?: string;
       };
 
-      const w = Math.max(el.width || 400, 200);
-      const h = Math.max(el.height || 100, 60);
+      return {
+        el,
+        baseWidth: Math.max(el.width || 400, 180),
+        baseHeight: Math.max(el.height || 120, 60),
+      };
+    });
+
+    const maxBaseWidth = Math.max(...parsedElements.map((p) => p.baseWidth));
+    const totalBaseHeight =
+      parsedElements.reduce((sum, p) => sum + p.baseHeight, 0) + GAP * Math.max(0, parsedElements.length - 1);
+
+    let startX = 0;
+    let currentY = 0;
+    let availableWidth = 560;
+    let availableHeight = Number.POSITIVE_INFINITY;
+    let scale = 1;
+
+    if (targetBounds) {
+      availableWidth = Math.max(120, targetBounds.maxX - targetBounds.minX - PADDING * 2);
+      availableHeight = Math.max(120, targetBounds.maxY - targetBounds.minY - PADDING * 2);
+      const widthScale = availableWidth / Math.max(1, maxBaseWidth);
+      const heightScale = availableHeight / Math.max(1, totalBaseHeight);
+      scale = Math.max(0.2, Math.min(widthScale, heightScale, 1));
+      startX = targetBounds.minX + PADDING;
+      currentY = targetBounds.minY + PADDING;
+    } else {
+      const viewport = figma.viewport.center;
+      startX = viewport.x - 300;
+      currentY = viewport.y - 400;
+      availableWidth = 560;
+      scale = 1;
+    }
+
+    for (const parsed of parsedElements) {
+      const { el } = parsed;
+      const w = Math.min(Math.round(parsed.baseWidth * scale), availableWidth);
+      const h = Math.round(parsed.baseHeight * scale);
+      const frameX = startX + Math.max(0, (availableWidth - w) / 2);
 
       // Create a section frame
       const frame = figma.createFrame();
       frame.name = el.label || el.type || "Section";
       frame.resize(w, h);
-      frame.x = startX;
+      frame.x = frameX;
       frame.y = currentY;
       frame.clipsContent = true;
 
@@ -400,6 +436,8 @@ async function handleApplyDetectedElements(elements: unknown[]): Promise<void> {
             const parsed = parseInt(el.font_size, 10);
             if (!isNaN(parsed) && parsed > 0) fontSize = parsed;
           }
+          // Scale text to the target area so headings don't overflow.
+          fontSize = Math.max(10, Math.round(fontSize * Math.min(1, scale * 1.1)));
           textNode.fontSize = fontSize;
 
           // Text color
