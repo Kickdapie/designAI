@@ -317,7 +317,9 @@ async function handleApplyDetectedElements(elements: unknown[]): Promise<void> {
   }
 
   try {
-    const targetBounds = getSelectionBounds(figma.currentPage.selection);
+    const originalSelection = [...figma.currentPage.selection];
+    const targetBounds = getSelectionBounds(originalSelection);
+    const hasTargetSelection = Boolean(targetBounds);
     const GAP = 24;
     const PADDING = 24;
     const createdNodes: SceneNode[] = [];
@@ -356,6 +358,7 @@ async function handleApplyDetectedElements(elements: unknown[]): Promise<void> {
     let availableWidth = 560;
     let availableHeight = Number.POSITIVE_INFINITY;
     let scale = 1;
+    const placeSingleAtTopRight = hasTargetSelection && parsedElements.length === 1;
 
     if (targetBounds) {
       availableWidth = Math.max(120, targetBounds.maxX - targetBounds.minX - PADDING * 2);
@@ -367,7 +370,7 @@ async function handleApplyDetectedElements(elements: unknown[]): Promise<void> {
       currentY = targetBounds.minY + PADDING;
     } else {
       const viewport = figma.viewport.center;
-      startX = viewport.x - 300;
+      startX = viewport.x - maxBaseWidth / 2;
       currentY = viewport.y - 400;
       availableWidth = 560;
       scale = 1;
@@ -377,7 +380,9 @@ async function handleApplyDetectedElements(elements: unknown[]): Promise<void> {
       const { el } = parsed;
       const w = Math.min(Math.round(parsed.baseWidth * scale), availableWidth);
       const h = Math.round(parsed.baseHeight * scale);
-      const frameX = startX + Math.max(0, (availableWidth - w) / 2);
+      const frameX = placeSingleAtTopRight && targetBounds
+        ? targetBounds.maxX - PADDING - w
+        : startX + Math.max(0, (availableWidth - w) / 2);
 
       // Create a section frame
       const frame = figma.createFrame();
@@ -463,9 +468,13 @@ async function handleApplyDetectedElements(elements: unknown[]): Promise<void> {
       currentY += h + GAP;
     }
 
-    // Select the newly created nodes
-    figma.currentPage.selection = createdNodes;
-    figma.viewport.scrollAndZoomIntoView(createdNodes);
+    if (hasTargetSelection) {
+      // Keep user's selected target so repeated inserts stay anchored there.
+      figma.currentPage.selection = originalSelection;
+    } else {
+      figma.currentPage.selection = createdNodes;
+      figma.viewport.scrollAndZoomIntoView(createdNodes);
+    }
 
     postToUI({
       type: "collection-applied",
@@ -481,20 +490,6 @@ async function handleApplyDetectedElements(elements: unknown[]): Promise<void> {
       payload: { success: false, error: err instanceof Error ? err.message : "Failed to create elements." },
     });
   }
-}
-
-function getDetectedElementsPlacementAnchor(): { startX: number; startY: number } {
-  const selectionBounds = getSelectionBounds(figma.currentPage.selection);
-  if (selectionBounds) {
-    // Keep detected elements near the currently highlighted region.
-    return {
-      startX: selectionBounds.maxX + 80,
-      startY: selectionBounds.minY,
-    };
-  }
-
-  const viewport = figma.viewport.center;
-  return { startX: viewport.x - 300, startY: viewport.y - 400 };
 }
 
 function getSelectionBounds(
