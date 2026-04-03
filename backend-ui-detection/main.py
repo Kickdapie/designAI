@@ -9,7 +9,7 @@ No training needed: by default we use a pre-trained UI model from Hugging Face
 import base64
 import os
 from io import BytesIO
-from typing import Any, Optional
+from typing import Any, Optional, Tuple
 
 from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
@@ -206,14 +206,42 @@ class SearchImagesRequest(BaseModel):
     num_results: int = 8
 
 
-def fetch_image_bytes(url: str) -> bytes:
-    """Download image from URL and return bytes."""
+def guess_image_mime_type(data: bytes) -> str:
+    """Infer MIME type from magic bytes (OpenAI accepts png, jpeg, gif, webp)."""
+    if len(data) < 12:
+        return "image/png"
+    if data[:3] == b"\xff\xd8\xff":
+        return "image/jpeg"
+    if data[:8] == b"\x89PNG\r\n\x1a\n":
+        return "image/png"
+    if data[:6] in (b"GIF87a", b"GIF89a"):
+        return "image/gif"
+    if data[:4] == b"RIFF" and len(data) >= 12 and data[8:12] == b"WEBP":
+        return "image/webp"
+    return "image/png"
+
+
+def normalize_image_mime(header_value: Optional[str], data: bytes) -> str:
+    """Prefer HTTP Content-Type when trustworthy; otherwise sniff bytes."""
+    if header_value:
+        h = header_value.split(";")[0].strip().lower()
+        if h == "image/jpg":
+            h = "image/jpeg"
+        if h in ("image/jpeg", "image/png", "image/gif", "image/webp"):
+            return h
+    return guess_image_mime_type(data)
+
+
+def fetch_image_bytes(url: str) -> Tuple[bytes, str]:
+    """Download image from URL; return (bytes, mime type for Vision API)."""
     import requests as req
     resp = req.get(url, timeout=15, headers={
         "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36"
     })
     resp.raise_for_status()
-    return resp.content
+    data = resp.content
+    mime = normalize_image_mime(resp.headers.get("Content-Type"), data)
+    return data, mime
 
 
 @app.post("/analyze")
@@ -237,7 +265,7 @@ def analyze_url(request: AnalyzeUrlRequest) -> dict[str, Any]:
     if not request.image_url:
         raise HTTPException(status_code=400, detail="image_url is required")
     try:
-        image_bytes = fetch_image_bytes(request.image_url)
+        image_bytes, source_mime = fetch_image_bytes(request.image_url)
     except Exception as e:
         raise HTTPException(status_code=400, detail=f"Could not fetch image: {e}")
 
@@ -245,6 +273,8 @@ def analyze_url(request: AnalyzeUrlRequest) -> dict[str, Any]:
     result["source_url"] = request.image_url
     # Include the full source image so the frontend can send it to GPT-4o Vision
     result["source_image_base64"] = base64.b64encode(image_bytes).decode("utf-8")
+    # Correct MIME matters: Vision rejects data:image/png with JPEG bytes (400 unsupported image)
+    result["source_image_mime"] = source_mime
     return result
 
 

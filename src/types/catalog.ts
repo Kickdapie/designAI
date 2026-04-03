@@ -199,6 +199,8 @@ export type VisualDecompositionResult = {
   palette?: string[];
   source_url?: string;
   source_image_base64?: string;
+  /** MIME for Vision data URL; must match actual bytes (e.g. image/jpeg for .jpg). */
+  source_image_mime?: string;
 };
 
 /** A single actionable element GPT extracted from YOLO output; user can pick which to add. */

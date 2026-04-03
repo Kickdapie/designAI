@@ -1,5 +1,47 @@
 import { Example, ElementTrait, LayoutSpec, ViewportInfo, VisualDecompositionResult, DetectedDesignElement } from "../types/catalog";
 
+/** Infer image MIME from base64 so Vision data: URLs match real bytes (fixes OpenAI 400 on JPEG labeled as PNG). */
+function sniffImageMimeFromBase64(base64: string): string {
+  const clean = base64.replace(/\s/g, "");
+  const slice = clean.slice(0, 64);
+  try {
+    const binary = atob(slice);
+    const bytes = new Uint8Array(binary.length);
+    for (let i = 0; i < binary.length; i++) bytes[i] = binary.charCodeAt(i);
+    if (bytes.length >= 3 && bytes[0] === 0xff && bytes[1] === 0xd8 && bytes[2] === 0xff) {
+      return "image/jpeg";
+    }
+    if (
+      bytes.length >= 8 &&
+      bytes[0] === 0x89 &&
+      bytes[1] === 0x50 &&
+      bytes[2] === 0x4e &&
+      bytes[3] === 0x47
+    ) {
+      return "image/png";
+    }
+    if (bytes.length >= 6 && bytes[0] === 0x47 && bytes[1] === 0x49 && bytes[2] === 0x46) {
+      return "image/gif";
+    }
+    if (
+      bytes.length >= 12 &&
+      bytes[0] === 0x52 &&
+      bytes[1] === 0x49 &&
+      bytes[2] === 0x46 &&
+      bytes[3] === 0x46 &&
+      bytes[8] === 0x57 &&
+      bytes[9] === 0x45 &&
+      bytes[10] === 0x42 &&
+      bytes[11] === 0x50
+    ) {
+      return "image/webp";
+    }
+  } catch {
+    /* ignore */
+  }
+  return "image/png";
+}
+
 /**
  * AI Service for intelligent design recommendations and semantic search
  * 
@@ -153,9 +195,12 @@ class AIService {
         // Use GPT-4o Vision — send the actual image for much better analysis
         console.log("[AI Service] Using GPT-4o Vision with source image (" + Math.round(sourceImageBase64.length / 1024) + " KB)");
         try {
+          const imageMime =
+            decomposition.source_image_mime || sniffImageMimeFromBase64(sourceImageBase64);
           response = await this.callLLMWithVision(
             this.buildVisionElementsPrompt(decomposition),
             sourceImageBase64,
+            imageMime,
           );
           console.log("[AI Service] Vision response received, length:", response.length);
         } catch (visionError) {
@@ -331,10 +376,17 @@ class AIService {
   /**
    * Call GPT-4o with vision (image + text prompt). Used for analyzing actual screenshots.
    */
-  private async callLLMWithVision(prompt: string, imageBase64: string): Promise<string> {
+  private async callLLMWithVision(
+    prompt: string,
+    imageBase64: string,
+    imageMime: string = "image/png",
+  ): Promise<string> {
     if (!this.config.apiKey) {
       throw new Error("API key not configured");
     }
+
+    const mime = imageMime || sniffImageMimeFromBase64(imageBase64);
+    const dataUrl = `data:${mime};base64,${imageBase64}`;
 
     const response = await fetch("https://api.openai.com/v1/chat/completions", {
       method: "POST",
@@ -359,7 +411,7 @@ class AIService {
               {
                 type: "image_url",
                 image_url: {
-                  url: `data:image/png;base64,${imageBase64}`,
+                  url: dataUrl,
                   detail: "high",
                 },
               },
