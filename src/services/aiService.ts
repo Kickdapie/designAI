@@ -42,6 +42,15 @@ function sniffImageMimeFromBase64(base64: string): string {
   return "image/png";
 }
 
+/** OpenAI Vision accepts only these; map common aliases (e.g. image/jpg → image/jpeg). */
+function normalizeVisionMime(mime: string): string {
+  const m = mime.split(";")[0].trim().toLowerCase();
+  if (m === "image/jpg" || m === "image/pjpeg" || m === "image/x-jpeg") return "image/jpeg";
+  if (m === "image/x-png") return "image/png";
+  if (["image/jpeg", "image/png", "image/gif", "image/webp"].includes(m)) return m;
+  return mime;
+}
+
 /**
  * AI Service for intelligent design recommendations and semantic search
  * 
@@ -195,8 +204,9 @@ class AIService {
         // Use GPT-4o Vision — send the actual image for much better analysis
         console.log("[AI Service] Using GPT-4o Vision with source image (" + Math.round(sourceImageBase64.length / 1024) + " KB)");
         try {
-          const imageMime =
-            decomposition.source_image_mime || sniffImageMimeFromBase64(sourceImageBase64);
+          // Always infer MIME from actual base64 bytes (ignore wrong Content-Type from CDNs).
+          const imageMime = normalizeVisionMime(sniffImageMimeFromBase64(sourceImageBase64));
+          console.log("[AI Service] Vision data URL MIME:", imageMime);
           response = await this.callLLMWithVision(
             this.buildVisionElementsPrompt(decomposition),
             sourceImageBase64,
@@ -385,7 +395,7 @@ class AIService {
       throw new Error("API key not configured");
     }
 
-    const mime = imageMime || sniffImageMimeFromBase64(imageBase64);
+    const mime = normalizeVisionMime(imageMime || sniffImageMimeFromBase64(imageBase64));
     const dataUrl = `data:${mime};base64,${imageBase64}`;
 
     const response = await fetch("https://api.openai.com/v1/chat/completions", {
